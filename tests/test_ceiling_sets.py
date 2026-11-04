@@ -26,14 +26,16 @@ import evm  # noqa: E402
 DATA = json.load(open(os.path.join(HERE, '..', 'data', 'etter_fpa.json')))
 BASE = json.load(open(os.path.join(HERE, '..', 'packs', 'base.json')))
 
-CATS = ('Directive', 'Feedback Loop', 'Task Iteration', 'Learning', 'Validation', 'Negligibility')
+# Negligibility is not here: it maps to human in evm.CAT_TYPE, so it has no ceiling in the pack
+# (removed 5 Nov 2026). Both Etter tables give it 0.10; that value was never read.
+CATS = ('Directive', 'Feedback Loop', 'Task Iteration', 'Learning', 'Validation')
 
 # name: (ceilings in CATS order, expected 5-year cash NPV)
 CEILING_SETS = {
-    'tasks_column':   ((0.85, 0.55, 0.45, 0.25, 0.50, 0.10),  5_800_227.08),
-    'pack':           ((0.90, 0.80, 0.45, 0.25, 0.50, 0.00),  9_376_169.02),
-    'read_me_table':  ((0.90, 0.85, 0.50, 0.45, 0.40, 0.10),  9_754_376.86),
-    'bucket_ceiling': ((1.00, 1.00, 0.50, 0.50, 0.50, 0.00), 11_476_088.73),
+    'tasks_column':   ((0.85, 0.55, 0.45, 0.25, 0.50),  5_800_227.08),
+    'pack':           ((0.90, 0.80, 0.45, 0.25, 0.50),  9_376_169.02),
+    'read_me_table':  ((0.90, 0.85, 0.50, 0.45, 0.40),  9_754_376.86),
+    'bucket_ceiling': ((1.00, 1.00, 0.50, 0.50, 0.50), 11_476_088.73),
 }
 
 TOLERANCE = 0.50  # dollars, as in test_evm.test_reference_numbers
@@ -62,6 +64,8 @@ class CeilingSets(unittest.TestCase):
         """Guards the table: the 'pack' row must be what base.json actually holds."""
         held = tuple(BASE['categories'][c]['ceiling'] for c in CATS)
         self.assertEqual(held, CEILING_SETS['pack'][0])
+        self.assertEqual(set(BASE['categories']), set(CATS))
+        self.assertEqual(evm.CAT_TYPE['Negligibility'], 'human')
 
 
 def _make(name, values, expected):

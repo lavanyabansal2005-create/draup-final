@@ -76,7 +76,7 @@ Harvest share is the largest single driver: −$1.4M at 25% to +$20.5M at 75% (d
 | 5.3 | Task Iteration | **45%** | Assistant (person goes faster; capacity by default) | Team / Etter |
 | 5.4 | Learning | **25%** | Assistant | Team / Etter |
 | 5.5 | Validation | **50%** | Assistant | Team / Etter |
-| 5.6 | Negligibility | **0%** | Human only | Team / Etter |
+| 5.6 | Negligibility | none (no ceiling in the pack) | Human only | Team / Etter |
 
 The two agent ceilings were set by Chandan in the review meeting on 23 October 2026 (previously 85% and 55%, the lower of Etter's two ceilings). The assistant ceilings remain the lower of Etter's two ceilings per category (its potential and its bucket ceiling). A ceiling is the most AI could ever do, not a savings number on its own.
 
@@ -95,7 +95,7 @@ The Etter source workbook (`Etter_FPandA_11roles_tasks_hours_automation.xlsx`, t
 | Task Iteration | 0.50 | 0.45 | 0.50 | **0.45** |
 | Learning | 0.45 | 0.25 | 0.50 | **0.25** |
 | Validation | 0.40 | 0.50 | 0.50 | **0.50** |
-| Negligibility | 0.10 | 0.10 | 0.00 | **0.00** |
+| Negligibility | 0.10 | 0.10 | 0.00 | **— (removed)** |
 
 The Tasks column is the data shipped on all 420 rows, and the How to use it sheet says it is the full resolution of that column. The Read me table appears nowhere else in the file.
 
@@ -103,7 +103,7 @@ The Tasks column is the data shipped on all 420 rows, and the How to use it shee
 
 - **Agent categories (Directive, Feedback Loop): 0.90 / 0.80.** Set by Chandan on 23 Oct 2026, overriding the shipped 0.85 / 0.55 (recorded on the value-model workbook's Inputs sheet and in its Read me, item 10). `experiments/legacy/engine_v2.py` line 11 shows the earlier engine used the shipped column, which dates the change. 0.90 matches the Read me table. **0.80 matches no table in the source.**
 - **Assistant categories: the lower of the bucket ceiling and the Tasks column.** That gives 0.45 / 0.25 / 0.50.
-- **Negligibility: 0.00**, the bucket ceiling. Both Etter tables say 0.10. This is dead config: Negligibility maps to Human, so the value is never read.
+- **Negligibility: no ceiling.** The pack used to carry 0.00 (the bucket ceiling) where both Etter tables say 0.10. Negligibility maps to Human, so the value was never read; the key was removed on 5 Nov 2026 with the headline unchanged to the cent.
 
 #### Why only two of the six move the headline
 

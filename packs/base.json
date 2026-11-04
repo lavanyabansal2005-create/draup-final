@@ -19,9 +19,6 @@
     },
     "Validation": {
       "ceiling": 0.5
-    },
-    "Negligibility": {
-      "ceiling": 0.0
     }
   },
   "augment": {

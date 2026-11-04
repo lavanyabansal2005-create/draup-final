@@ -13,7 +13,7 @@
   },
   "categories.*.ceiling": {
     "status": "out_of_scope",
-    "default": "Directive 0.90, Feedback Loop 0.80, Task Iteration 0.45, Learning 0.25, Validation 0.50, Negligibility 0.00",
+    "default": "Directive 0.90, Feedback Loop 0.80, Task Iteration 0.45, Learning 0.25, Validation 0.50. Negligibility has no ceiling (human only; key removed 5 Nov 2026).",
     "source": "Set by Chandan Kumar (Draup), overriding the source workbook. Scoring engine is out of scope per brief section 7.",
     "url": null,
     "note": "Largest single lever in the model and entirely exogenous. Named as a dependency in the validation pack, not defended as our choice.",
@@ -46,7 +46,7 @@
         "Task Iteration": 0.45,
         "Learning": 0.25,
         "Validation": 0.5,
-        "Negligibility": 0.0
+        "Negligibility": "removed (was 0.0, never read)"
       },
       "which_is_authoritative": "The Tasks sheet column is the per-row data actually shipped on all 420 rows, and the How to use it sheet reproduces it. The Read me table disagrees with it on five of six categories; only Negligibility agrees (both 0.10).",
       "priced_impact_5y_cash_npv": {
@@ -60,7 +60,7 @@
       "locked_by": "tests/test_ceiling_sets.py prices all four readings and asserts each headline.",
       "note": "A 2x spread on the headline from a choice the brief puts out of scope. This belongs in the validation pack as the first-named limitation, and in a question to Chandan."
     },
-    "negligibility_note": "Pack uses 0.00 where both workbook tables say 0.10. Currently harmless: CAT_TYPE maps Negligibility to human, so the ceiling is never read. It is dead config that implies a decision was made. Either wire it or delete the key."
+    "negligibility_note": "REMOVED 5 Nov 2026. The pack carried categories.Negligibility.ceiling = 0.00 where both workbook tables say 0.10. CAT_TYPE maps Negligibility to human, so the ceiling was never read: dead config that implied a decision had been made. The key was deleted rather than wired; the headline NPV was unchanged to the cent ($9,376,169.02)."
   },
   "economics.discount_rate": {
     "status": "sourced",

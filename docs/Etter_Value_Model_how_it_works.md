@@ -52,7 +52,7 @@ Each task's category decides the most AI could ever do and what kind of help it 
 | Task Iteration | 45% | Assistant — makes the person faster |
 | Learning | 25% | Assistant |
 | Validation | 50% | Assistant |
-| Negligibility | 0% | Stays human |
+| Negligibility | none | Stays human (no ceiling; never automated) |
 
 Agent ceilings set by Chandan (Draup), 23 October 2026 (previously 85% and 55%).
 
