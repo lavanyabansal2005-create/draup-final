@@ -94,7 +94,7 @@
     "url": "https://www.bls.gov/news.release/archives/ecec_09092026.htm",
     "verified": "2026-11-04",
     "reconciles": "PARTIAL. ECEC June 2026 private industry: $46.89/hr total, $32.82 wages (70.0%), $14.07 benefits. All-in multiplier is 1.4287. The pack's 1.3055 reconciles only if paid leave is excluded (1.314 to 1.329 depending on the paid-leave share), which is the right convention when salary is annual, because paid leave is already inside the salary.",
-    "note": "ACTION: state the convention explicitly in the parameter book. As written the number looks 9% low against the headline ECEC figure and a reviewer will catch it. P90 of 1.43 is the all-in multiplier for the alternative convention."
+    "note": "DONE 5 Nov 2026: convention stated in docs/Etter_Value_Model_assumptions.md (row 4.1 and the on-cost convention note) and in how_it_works.md. Against the headline ECEC figure the number looks 9% low; the note explains why it is not. P90 of 1.43 is the all-in multiplier for the alternative convention; at 1.4287 the default headline is $10.97M."
   },
   "economics.wage_growth": {
     "status": "sourced",

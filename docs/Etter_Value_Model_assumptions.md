@@ -56,7 +56,7 @@ Harvest share is the largest single driver: −$1.4M at 25% to +$20.5M at 75% (d
 
 | # | Assumption | Value | Grade | Source / basis |
 |---|---|---|---|---|
-| 4.1 | On-cost multiplier (loaded cost = salary × this) | **1.3055** | A | BLS Employer Costs for Employee Compensation, **Table 5, full-time private industry**: wages 68.5%, paid leave 8.1% of compensation; 100 ÷ (68.5 + 8.1). Paid leave is added back because the hours below are working hours. |
+| 4.1 | On-cost multiplier (loaded cost = salary × this) | **1.3055** | A | BLS Employer Costs for Employee Compensation, **Table 5, full-time private industry**: wages 68.5%, paid leave 8.1% of compensation; 100 ÷ (68.5 + 8.1). Paid leave is excluded from the on-cost because the salary already pays for it; see the convention note below. |
 | 4.2 | Working hours | **160 a month (1,920 a year)** | A | Etter file convention. If a role's tasks sum to a different total (Senior Analyst: 136), shares are taken of the hours recorded. |
 | 4.3 | Hourly rate | loaded cost ÷ (12 × task hours a month) | derived | Time-driven activity-based costing. Example: Analyst $54.17/h. |
 | 4.4 | Assistant time saving by band | Para-professional **20%**, Professional **12%**, Management **6%**, Executive **3%** | B | Brynjolfsson, Li and Raymond, *Generative AI at Work*, QJE 2025 (largest gains for less experienced workers). Applied as the smaller of this and the category ceiling. |
@@ -64,6 +64,10 @@ Harvest share is the largest single driver: −$1.4M at 25% to +$20.5M at 75% (d
 | 4.6 | Role level → turnover band | Etter level mapped to band (e.g. Individual Contributor → Professional; Clerk → Para-professional) | Design | Turnover band given per role in the data. |
 | 4.7 | Cost per hire (saved when a leaver is not replaced, or a planned hire is avoided) | **$4,700** | B | SHRM cost-per-hire benchmark. |
 | 4.8 | Equipment and software per position (saved when not refilled) | **$468 a year** | C | Estimate. |
+
+**On-cost convention (4.1).** 1.3055 reconciles to BLS ECEC **only with paid leave excluded from the on-cost**. ECEC counts paid leave (holidays, vacation, sick leave) as a benefit, separate from "wages and salaries", but an annual salary already includes the pay for that leave. So the right multiplier on an annual salary is total compensation ÷ (wages + paid leave) = 100 ÷ (68.5 + 8.1) = **1.3055** (Table 5, full-time private industry). The hourly rate then spreads the full loaded cost over 1,920 working hours (row 4.3), so leave is paid for once, not twice.
+
+The **headline ECEC multiplier is 1.4287** (June 2026, all private-industry workers: $46.89 total compensation ÷ $32.82 wages an hour). That is the right multiplier on pay for hours worked, which excludes leave. Applying it to an annual salary counts leave twice. It is also a different population (all workers, including part-time); the full-time equivalent is 100 ÷ 68.5 = 1.460. A reviewer who checks the headline figure will see 1.3055 as 9% low; this is why it isn't. Priced: at 1.4287 the default headline would be **$10.97M** instead of $9.38M.
 
 ---
 

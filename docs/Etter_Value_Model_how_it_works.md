@@ -39,7 +39,7 @@ Worked example carried through: Analysts' task **"Extract and format financial d
 loaded cost  = salary × 1.3055
 hourly rate  = loaded cost ÷ (12 × task hours a month)
 ```
-1.3055 = 100 ÷ (68.5 + 8.1): wages and paid leave as shares of compensation for full-time private-industry workers (BLS ECEC, Table 5). Standard month = 160 hours.
+1.3055 = 100 ÷ (68.5 + 8.1): wages and paid leave as shares of compensation for full-time private-industry workers (BLS ECEC, Table 5). Paid leave is left out of the on-cost because the salary already pays for it; the headline ECEC all-in multiplier (1.4287) applies to pay for hours worked, not to annual salary. See the parameter book, row 4.1. Standard month = 160 hours.
 *Example:* $79,661 × 1.3055 = $103,997 a year ÷ 1,920 = **$54.17 an hour**.
 
 ### Step 2 — Potential: what AI could do

@@ -97,8 +97,8 @@ question 1 below. Do not "correct" it.
 3. Whether month 61 carries any residual value.
 
 ## Known gaps, already diagnosed
-- `on_cost` 1.3055 reconciles to BLS ECEC only if paid leave is excluded. The convention is
-  undocumented; the headline ECEC multiplier is 1.4287.
+- `on_cost` 1.3055 reconciles to BLS ECEC only if paid leave is excluded; the headline ECEC
+  multiplier is 1.4287. Convention documented in the parameter book (assumptions row 4.1).
 - No wage escalation: salaries are flat for 60 months while run cost declines 13%/yr, under a
   nominal discount rate. Asymmetric, and it understates savings.
 - `review` is a flat 0.30 across all bands. Two studies (Dell'Acqua; Brynjolfsson v2) show the
