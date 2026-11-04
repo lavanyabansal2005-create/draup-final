@@ -1,0 +1,79 @@
+[
+ {
+  "score": 0.05,
+  "takeover only": 0.02,
+  "+ review": 0.014,
+  "+ complexity drag": 0.013,
+  "+ policy (attrition, 50% harvest)": 0.006
+ },
+ {
+  "score": 0.1,
+  "takeover only": 0.04,
+  "+ review": 0.028,
+  "+ complexity drag": 0.027,
+  "+ policy (attrition, 50% harvest)": 0.013
+ },
+ {
+  "score": 0.15,
+  "takeover only": 0.06,
+  "+ review": 0.042,
+  "+ complexity drag": 0.041,
+  "+ policy (attrition, 50% harvest)": 0.02
+ },
+ {
+  "score": 0.2,
+  "takeover only": 0.08,
+  "+ review": 0.056,
+  "+ complexity drag": 0.055,
+  "+ policy (attrition, 50% harvest)": 0.027
+ },
+ {
+  "score": 0.25,
+  "takeover only": 0.1,
+  "+ review": 0.07,
+  "+ complexity drag": 0.068,
+  "+ policy (attrition, 50% harvest)": 0.034
+ },
+ {
+  "score": 0.3,
+  "takeover only": 0.12,
+  "+ review": 0.084,
+  "+ complexity drag": 0.081,
+  "+ policy (attrition, 50% harvest)": 0.04
+ },
+ {
+  "score": 0.4,
+  "takeover only": 0.16,
+  "+ review": 0.112,
+  "+ complexity drag": 0.108,
+  "+ policy (attrition, 50% harvest)": 0.054
+ },
+ {
+  "score": 0.5,
+  "takeover only": 0.2,
+  "+ review": 0.14,
+  "+ complexity drag": 0.134,
+  "+ policy (attrition, 50% harvest)": 0.067
+ },
+ {
+  "score": 0.6,
+  "takeover only": 0.24,
+  "+ review": 0.168,
+  "+ complexity drag": 0.159,
+  "+ policy (attrition, 50% harvest)": 0.079
+ },
+ {
+  "score": 0.7,
+  "takeover only": 0.28,
+  "+ review": 0.196,
+  "+ complexity drag": 0.184,
+  "+ policy (attrition, 50% harvest)": 0.092
+ },
+ {
+  "score": 0.8,
+  "takeover only": 0.32,
+  "+ review": 0.224,
+  "+ complexity drag": 0.208,
+  "+ policy (attrition, 50% harvest)": 0.104
+ }
+]

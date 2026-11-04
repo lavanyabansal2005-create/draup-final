@@ -1,0 +1,521 @@
+{
+  "meta": {
+    "name": "Source book for packs/base.json",
+    "as_of": "2026-11-04",
+    "status_values": {
+      "sourced": "public, citable source; default and range derive from it",
+      "client_supplied": "no credible public source; client provides or we state it as an input",
+      "judgment": "modelling choice by the authors; range is deliberately wide",
+      "out_of_scope": "consumed as given from Etter; not ours to source"
+    },
+    "note": "Every key in base.json must appear here. tests/test_sources.py enforces that.",
+    "pdfs_on_file": "Six primary PDFs verified page-by-page: 2507.09089v2 (METR), 2304.11771v2 (Brynjolfsson v2, Nov 2024), ssrn-4375283 (Noy & Zhang WP), 4573321 (Dell Acqua, Organization Science 2026), draft_copilot_experiments (Cui et al, Feb 2025), Generative-AI-in-Real-World-Workplaces (Microsoft, 2nd report)."
+  },
+  "categories.*.ceiling": {
+    "status": "out_of_scope",
+    "default": "Directive 0.90, Feedback Loop 0.80, Task Iteration 0.45, Learning 0.25, Validation 0.50, Negligibility 0.00",
+    "source": "Set by Chandan Kumar (Draup), overriding the source workbook. Scoring engine is out of scope per brief section 7.",
+    "url": null,
+    "note": "Largest single lever in the model and entirely exogenous. Named as a dependency in the validation pack, not defended as our choice.",
+    "cross_check": {
+      "citation": "Eloundou, Manning, Mishkin & Rock, 'GPTs are GPTs: Labor market impact potential of LLMs', Science 384 (2024)",
+      "use": "Sanity-check that implied exposure sits in a comparable range. Cross-check only; never used to set a ceiling."
+    },
+    "source_workbook": "Etter_FPandA_11roles_tasks_hours_automation.xlsx (team-provided)",
+    "CONFLICT": {
+      "issue": "The source workbook states the Etter potential ceilings TWICE, with different numbers, and the pack matches neither.",
+      "read_me_sheet": {
+        "Directive": 0.9,
+        "Feedback Loop": 0.85,
+        "Task Iteration": 0.5,
+        "Learning": 0.45,
+        "Validation": 0.4,
+        "Negligibility": 0.1
+      },
+      "tasks_sheet_column_and_how_to_use_it_sheet": {
+        "Directive": 0.85,
+        "Feedback Loop": 0.55,
+        "Task Iteration": 0.45,
+        "Learning": 0.25,
+        "Validation": 0.5,
+        "Negligibility": 0.1
+      },
+      "pack_in_use": {
+        "Directive": 0.9,
+        "Feedback Loop": 0.8,
+        "Task Iteration": 0.45,
+        "Learning": 0.25,
+        "Validation": 0.5,
+        "Negligibility": 0.0
+      },
+      "which_is_authoritative": "The Tasks sheet column is the per-row data actually shipped on all 420 rows, and the How to use it sheet reproduces it. The Read me table disagrees on four of six categories.",
+      "priced_impact_5y_cash_npv": {
+        "pack": "$9.38M",
+        "read_me_table": "$9.75M",
+        "tasks_column": "$5.80M",
+        "coarse_bucket_ceiling": "$11.48M"
+      },
+      "note": "A 2x spread on the headline from a choice the brief puts out of scope. This belongs in the validation pack as the first-named limitation, and in a question to Chandan."
+    },
+    "negligibility_note": "Pack uses 0.00 where both workbook tables say 0.10. Currently harmless: CAT_TYPE maps Negligibility to human, so the ceiling is never read. It is dead config that implies a decision was made. Either wire it or delete the key."
+  },
+  "economics.discount_rate": {
+    "status": "sourced",
+    "default": 0.0696,
+    "p10": 0.0619,
+    "p90": 0.0934,
+    "source": "Damodaran, Cost of Capital by Sector (US), January 2026 data update",
+    "url": "https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/wacc.htm",
+    "verified": "2026-11-04",
+    "reconciles": "Total Market 6.96%. Archetype values also reconcile exactly: Software (System & Application) 9.34%, Insurance (General) 6.34%, Hospitals/Healthcare Facilities 6.19%.",
+    "note": "Nominal, post-tax WACC. Pairs only with nominal cash flows (see economics.wage_growth) and after-tax cash flows (see economics.tax_rate)."
+  },
+  "economics.tax_rate": {
+    "status": "sourced",
+    "proposed_new_key": true,
+    "default": 0.083,
+    "p10": 0.0551,
+    "p90": 0.1277,
+    "source": "Damodaran, same file, 'Tax Rate' column",
+    "url": "https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/wacc.htm",
+    "verified": "2026-11-04",
+    "reconciles": "Total Market 8.30%; Software (System & Application) 5.51%; Insurance (General) 12.77%; Hospitals/Healthcare Facilities 11.35%.",
+    "note": "Closes the pre-tax-cash-flow / post-tax-WACC mismatch. Same file already used for the discount rate, so no new source to defend."
+  },
+  "economics.on_cost": {
+    "status": "sourced",
+    "default": 1.3055,
+    "p10": 1.25,
+    "p90": 1.43,
+    "source": "BLS Employer Costs for Employee Compensation, June 2026, private industry workers",
+    "url": "https://www.bls.gov/news.release/archives/ecec_09092026.htm",
+    "verified": "2026-11-04",
+    "reconciles": "PARTIAL. ECEC June 2026 private industry: $46.89/hr total, $32.82 wages (70.0%), $14.07 benefits. All-in multiplier is 1.4287. The pack's 1.3055 reconciles only if paid leave is excluded (1.314 to 1.329 depending on the paid-leave share), which is the right convention when salary is annual, because paid leave is already inside the salary.",
+    "note": "ACTION: state the convention explicitly in the parameter book. As written the number looks 9% low against the headline ECEC figure and a reviewer will catch it. P90 of 1.43 is the all-in multiplier for the alternative convention."
+  },
+  "economics.wage_growth": {
+    "status": "sourced",
+    "proposed_new_key": true,
+    "default": 0.034,
+    "p10": 0.025,
+    "p90": 0.045,
+    "source": "BLS Employment Cost Index, private industry workers, 12-month change",
+    "url": "https://www.bls.gov/news.release/pdf/eci.pdf",
+    "verified": "2026-11-04",
+    "reconciles": "Compensation costs for private industry workers rose 3.4% (not seasonally adjusted) for the 12 months ending September 2026.",
+    "note": "Fixes the asymmetry flagged in review: run cost declines 13%/yr while salaries sit flat for 60 months under a nominal discount rate. Understates savings."
+  },
+  "uncertainty.params.takeover": {
+    "status": "sourced",
+    "default": 0.4,
+    "p10": 0.2,
+    "p90": 0.62,
+    "sources": [
+      {
+        "citation": "Brynjolfsson, Li & Raymond, \"Generative AI at Work\", v2 (7 Nov 2024); NBER WP 31161",
+        "url": "https://www.nber.org/papers/w31161",
+        "evidence": "5,172 customer support agents, staggered rollout. +15% issues resolved per hour on average. Lowest skill quintile +0.5 resolutions/hour (+36%); most skilled quintile shows no productivity increase and small but statistically significant quality declines.",
+        "verified": "2026-11-04",
+        "pdf": "2304.11771v2.pdf p1, p20, p21",
+        "version_note": "v2 reports 5,172 agents and 15%. The widely quoted 5,179 agents / 14% comes from the 2023 NBER working paper. Cite v2 numbers with the v2 date."
+      },
+      {
+        "citation": "Cui, Demirer, Jaffe, Musolff, Peng & Salz, \"The Effects of Generative AI on High-Skilled Work\", Feb 2025",
+        "url": "https://economics.mit.edu/sites/default/files/inline-files/draft_copilot_experiments.pdf",
+        "verified": "2026-11-04",
+        "evidence": "Three RCTs (Microsoft, Accenture, anonymous Fortune 100), 4,867 developers pooled. +26.08% completed tasks, SE 10.3%. Less experienced developers adopted more and gained more.",
+        "pdf": "draft_copilot_experiments.pdf p1",
+        "use": "The standard error is the useful part: +/-1.96 SE gives roughly +6% to +46%, an empirically grounded spread rather than an assumed one."
+      },
+      {
+        "citation": "Noy & Zhang, \"Experimental evidence on the productivity effects of generative AI\", Science 381:1257-1261 (2023)",
+        "url": "https://ssrn.com/abstract=4375283",
+        "evidence": "444 college-educated professionals on incentivized mid-level writing tasks. Time taken -0.8 SD, output quality +0.4 SD. ChatGPT compressed the productivity distribution by benefiting low-ability workers more, and substituted for worker effort rather than complementing skill.",
+        "verified": "2026-11-04",
+        "pdf": "ssrn-4375283.pdf p1",
+        "version_note": "The PDF on file is the March 2023 working paper (444 participants, explicitly not peer reviewed). The Science version is the one to cite. Check the participant count against the published paper before quoting it."
+      },
+      {
+        "citation": "ICLE, 'AI, Productivity, and Labor Markets: A Review of the Empirical Evidence' (Oct 2026)",
+        "url": "https://laweconcenter.org/resources/ai-productivity-and-labor-markets-a-review-of-the-empirical-evidence/",
+        "use": "Range-setting survey. Prefer this to cherry-picking a single effect size.",
+        "verified": "2026-11-04"
+      },
+      {
+        "citation": "Microsoft Research, \"Generative AI in Real-World Workplaces\" (2nd report on AI and productivity)",
+        "url": "https://www.microsoft.com/en-us/research/wp-content/uploads/2024/07/Generative-AI-in-Real-World-Workplaces.pdf",
+        "evidence": "Copilot for M365 telemetry across organisations: 11% fewer individual emails read and 4% less time interacting with them (some organisations 20-25%); 10% more documents edited (13% for heavy Office users). In a security-incident task, Copilot users were 23% faster on quality-adjusted completion time and included 49% more expert-listed key facts.",
+        "pdf": "Generative-AI-in-Real-World-Workplaces.pdf p2, p3, p7",
+        "use": "Closest public analogue to per-task time savings in a general knowledge-work setting. Note the effects are single-digit percentages of total time, not of task time."
+      }
+    ],
+    "mapping_caveat": "EVERY source above measures assistant-style augmentation, not agentic takeover of a workload. The mapping onto `takeover` is our judgment, not a measured quantity. State this in the spec; it is the first thing a careful reviewer will ask.",
+    "strongest_single_anchor": {
+      "finding": "Brynjolfsson et al. report that agents followed the AI recommendation about 35% of the time on average, and returns were highest for workers who followed them.",
+      "pdf": "2304.11771v2.pdf p23",
+      "why_it_matters": "This is the closest thing in the literature to a directly measured realisation rate: the share of AI output a human actually accepts. Your net realisation is takeover x (1 - review) = 0.40 x 0.70 = 28%. An independently measured 35% adherence rate in a production deployment lands in the same neighbourhood. That is the single most defensible sentence available to you for the Tier 1 parameters, and it was not in the abstract."
+    }
+  },
+  "uncertainty.params.review": {
+    "status": "sourced",
+    "default": 0.3,
+    "p10": 0.15,
+    "p90": 0.45,
+    "sources": [
+      {
+        "citation": "Dell Acqua, McFowland III, Mollick, Lifshitz, Kellogg, Rajendran, Krayer, Candelon & Lakhani, \"Navigating the Jagged Technological Frontier\", Organization Science (2026), doi 10.1287/orsc.2025.21838",
+        "url": "https://ssrn.com/abstract=4573321",
+        "evidence": "758 BCG consultants. Inside the frontier: +12.2% tasks completed and 25.1% faster, with significantly improved quality. Outside the frontier (a complex managerial task chosen to sit beyond AI capability): AI users were 19% less likely to produce correct solutions.",
+        "use": "Why `review` is non-zero: outside the frontier AI output is inaccurate and degrades human performance, so checking it is not optional.",
+        "verified": "2026-11-04",
+        "pdf": "4573321.pdf p2, p3"
+      }
+    ],
+    "note": "No source measures review effort as a share of task time. The direction is evidenced; the magnitude is judgment. Say so.",
+    "corroborating": {
+      "citation": "Brynjolfsson et al., v2",
+      "evidence": "The most experienced and highest-skilled agents saw small but statistically significant DECLINES in chat quality under AI assistance.",
+      "pdf": "2304.11771v2.pdf p1, p21",
+      "use": "Independent evidence that unreviewed AI output degrades quality for senior staff. Supports a review share that rises with band, which the pack does not currently model."
+    }
+  },
+  "uncertainty.params.takeover.downside_anchor": {
+    "status": "sourced",
+    "source_of_p10": true,
+    "sources": [
+      {
+        "citation": "Becker, Rush, Barnes & Rein (METR), 'Measuring the Impact of Early-2025 AI on Experienced Open-Source Developer Productivity' (Jul 2025)",
+        "url": "https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/",
+        "paper": "https://arxiv.org/abs/2507.09089",
+        "evidence": "16 developers, 246 tasks averaging 2.0 hours, randomised per task, Feb-Jun 2025 frontier (Cursor Pro, Claude 3.5/3.7 Sonnet). AI-allowed tasks took 19% LONGER. Developers forecast a 20% speedup beforehand; economics experts forecast 39% shorter and ML experts 38% shorter. The naive mean difference is 34%; the 19% is the regression estimate correcting for AI-allowed issues being slightly harder post-randomisation.",
+        "verified": "2026-11-04",
+        "pdf": "2507.09089v2.pdf p1, p2, p8, p9"
+      },
+      {
+        "citation": "METR, 'We are Changing our Developer Productivity Experiment Design' (Feb 2026)",
+        "url": "https://metr.org/blog/2026-02-24-uplift-update/",
+        "evidence": "SUPERSEDES the above as a current estimate. The 2025 page now carries an out-of-date banner. Follow-up study (57 developers, 143 repos, 800+ tasks): returning developers estimated at -18% (CI -38% to +9%), newly recruited at -4% (CI -15% to +9%). METR judge the data unreliable because developers increasingly refuse to work without AI: 30-50% said they withheld tasks they did not want to do unassisted. They believe the true 2026 speedup is higher than measured but the selection effects obscure its size.",
+        "verified": "2026-11-04"
+      }
+    ],
+    "note": "Cite BOTH or neither. Citing only the 19% slowdown is now a stale citation and a reviewer who checks the link will see the banner. The honest reading is that the measured range has moved from clearly negative toward modestly positive, with wide and acknowledged uncertainty, which supports keeping a P10 that implies a negative NPV without claiming AI makes people slower today."
+  },
+  "uncertainty.params.active_use": {
+    "status": "client_supplied",
+    "default": 0.7,
+    "p10": 0.5,
+    "p90": 0.85,
+    "intended_source": "Zylo SaaS Management Index / Productiv State of SaaS licence utilisation benchmarks",
+    "url": null,
+    "note": "Both gated. FR6 requires licences priced at real adoption rather than full seat count, so the parameter must exist; the number is client-supplied until Draup provides a subscription benchmark."
+  },
+  "augment.time_saving_by_band": {
+    "status": "sourced",
+    "default": {
+      "Para-professional": 0.2,
+      "Professional": 0.12,
+      "Management": 0.06,
+      "Executive": 0.03
+    },
+    "source": "Gradient measured directly: Brynjolfsson et al. v2 find +36% for the lowest skill quintile falling to no productivity gain for the most skilled quintile, with small quality declines at the top. Noy & Zhang and Cui et al. independently report the same direction.",
+    "url": "https://www.nber.org/papers/w31161",
+    "note": "The ladder is now evidenced in SHAPE and in END POINTS, not just direction: a roughly 7:1 ratio between least and most skilled. Your pack runs 0.20 to 0.03, a 6.7:1 ratio. That is a genuine match and worth stating explicitly. The two middle rungs (0.12, 0.06) remain interpolation.",
+    "pdf": "2304.11771v2.pdf p20, p21"
+  },
+  "costs.run_cost_per_ai_hour": {
+    "status": "client_supplied",
+    "default": 3.48,
+    "intended_source": "Vendor list pricing (dated screenshot) plus a tokens-per-task estimate for the workload mix",
+    "url": null,
+    "note": "Derive from first principles and record the token assumption. A posted price with a date is auditable; a blended hourly rate is not."
+  },
+  "costs.run_cost_decline_per_year": {
+    "status": "sourced",
+    "default": 0.13,
+    "p10": 0.05,
+    "p90": 0.35,
+    "sources": [
+      {
+        "citation": "Stanford HAI, AI Index 2026",
+        "url": "https://hai.stanford.edu/ai-index",
+        "evidence": "Median inference price per million tokens fell from $2.10 (2024) to $0.85 (2025); large multi-year decline for a fixed capability level.",
+        "verify_before_use": true
+      },
+      {
+        "citation": "Epoch AI, inference price trends",
+        "url": null,
+        "verify_before_use": true
+      }
+    ],
+    "note": "COUNTERWEIGHT, and the reason 13% is defensible despite steeper published curves: unit price decline is not bill decline. Agentic workflows consume 5-30x more tokens per task than a chatbot query, and enterprise AI spend has risen while unit prices collapsed. Document this or a reviewer will say the parameter is 3x too conservative."
+  },
+  "economics.cost_per_hire": {
+    "status": "client_supplied",
+    "default": 4700,
+    "intended_source": "SHRM Talent Acquisition Benchmarking Report",
+    "url": null,
+    "note": "Gated. Immaterial against a $9.38M NPV; mark client-supplied and move on."
+  },
+  "costs.training_spend_per_head": {
+    "status": "client_supplied",
+    "default": 846,
+    "intended_source": "ATD State of the Industry (annual spend per employee)",
+    "url": null,
+    "note": "Gated."
+  },
+  "costs.training_hours_per_head": {
+    "status": "client_supplied",
+    "default": 16.7,
+    "intended_source": "ATD State of the Industry (hours per employee)",
+    "url": null,
+    "note": "Gated."
+  },
+  "turnover_by_band": {
+    "status": "sourced",
+    "default": {
+      "Para-professional": 0.125,
+      "Professional": 0.091,
+      "Management": 0.063,
+      "Executive": 0.052
+    },
+    "source": "BLS JOLTS quits rates by industry",
+    "url": null,
+    "verify_before_use": true,
+    "note": "JOLTS gives INDUSTRY, not seniority band. The by-band split is interpolated. Either concede that in the parameter book or find a seniority-level source; the interpolation is currently invisible to a reader."
+  },
+  "economics.standard_task_hours_month": {
+    "status": "judgment",
+    "default": 160,
+    "note": "FR3 asks for productive hours per level rather than one flat constant, and this is a flat constant. Known gap. Candidate source: BLS American Time Use Survey (time actually spent on work activities). Record as a deliberate simplification in the validation pack's limitations section until replaced."
+  },
+  "nonlinear.complexity_drag": {
+    "status": "judgment",
+    "default": 0.3,
+    "p10": 0.1,
+    "p90": 0.55,
+    "source": null,
+    "intellectual_support": {
+      "citation": "Acemoglu, 'The Simple Macroeconomics of AI', NBER WP 32487",
+      "url": "https://www.nber.org/papers/w32487",
+      "use": "Argues hard-to-learn tasks cap aggregate gains. Supports the DIRECTION of a drag term, supplies no magnitude."
+    },
+    "note": "No credible public source for the magnitude. Declaring that plainly is stronger than a decorative citation."
+  },
+  "costs.build_workflow": {
+    "status": "client_supplied",
+    "default": 55000,
+    "url": null,
+    "note": "No public benchmark survives scrutiny. Client-supplied with a wide range."
+  },
+  "costs.build_enterprise": {
+    "status": "client_supplied",
+    "default": 130000,
+    "url": null,
+    "note": "As above."
+  },
+  "costs.buy_workflow": {
+    "status": "client_supplied",
+    "default": 15000,
+    "url": null,
+    "note": "Vendor quotes, dated."
+  },
+  "costs.buy_enterprise": {
+    "status": "client_supplied",
+    "default": 35000,
+    "url": null,
+    "note": "Vendor quotes, dated."
+  },
+  "costs.programme_fixed": {
+    "status": "client_supplied",
+    "default": 75000,
+    "url": null,
+    "note": "Candidate: Prosci change-management benchmarking (gated)."
+  },
+  "costs.deploy_per_affected_head": {
+    "status": "client_supplied",
+    "default": 623,
+    "url": null,
+    "note": "As above."
+  },
+  "costs.maintenance_share_per_year": {
+    "status": "client_supplied",
+    "default": 0.18,
+    "p10": 0.15,
+    "p90": 0.22,
+    "note": "15-22% is the software-maintenance industry convention (ISBSG, Gartner application TCO; both gated). Range is conventional, not measured."
+  },
+  "costs.assistant_licence_per_seat_year": {
+    "status": "sourced",
+    "default": 360,
+    "source": "Vendor list pricing: $30/user/month reconciles exactly to $360/yr",
+    "url": null,
+    "note": "Record a dated screenshot of the pricing page. This is the cleanest-sourced cost line in the pack."
+  },
+  "uncertainty.params.adopt_months": {
+    "status": "judgment",
+    "default": 12,
+    "p10": 6,
+    "p90": 24,
+    "shape_source": {
+      "citation": "Bass, 'A New Product Growth Model for Consumer Durables', Management Science 15(5), 1969",
+      "use": "Functional form for the S-curve only."
+    },
+    "context": {
+      "citation": "Stanford HAI AI Index 2026 / McKinsey global survey",
+      "url": "https://hai.stanford.edu/ai-index",
+      "evidence": "88% of organisations report AI use in at least one function, but only about a third have begun scaling across the enterprise. The gap between adoption and scaling is the empirical case for a multi-month ramp rather than a switch.",
+      "verify_before_use": true
+    }
+  },
+  "programme_abandonment": {
+    "status": "judgment",
+    "proposed_new_key": true,
+    "default": null,
+    "sources": [
+      {
+        "citation": "MIT Project NANDA, 'The GenAI Divide: State of AI in Business 2025' (Jul 2025)",
+        "url": "https://www.artificialintelligence-news.com/wp-content/uploads/2025/08/ai_report_2025.pdf",
+        "evidence": "95% of enterprise GenAI pilots produced no measurable P&L impact. Methodology: 52 executive interviews, 153 surveys, 300+ implementation reviews, 26 pages, labelled preliminary by the authors.",
+        "handling": "CITE THE METHODOLOGY LINE WITH THE FIGURE. The 95% number is widely contested on sample-size and self-report grounds. Quoting it naked is what every low-quality blog post does.",
+        "verified": "2026-11-04"
+      }
+    ],
+    "corroborating": "RAND on AI project failure; S&P Global Market Intelligence (42% abandoned most initiatives in 2025); Gartner (>40% of agentic projects cancelled by end-2027). All need URL verification.",
+    "note": "Supports the archetype where the honest conclusion is that payback does not justify the programme (acceptance criterion 5)."
+  },
+  "methodology.capacity_cost_rate": {
+    "status": "sourced",
+    "applies_to": "evm.py prepare(): R['rate'] = R['C'] / (12 * R['H'])",
+    "citation": "Kaplan & Anderson, 'Time-Driven Activity-Based Costing', Harvard Business Review, November 2004",
+    "url": null,
+    "note": "Your rate IS a TDABC capacity cost rate. Citing it answers the activity-based-costing row in brief section 3 without building anything. You need the reference, not the text."
+  },
+  "methodology.unused_capacity": {
+    "status": "sourced",
+    "applies_to": "The cash / capacity separation; brief section 6",
+    "citation": "Kaplan & Cooper on the cost of unused capacity",
+    "url": null,
+    "note": "Academic backing for the claim that freed capacity is not cash until someone removes the cost. This is the argument the whole finance view rests on."
+  },
+  "methodology.capitalisation_and_terminal": {
+    "status": "sourced",
+    "applies_to": "Proposed capex/opex split and terminal treatment at month 61",
+    "citation": "FASB ASC 350-40, Internal-Use Software (IAS 38 for non-US archetypes)",
+    "url": null,
+    "note": "Gated, and you only need the citation. Supplies the defensible basis for useful life and for the P&L view alongside the cash view."
+  },
+  "augment.rollout_start_month": {
+    "status": "judgment",
+    "default": 2,
+    "note": "Programme schedule choice."
+  },
+  "augment.rollout_months": {
+    "status": "judgment",
+    "default": 6,
+    "note": "Programme schedule choice; shares the Bass rationale in adopt_months."
+  },
+  "costs.build_lead_months": {
+    "status": "judgment",
+    "default": 3,
+    "note": "Programme schedule choice."
+  },
+  "costs.allow_buy": {
+    "status": "judgment",
+    "default": true,
+    "note": "Structural switch, not a parameter."
+  },
+  "costs.buy_run_per_ai_hour": {
+    "status": "client_supplied",
+    "default": 6.0,
+    "note": "Vendor quotes, dated. Same treatment as run_cost_per_ai_hour."
+  },
+  "costs.seat_cost_per_position": {
+    "status": "client_supplied",
+    "default": 468,
+    "intended_source": "Client SaaS spend per employee, or Zylo/Productiv benchmarks (gated)",
+    "note": "Per-position software seat reclaimed when a position is not backfilled."
+  },
+  "economics.function_growth": {
+    "status": "client_supplied",
+    "default": 0.0,
+    "note": "Planned headcount growth. Client input by definition; archetype notes already flag the 8% and 15% values as illustrative."
+  },
+  "economics.turnover_multiplier": {
+    "status": "sourced",
+    "default": 1.0,
+    "source": "BLS JOLTS quits rates by industry, used as a ratio to total private",
+    "url": null,
+    "verify_before_use": true,
+    "note": "Archetype notes already carry the JOLTS ratios (0.59 information/finance, 0.91 health care). Lift those citations into this entry."
+  },
+  "uncertainty.execution_correlation": {
+    "status": "judgment",
+    "default": 0.5,
+    "note": "Shared execution-quality factor across draws. No source; a structural modelling choice about how the uncertainties co-move. Worth naming in the spec because it materially narrows or widens the band."
+  },
+  "uncertainty.params.aug_mult.*": {
+    "status": "judgment",
+    "default": 1.0,
+    "p10": 0.4,
+    "p90": 1.6,
+    "note": "Multiplier on the augment ladder, which is itself interpolated (see augment.time_saving_by_band). Spread is judgment."
+  },
+  "uncertainty.params.cost_mult.*": {
+    "status": "judgment",
+    "default": 1.0,
+    "p10": 0.85,
+    "p90": 1.6,
+    "note": "Asymmetric by design: programme costs overrun more often than they undershoot. No public source; the asymmetry is the claim and it should be stated."
+  },
+  "uncertainty.params.run_mult.*": {
+    "status": "judgment",
+    "default": 1.0,
+    "p10": 0.43,
+    "p90": 2.9,
+    "note": "Widest band in the pack, and correctly so: token consumption per task is the least predictable quantity here. Supported in direction by the 5-30x agentic token multiple cited under run_cost_decline_per_year."
+  },
+  "uncertainty.params.drag.*": {
+    "status": "judgment",
+    "default": 0.3,
+    "p10": 0.1,
+    "p90": 0.55,
+    "note": "Uncertainty wrapper on nonlinear.complexity_drag; inherits that entry's lack of a source."
+  },
+  "uncertainty.params.turnover_mult.*": {
+    "status": "sourced",
+    "default": 1.0,
+    "p10": 0.75,
+    "p90": 1.3,
+    "source": "Dispersion of BLS JOLTS quits rates across industries",
+    "url": null,
+    "verify_before_use": true
+  },
+  "_unsourced_by_design": [
+    "nonlinear.complexity_drag",
+    "costs.build_workflow",
+    "costs.build_enterprise",
+    "costs.programme_fixed",
+    "costs.deploy_per_affected_head",
+    "economics.standard_task_hours_month"
+  ],
+  "_policy_not_empirical": [
+    "policies.*.harvest_automation",
+    "policies.*.harvest_augmentation",
+    "policies.*.mechanism",
+    "policies.*.severance_weeks",
+    "policies.*.notice_months",
+    "economics.horizon_months",
+    "data_quality.score_tolerance",
+    "costs.enterprise_if_roles_at_least",
+    "costs.enterprise_if_auto_tasks_at_least",
+    "programme.pilot_workloads",
+    "programme.pilot_evaluation_months",
+    "programme.wave_size",
+    "programme.wave_gap_months"
+  ],
+  "data_quality.score_tolerance": {
+    "status": "judgment",
+    "default": 0.1,
+    "note": "The workbook states on the How to use it sheet that the role-level Automation % will NOT equal the AI-bucket share of task hours, in either direction, because the two are produced independently, and advises building on task hours while treating the role score as a second opinion. The model currently raises this as a data-quality WARNING on 5 of 11 roles. Those are not data errors. Reword to an informational second-opinion note, or a reviewer reads 5 warnings as 5 defects."
+  }
+}

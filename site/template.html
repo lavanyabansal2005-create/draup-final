@@ -1,0 +1,247 @@
+<title>Etter Value Model</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: a sticky control bar, a verdict band, then four tabbed views of one model run. */
+:root {
+  --bg: #f3f4f1; --surface: #ffffff; --ink: #161b19; --muted: #5a645f; --rule: #d8dcd5; --soft: #eaece7;
+  --accent: #2343c4; --accent-soft: rgba(35, 67, 196, 0.10);
+  --avoid: #0b766d; --capacity: #a8620c; --good: #1a7343; --bad: #b0352a; --warn: #9a6200;
+  --band: rgba(35, 67, 196, 0.16);
+  --font-display: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+  --font-body: 'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --r: 10px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #101412; --surface: #171c1a; --ink: #e7ebe8; --muted: #9ba59f; --rule: #2a322e; --soft: #1e2421;
+  --accent: #8ba0ff; --accent-soft: rgba(139, 160, 255, 0.14);
+  --avoid: #45c2b4; --capacity: #e2a552; --good: #52c487; --bad: #f07d70; --warn: #e3b24c;
+  --band: rgba(139, 160, 255, 0.20); color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #101412; --surface: #171c1a; --ink: #e7ebe8; --muted: #9ba59f; --rule: #2a322e; --soft: #1e2421;
+  --accent: #8ba0ff; --accent-soft: rgba(139, 160, 255, 0.14);
+  --avoid: #45c2b4; --capacity: #e2a552; --good: #52c487; --bad: #f07d70; --warn: #e3b24c;
+  --band: rgba(139, 160, 255, 0.20); color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.5; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
+.wrap { max-width: 1180px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h2 { font-size: 1.15rem; font-weight: 600; }
+h3 { font-size: 0.98rem; font-weight: 600; }
+p { margin: 0; }
+.num, td.n, .mono { font-variant-numeric: tabular-nums; }
+.mono { font-family: var(--font-mono); font-size: 0.86em; }
+.muted { color: var(--muted); }
+.label { font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+
+/* control bar */
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 9; background: var(--surface); border-bottom: 1px solid var(--rule); }
+.top .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; padding-block: 10px; }
+.brand { display: flex; align-items: baseline; gap: 10px; margin-right: auto; }
+.brand h1 { font-size: 1.12rem; font-weight: 700; }
+.brand h1 span { color: var(--accent); }
+.brand .tag { font-size: 0.75rem; color: var(--muted); }
+.ctl { display: flex; align-items: center; gap: 8px; }
+.ctl > .label { white-space: nowrap; }
+select { font: inherit; font-size: 0.88rem; color: var(--ink); background: var(--bg); border: 1px solid var(--rule); border-radius: 8px; padding: 6px 8px; max-width: 260px; }
+.seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 9px; overflow: hidden; background: var(--bg); }
+.seg button { font: inherit; font-size: 0.84rem; color: var(--muted); background: transparent; border: 0; padding: 6px 11px; cursor: pointer; white-space: nowrap; }
+.seg button + button { border-left: 1px solid var(--rule); }
+.seg button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+:root[data-theme="dark"] .seg button[aria-pressed="true"] { color: #0d1020; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .seg button[aria-pressed="true"] { color: #0d1020; } }
+button:focus-visible, select:focus-visible, input:focus-visible, .tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* verdict band */
+.verdict { padding-block: 26px 10px; display: grid; gap: 18px; }
+.answer { font-family: var(--font-display); font-size: clamp(1.15rem, 1.6vw + 0.7rem, 1.55rem); font-weight: 500; line-height: 1.35; max-width: 62ch; text-wrap: pretty; }
+.answer b { font-weight: 700; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
+.tile { background: var(--surface); border: 1px solid var(--rule); border-radius: var(--r); padding: 14px 16px; display: grid; gap: 4px; min-width: 0; }
+.tile .big { font-family: var(--font-display); font-size: 1.9rem; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.tile .sub { font-size: 0.82rem; color: var(--muted); }
+.tile.cash .big { color: var(--accent); }
+.tile.avoid .big { color: var(--avoid); }
+.tile.cap .big { color: var(--capacity); }
+.chip { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 600; border-radius: 999px; padding: 3px 10px; border: 1px solid currentColor; width: fit-content; }
+.chip.go { color: var(--good); } .chip.pilot { color: var(--warn); } .chip.stop, .chip.capacity { color: var(--bad); } .chip.wait { color: var(--muted); }
+.meter { height: 6px; border-radius: 4px; background: var(--soft); overflow: hidden; }
+.meter i { display: block; height: 100%; background: var(--accent); width: 0; transition: width 0.2s; }
+
+/* tabs */
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--rule); margin-top: 14px; overflow-x: auto; }
+.tab { font: inherit; font-weight: 600; font-size: 0.92rem; color: var(--muted); background: none; border: 0; border-bottom: 2px solid transparent; padding: 10px 14px; cursor: pointer; white-space: nowrap; }
+.tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+.tab .who { font-weight: 400; font-size: 0.78rem; color: var(--muted); margin-left: 6px; }
+main { padding-block: 20px 48px; }
+.panel { display: grid; gap: 18px; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+@media (max-width: 860px) { .grid2 { grid-template-columns: minmax(0, 1fr); } }
+.card { background: var(--surface); border: 1px solid var(--rule); border-radius: var(--r); padding: 16px 18px; display: grid; gap: 12px; min-width: 0; align-content: start; }
+.card header { display: grid; gap: 3px; }
+.card header p { font-size: 0.86rem; color: var(--muted); max-width: 70ch; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+.kpi { border-left: 3px solid var(--rule); padding: 2px 0 2px 10px; display: grid; gap: 2px; }
+.kpi .v { font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.kpi .k { font-size: 0.78rem; color: var(--muted); }
+
+/* tables */
+.tw { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 0.86rem; }
+th { text-align: left; font-weight: 600; font-size: 0.74rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); padding: 6px 8px; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+td { padding: 7px 8px; border-bottom: 1px solid var(--soft); vertical-align: top; }
+td.n, th.n { text-align: right; white-space: nowrap; }
+tr.tot td { font-weight: 600; border-top: 1px solid var(--rule); }
+.grade { display: inline-block; min-width: 1.6em; text-align: center; font-weight: 600; font-size: 0.75rem; border-radius: 5px; padding: 1px 5px; border: 1px solid var(--rule); }
+.grade.A { color: var(--good); } .grade.B { color: var(--accent); } .grade.C { color: var(--warn); } .grade.D { color: var(--bad); }
+.pos { color: var(--good); } .neg { color: var(--bad); }
+input[type=number] { font: inherit; font-size: 0.86rem; width: 96px; color: var(--ink); background: var(--bg); border: 1px solid var(--rule); border-radius: 6px; padding: 4px 6px; font-variant-numeric: tabular-nums; }
+input[type=range] { width: 100%; accent-color: var(--accent); }
+input.edited { border-color: var(--accent); background: var(--accent-soft); }
+.btn { font: inherit; font-size: 0.84rem; font-weight: 600; color: var(--accent); background: var(--accent-soft); border: 1px solid transparent; border-radius: 8px; padding: 6px 12px; cursor: pointer; }
+.btn.quiet { color: var(--muted); background: transparent; border-color: var(--rule); }
+.row { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+details summary { cursor: pointer; }
+ul.plain { margin: 0; padding-left: 1.1em; display: grid; gap: 4px; font-size: 0.88rem; }
+.note { font-size: 0.8rem; color: var(--muted); }
+textarea { width: 100%; min-height: 140px; font-family: var(--font-mono); font-size: 0.78rem; color: var(--ink); background: var(--bg); border: 1px solid var(--rule); border-radius: 8px; padding: 8px; }
+
+/* charts */
+svg.chart { width: 100%; height: auto; display: block; overflow: visible; }
+svg.chart text { fill: var(--ink); font-family: var(--font-body); }
+svg.chart .q { fill: var(--muted); }
+svg.chart .grid { stroke: var(--soft); }
+svg.chart .axis { stroke: var(--muted); }
+svg.chart .ref { stroke: var(--muted); stroke-dasharray: 4 4; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 0.8rem; color: var(--muted); }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -1px; margin-right: 6px; }
+footer { border-top: 1px solid var(--rule); padding-block: 16px 28px; font-size: 0.8rem; color: var(--muted); }
+@media (max-width: 640px) {
+  .top { position: static; }
+  .brand { width: 100%; }
+  .seg button { padding: 6px 8px; font-size: 0.8rem; }
+  .tile .big { font-size: 1.6rem; }
+}
+
+/* funnel, workload, tornado, waves */
+.fn { display: grid; gap: 10px; }
+.fn-row { display: grid; grid-template-columns: minmax(170px, 300px) minmax(0, 1fr) 92px; gap: 6px 16px; align-items: center; }
+.fn-l { display: grid; min-width: 0; }
+.fn-l b { font-weight: 600; font-size: 0.92rem; }
+.fn-l span { font-size: 0.8rem; color: var(--muted); }
+.fn-bar { position: relative; display: flex; align-items: center; gap: 10px; min-width: 0; }
+.fn-bar i { display: block; height: 18px; border-radius: 4px; flex: none; }
+.fn-bar span { font-size: 0.86rem; white-space: nowrap; }
+.fn-k { font-size: 0.8rem; color: var(--muted); text-align: right; }
+.wlist { display: grid; gap: 8px; }
+.wl-row { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(60px, 1fr) 76px; gap: 10px; align-items: center; }
+.wl-name { display: grid; font-size: 0.86rem; min-width: 0; }
+.wl-name span { font-size: 0.76rem; color: var(--muted); }
+.wl-bar { height: 12px; }
+.wl-bar i { display: block; height: 100%; border-radius: 3px; background: var(--accent); box-sizing: border-box; }
+.wl-v { font-size: 0.8rem; color: var(--muted); text-align: right; }
+ol.dec { margin: 0; padding-left: 1.2em; display: grid; gap: 12px; font-size: 0.92rem; }
+.tor { display: grid; gap: 10px; }
+.tor-row { display: grid; grid-template-columns: minmax(140px, 200px) minmax(0, 1fr); gap: 2px 14px; align-items: center; }
+.tor-l { display: grid; font-size: 0.86rem; }
+.tor-l span { font-size: 0.76rem; color: var(--muted); }
+.tor-t { position: relative; height: 18px; }
+.tor-t i { position: absolute; top: 3px; height: 12px; border-radius: 3px; }
+.tor-t .z { position: absolute; top: -3px; bottom: -3px; border-left: 1.5px solid var(--muted); }
+.tor-t .bs { position: absolute; top: -3px; bottom: -3px; border-left: 1.5px dotted var(--ink); }
+.tor-v { grid-column: 2; font-size: 0.78rem; color: var(--muted); }
+.waves { display: grid; gap: 8px; }
+.wv { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 12px; align-items: center; }
+.wv-l { display: grid; font-size: 0.86rem; }
+.wv-l span { font-size: 0.76rem; color: var(--muted); }
+.wv-t { position: relative; height: 10px; border-bottom: 1px solid var(--rule); }
+.wv-t i { position: absolute; top: 0; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); transform: translateX(-5px); }
+#gate { display: grid; gap: 14px; }
+.regv { display: inline-flex; align-items: center; gap: 6px; }
+.regv .u { width: 1.1em; text-align: left; color: var(--muted); }
+.lg-src { display: flex; justify-content: space-between; gap: 12px; font-size: 0.8rem; color: var(--muted); padding: 2px 0 2px 14px; }
+@media (max-width: 640px) {
+  .fn-row { grid-template-columns: minmax(0, 1fr); }
+  .fn-k { text-align: left; }
+  .tor-row { grid-template-columns: minmax(0, 1fr); }
+  .tor-v { grid-column: 1; }
+  .wv { grid-template-columns: 110px minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) { .meter i { transition: none; } }
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><h1>Etter<span>.</span> Value Model</h1><span class="tag">Prototype on the Etter FP&amp;A dataset</span></div>
+    <label class="ctl"><span class="label">Organisation</span><select id="org" aria-label="Organisation"></select></label>
+    <div class="ctl"><span class="label">Policy</span><div class="seg" id="policy" role="group" aria-label="Headcount policy"></div></div>
+    <div class="ctl"><span class="label">Ambition</span><div class="seg" id="scen" role="group" aria-label="Ambition"></div></div>
+    <label class="ctl"><span class="label">Horizon</span><select id="horizon" aria-label="Horizon"><option value="36">3 years</option><option value="48">4 years</option><option value="60" selected>5 years</option></select></label>
+  </div>
+</header>
+
+<section class="wrap verdict" aria-live="polite">
+  <p class="answer" id="answer"></p>
+  <div class="tiles" id="tiles"></div>
+</section>
+
+<div class="wrap">
+  <nav class="tabs" role="tablist" aria-label="Views">
+    <button class="tab" role="tab" id="t-leader" aria-selected="true" aria-controls="p-leader">Leader<span class="who">what changes</span></button>
+    <button class="tab" role="tab" id="t-finance" aria-selected="false" aria-controls="p-finance">Finance<span class="who">what it is worth</span></button>
+    <button class="tab" role="tab" id="t-plan" aria-selected="false" aria-controls="p-plan">Plan<span class="who">what to do first</span></button>
+    <button class="tab" role="tab" id="t-audit" aria-selected="false" aria-controls="p-audit">Audit<span class="who">where every dollar comes from</span></button>
+  </nav>
+</div>
+
+<main class="wrap">
+  <section class="panel" id="p-leader" role="tabpanel" aria-labelledby="t-leader">
+    <div class="card"><header><h2>Why 1:1 does not hold</h2><p>From hours Etter scores as AI work to positions that actually go, in full-time equivalents at the end of the horizon. Each step is one named assumption.</p></header><div id="funnel"></div></div>
+    <div class="grid2">
+      <div class="card"><header><h2>Where the value sits</h2><p>Workloads ranked by what the AI is worth against its own cost. Filled bars are in the programme; hollow bars cost more than the work they would take over.</p></header><div id="wl"></div></div>
+      <div class="card"><header><h2>What decides the answer</h2><p>The three inputs that move cash the most, each across its plausible range.</p></header><div id="decides"></div></div>
+    </div>
+    <div class="card"><header><h2>People, role by role</h2><p id="people-sub"></p></header><div class="tw" id="roles"></div></div>
+  </section>
+
+  <section class="panel" id="p-finance" role="tabpanel" aria-labelledby="t-finance" hidden>
+    <div class="card"><header><h2>The numbers a controller checks</h2><p>Cash and capacity are reported separately and never added. Ranges come from correlated draws around the chosen ambition.</p></header><div class="kpis" id="fin-kpis"></div></div>
+    <div class="card"><header><h2>Cumulative cash, month by month</h2><p>Costs land before savings. Undiscounted, so the end point is larger than the NPV. The band covers the middle 80% of outcomes; the line is the chosen ambition.</p></header><div id="fan"></div><div class="legend"><span><i style="background:var(--band)"></i>P10 to P90</span><span><i style="background:var(--accent)"></i>Chosen ambition</span><span><i style="background:var(--muted)"></i>Payback</span></div></div>
+    <div class="grid2">
+      <div class="card"><header><h2>Every line, present value</h2><p>Savings and costs by line, with the grade of the evidence behind each.</p></header><div class="tw" id="lines"></div></div>
+      <div class="card"><header><h2>Sensitivity</h2><p>Cash NPV with one input moved across its plausible range, everything else held.</p></header><div id="tornado"></div></div>
+    </div>
+    <div class="card"><header><h2>Same organisation, nine ways</h2><p>Headline cash NPV under each ambition and policy. The highlighted cell is the current view.</p></header><div class="tw" id="grid"></div></div>
+  </section>
+
+  <section class="panel" id="p-plan" role="tabpanel" aria-labelledby="t-plan" hidden>
+    <div class="card"><header><h2>How big should the programme be?</h2><p>Workloads are added in rank order. Cash peaks before capacity does, so programme size is a real choice.</p></header><div id="frontier"></div>
+      <div class="row"><label class="label" for="scopek">Workloads in the programme</label><span class="mono" id="scopek-v"></span><button class="btn quiet" id="scope-reset">Use the cost test</button></div>
+      <input type="range" id="scopek" min="0" max="60" step="1" aria-label="Number of workloads">
+    </div>
+    <div class="grid2">
+      <div class="card"><header><h2>The pilot and its gate</h2><p id="gate-sub"></p></header><div id="gate"></div></div>
+      <div class="card"><header><h2>Go-live waves</h2><p>Three pilot workloads first, an evaluation period, then waves each quarter.</p></header><div id="waves"></div></div>
+    </div>
+  </section>
+
+  <section class="panel" id="p-audit" role="tabpanel" aria-labelledby="t-audit" hidden>
+    <div class="card"><header><h2>Checks</h2><p>The acceptance tests from the brief, recomputed on this run.</p></header><div id="checks"></div></div>
+    <div class="card"><header><h2>Ledger</h2><p>Every dollar, booked to the role, workload or pack line it comes from. Present values sum to the cash NPV.</p></header>
+      <div class="row"><button class="btn" id="copy-csv">Copy ledger as CSV</button><span class="note" id="copy-msg" role="status"></span></div>
+      <div class="tw" id="ledger"></div><textarea id="csv-fallback" hidden aria-label="Ledger CSV"></textarea></div>
+    <div class="card"><header><h2>Assumptions</h2><p>Change any value to see its effect. Edited values are highlighted, and all of them reset when you change organisation.</p></header>
+      <div class="row"><button class="btn quiet" id="reset-edits">Reset all</button></div><div class="tw" id="register"></div></div>
+    <div class="card"><header><h2>Data notes</h2><p>What the engine noticed in the input data. None of these stop the run.</p></header><div id="flags"></div></div>
+  </section>
+</main>
+
+<footer><div class="wrap" id="foot"></div></footer>
+
+<script>/*ENGINE*/</script>
+<script>/*DATA*/</script>
+<script>/*APP*/</script>

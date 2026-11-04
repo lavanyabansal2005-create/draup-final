@@ -1,0 +1,37 @@
+{
+  "tech_large": {
+    "label": "Large software company", "industry": "Technology", "size": "Large",
+    "headcount_factor": 1.0, "salary_factor": 1.0,
+    "economics": {"discount_rate": 0.0934, "function_growth": 0.08, "turnover_multiplier": 0.59},
+    "default_policy": "Attrition only",
+    "notes": "Etter FP&A dataset at full size. WACC: Damodaran Jan-2026 Software (System & Application) 9.34%. Turnover: JOLTS 2025 quits, Information 1.3 vs total private 2.2 per month (x0.59). Growth 8%/yr is an illustrative client input."
+  },
+  "insurance_large": {
+    "label": "Large insurer", "industry": "Insurance", "size": "Large",
+    "headcount_factor": 0.5, "salary_factor": 0.93,
+    "economics": {"discount_rate": 0.0634, "function_growth": 0.02, "turnover_multiplier": 0.59},
+    "default_policy": "Attrition only",
+    "notes": "Half the dataset's FP&A headcount. WACC: Damodaran Insurance (General) 6.34%. Salary x0.93: BLS OEWS May-2025 financial analysts, insurance carriers $95,830 vs all $102,740. Turnover: JOLTS 2025 finance & insurance quits 1.3 vs 2.2 (x0.59)."
+  },
+  "health_large": {
+    "label": "Large hospital system (non-profit)", "industry": "Healthcare", "size": "Large",
+    "headcount_factor": 0.2, "salary_factor": 1.0,
+    "economics": {"discount_rate": 0.0619, "function_growth": 0.03, "turnover_multiplier": 0.91},
+    "default_policy": "Capacity only",
+    "notes": "One fifth of the dataset's FP&A headcount; no reductions (redeploy only). WACC: Damodaran Hospitals/Healthcare Facilities 6.19%. Turnover: JOLTS 2025 health care quits 2.0 vs 2.2 (x0.91). Salary factor not sourced; client provides."
+  },
+  "insurance_mid": {
+    "label": "Mid-cap insurer", "industry": "Insurance", "size": "Mid-cap",
+    "headcount_factor": 0.04, "salary_factor": 0.93,
+    "economics": {"discount_rate": 0.0634, "function_growth": 0.02, "turnover_multiplier": 0.59},
+    "default_policy": "Attrition only",
+    "notes": "About 60 FP&A staff. Same sources as the large insurer."
+  },
+  "tech_mid": {
+    "label": "Mid-cap software company (high growth)", "industry": "Technology", "size": "Mid-cap",
+    "headcount_factor": 0.08, "salary_factor": 1.0,
+    "economics": {"discount_rate": 0.0934, "function_growth": 0.15, "turnover_multiplier": 0.59},
+    "default_policy": "Attrition only",
+    "notes": "About 120 FP&A staff growing 15%/yr (illustrative). Freed capacity absorbs planned hires."
+  }
+}

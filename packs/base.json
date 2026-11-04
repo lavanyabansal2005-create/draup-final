@@ -1,0 +1,195 @@
+{
+  "meta": {
+    "name": "Base pack: FP&A, large enterprise, cross-industry defaults",
+    "currency": "USD",
+    "as_of": "2026-10-23"
+  },
+  "categories": {
+    "Directive": {
+      "ceiling": 0.9
+    },
+    "Feedback Loop": {
+      "ceiling": 0.8
+    },
+    "Task Iteration": {
+      "ceiling": 0.45
+    },
+    "Learning": {
+      "ceiling": 0.25
+    },
+    "Validation": {
+      "ceiling": 0.5
+    },
+    "Negligibility": {
+      "ceiling": 0.0
+    }
+  },
+  "augment": {
+    "time_saving_by_band": {
+      "Para-professional": 0.2,
+      "Professional": 0.12,
+      "Management": 0.06,
+      "Executive": 0.03
+    },
+    "rollout_start_month": 2,
+    "rollout_months": 6
+  },
+  "turnover_by_band": {
+    "Para-professional": 0.125,
+    "Professional": 0.091,
+    "Management": 0.063,
+    "Executive": 0.052
+  },
+  "economics": {
+    "on_cost": 1.3055,
+    "standard_task_hours_month": 160,
+    "discount_rate": 0.0696,
+    "horizon_months": 60,
+    "cost_per_hire": 4700,
+    "function_growth": 0.0,
+    "turnover_multiplier": 1.0
+  },
+  "costs": {
+    "build_workflow": 55000,
+    "build_enterprise": 130000,
+    "enterprise_if_roles_at_least": 2,
+    "enterprise_if_auto_tasks_at_least": 3,
+    "build_lead_months": 3,
+    "maintenance_share_per_year": 0.18,
+    "run_cost_per_ai_hour": 3.48,
+    "run_cost_decline_per_year": 0.13,
+    "programme_fixed": 75000,
+    "deploy_per_affected_head": 623,
+    "training_spend_per_head": 846,
+    "training_hours_per_head": 16.7,
+    "assistant_licence_per_seat_year": 360,
+    "seat_cost_per_position": 468,
+    "allow_buy": true,
+    "buy_workflow": 15000,
+    "buy_enterprise": 35000,
+    "buy_run_per_ai_hour": 6.0
+  },
+  "programme": {
+    "pilot_workloads": 3,
+    "pilot_evaluation_months": 6,
+    "wave_size": 10,
+    "wave_gap_months": 3
+  },
+  "scenarios": {
+    "Conservative": {
+      "takeover": 0.25,
+      "review": 0.4,
+      "adopt_months": 18,
+      "active_use": 0.55,
+      "aug_mult": 0.5,
+      "cost_mult": 1.25
+    },
+    "Moderate": {
+      "takeover": 0.4,
+      "review": 0.3,
+      "adopt_months": 12,
+      "active_use": 0.7,
+      "aug_mult": 1.0,
+      "cost_mult": 1.0
+    },
+    "Aggressive": {
+      "takeover": 0.6,
+      "review": 0.2,
+      "adopt_months": 6,
+      "active_use": 0.85,
+      "aug_mult": 1.25,
+      "cost_mult": 0.9
+    }
+  },
+  "policies": {
+    "Capacity only": {
+      "mechanism": "attrition",
+      "harvest_automation": 0.0,
+      "harvest_augmentation": 0.0,
+      "absorb_growth": true
+    },
+    "Attrition only": {
+      "mechanism": "attrition",
+      "harvest_automation": 0.5,
+      "harvest_augmentation": 0.0,
+      "absorb_growth": true
+    },
+    "Active reduction": {
+      "mechanism": "separation",
+      "harvest_automation": 0.75,
+      "harvest_augmentation": 0.25,
+      "notice_months": 2,
+      "severance_weeks": 12,
+      "absorb_growth": true
+    }
+  },
+  "data_quality": {
+    "score_tolerance": 0.1
+  },
+  "nonlinear": {
+    "complexity_drag": 0.3
+  },
+  "uncertainty": {
+    "execution_correlation": 0.5,
+    "params": {
+      "takeover": {
+        "dist": "logitnormal",
+        "median": 0.4,
+        "p10": 0.2,
+        "p90": 0.62,
+        "quality_sign": 1
+      },
+      "review": {
+        "dist": "logitnormal",
+        "median": 0.3,
+        "p10": 0.15,
+        "p90": 0.45,
+        "quality_sign": -1
+      },
+      "adopt_months": {
+        "dist": "lognormal",
+        "median": 12,
+        "p10": 6,
+        "p90": 24,
+        "quality_sign": -1
+      },
+      "active_use": {
+        "dist": "logitnormal",
+        "median": 0.7,
+        "p10": 0.5,
+        "p90": 0.85,
+        "quality_sign": 1
+      },
+      "aug_mult": {
+        "dist": "lognormal",
+        "median": 1.0,
+        "p10": 0.4,
+        "p90": 1.6
+      },
+      "cost_mult": {
+        "dist": "lognormal",
+        "median": 1.0,
+        "p10": 0.85,
+        "p90": 1.6
+      },
+      "run_mult": {
+        "dist": "lognormal",
+        "median": 1.0,
+        "p10": 0.43,
+        "p90": 2.9
+      },
+      "drag": {
+        "dist": "logitnormal",
+        "median": 0.3,
+        "p10": 0.1,
+        "p90": 0.55
+      },
+      "turnover_mult": {
+        "dist": "lognormal",
+        "median": 1.0,
+        "p10": 0.75,
+        "p90": 1.3
+      }
+    }
+  }
+}

@@ -1,0 +1,3454 @@
+{
+ "tasks": [
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "AOP Documentation & System Management",
+   "task": "Upload AOP Data Into Planning Systems",
+   "category": "Directive",
+   "hours_month": 3.28,
+   "desc": "Upload approved AOP data into planning systems, organize supporting documentation, and maintain version control"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "AOP Documentation & System Management",
+   "task": "Update System Records Based On Changes",
+   "category": "Feedback Loop",
+   "hours_month": 2.19,
+   "desc": "Update system records based on approved changes and revisions to the plan"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "AOP Documentation & System Management",
+   "task": "Resolve System Issues With IT Support",
+   "category": "Task Iteration",
+   "hours_month": 2.19,
+   "desc": "Collaborate with IT on system issues and work with teams on documentation standards and organization"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "AOP Documentation & System Management",
+   "task": "Learn System Functionality And Documentation Requirements",
+   "category": "Learning",
+   "hours_month": 1.09,
+   "desc": "Learn system functionality and understand documentation requirements for AOP management"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "AOP Documentation & System Management",
+   "task": "Verify Data Quality And Completeness",
+   "category": "Validation",
+   "hours_month": 1.09,
+   "desc": "Verify data accuracy in systems and check that documentation is complete and properly organized"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "AOP Documentation & System Management",
+   "task": "Make System Design And Access Decisions",
+   "category": "Negligibility",
+   "hours_month": 1.1,
+   "desc": "Make system design decisions and approve user access controls for planning systems"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "Annual Operating Plan Development",
+   "task": "Compile And Distribute AOP Templates",
+   "category": "Directive",
+   "hours_month": 4.45,
+   "desc": "Compile AOP templates, distribute to departments, and consolidate submitted plans into master documents"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "Annual Operating Plan Development",
+   "task": "Request Plan Revisions And Consolidate",
+   "category": "Feedback Loop",
+   "hours_month": 3.56,
+   "desc": "Request plan revisions based on guidelines and adjust consolidation based on feedback"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "Annual Operating Plan Development",
+   "task": "Validate Planning Assumptions With Stakeholders",
+   "category": "Task Iteration",
+   "hours_month": 2.67,
+   "desc": "Collaborate with departments on planning assumptions and work with finance on plan refinement and alignment"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "Annual Operating Plan Development",
+   "task": "Learn Planning Processes And Strategic Priorities",
+   "category": "Learning",
+   "hours_month": 1.78,
+   "desc": "Understand planning processes, timelines, and strategic priorities that guide AOP development"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "Annual Operating Plan Development",
+   "task": "Verify Annual Operating Plan Completeness",
+   "category": "Validation",
+   "hours_month": 1.78,
+   "desc": "Verify AOP completeness and check alignment with organizational guidelines and constraints"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "Annual Operating Plan Development",
+   "task": "Set Strategic Direction And Approve Plan",
+   "category": "Negligibility",
+   "hours_month": 3.54,
+   "desc": "Set strategic direction for the plan and approve final AOP after resolving trade-off decisions"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "Cost Review Planning & Support",
+   "task": "Schedule Cost Review Meetings",
+   "category": "Directive",
+   "hours_month": 2.73,
+   "desc": "Schedule cost review meetings, prepare standard cost analysis reports, and distribute to cost owners"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "Cost Review Planning & Support",
+   "task": "Adjust Cost Analysis And Categories",
+   "category": "Feedback Loop",
+   "hours_month": 2.19,
+   "desc": "Adjust cost analysis based on review findings and refine cost categories based on feedback"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "Cost Review Planning & Support",
+   "task": "Analyze Costs With Cost Owners",
+   "category": "Task Iteration",
+   "hours_month": 1.64,
+   "desc": "Collaborate with cost owners on detailed cost analysis and work with teams on cost reduction initiatives"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "Cost Review Planning & Support",
+   "task": "Learn Cost Structures And Analysis Methodologies",
+   "category": "Learning",
+   "hours_month": 1.09,
+   "desc": "Understand organizational cost structures and learn cost analysis methodologies"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "Cost Review Planning & Support",
+   "task": "Validate Cost Data And Analysis",
+   "category": "Validation",
+   "hours_month": 1.09,
+   "desc": "Verify cost data accuracy and check that analysis is complete and supports review discussions"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "Cost Review Planning & Support",
+   "task": "Make Final Cost Reduction Decisions",
+   "category": "Negligibility",
+   "hours_month": 2.2,
+   "desc": "Make final cost reduction decisions and approve cost allocations across departments"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "Cross-Functional Coordination & Variance Resolution",
+   "task": "Schedule Variance Review Meetings",
+   "category": "Directive",
+   "hours_month": 4.45,
+   "desc": "Schedule variance review meetings and distribute variance analysis reports to relevant stakeholders"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "Cross-Functional Coordination & Variance Resolution",
+   "task": "Collect And Update Variance Analysis",
+   "category": "Feedback Loop",
+   "hours_month": 3.56,
+   "desc": "Collect variance explanations from departments and update analysis based on provided information"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "Cross-Functional Coordination & Variance Resolution",
+   "task": "Conduct Variance Analysis",
+   "category": "Task Iteration",
+   "hours_month": 2.67,
+   "desc": "Collaborate with departments to investigate variance drivers and work with teams to develop detailed explanations"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "Cross-Functional Coordination & Variance Resolution",
+   "task": "Learn Departmental Operations And Variance Drivers",
+   "category": "Learning",
+   "hours_month": 1.78,
+   "desc": "Understand departmental operations and learn key variance drivers across the organization"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "Cross-Functional Coordination & Variance Resolution",
+   "task": "Validate Variance Explanations And Support",
+   "category": "Validation",
+   "hours_month": 1.78,
+   "desc": "Verify that variance explanations are reasonable, complete, and supported by data"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "Cross-Functional Coordination & Variance Resolution",
+   "task": "Make Variance Acceptability And Resolution Decisions",
+   "category": "Negligibility",
+   "hours_month": 3.54,
+   "desc": "Make final decisions on variance acceptability and resolve conflicts between departments regarding explanations"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "Data Reconciliation & Control Management",
+   "task": "Run Automated Reconciliation Processes",
+   "category": "Directive",
+   "hours_month": 7.39,
+   "desc": "Run automated reconciliation processes to match transactions between source systems and general ledger"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "Data Reconciliation & Control Management",
+   "task": "Investigate And Adjust Reconciling Items",
+   "category": "Feedback Loop",
+   "hours_month": 4.92,
+   "desc": "Investigate reconciling differences and adjust records based on root cause findings"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "Data Reconciliation & Control Management",
+   "task": "Troubleshoot System Issues And Data Flows",
+   "category": "Task Iteration",
+   "hours_month": 4.92,
+   "desc": "Collaborate with IT and system teams to resolve data issues and work on control improvement initiatives"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "Data Reconciliation & Control Management",
+   "task": "Learn Data Structures And Systems",
+   "category": "Learning",
+   "hours_month": 2.46,
+   "desc": "Understand data structures, system interfaces, and reconciliation methodologies"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "Data Reconciliation & Control Management",
+   "task": "Verify Account Reconciliation Completeness",
+   "category": "Validation",
+   "hours_month": 2.46,
+   "desc": "Verify reconciliation completeness and test control effectiveness to ensure accuracy"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "Data Reconciliation & Control Management",
+   "task": "Determine Systemic Data Issues And Solutions",
+   "category": "Negligibility",
+   "hours_month": 2.47,
+   "desc": "Determine systemic data issues and design new control frameworks or system solutions"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "Financial Analysis & Performance Reporting",
+   "task": "Generate Monthly Performance Reports",
+   "category": "Directive",
+   "hours_month": 3.69,
+   "desc": "Generate monthly and quarterly performance reports from standard templates using actuals and budget data"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "Financial Analysis & Performance Reporting",
+   "task": "Adjust Report Formats And Metrics",
+   "category": "Feedback Loop",
+   "hours_month": 3.69,
+   "desc": "Adjust report formats and metrics based on stakeholder feedback and evolving reporting needs"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "Financial Analysis & Performance Reporting",
+   "task": "Conduct Variance Analysis",
+   "category": "Task Iteration",
+   "hours_month": 6.16,
+   "desc": "Collaborate with business units to understand performance drivers and work with analysts to interpret variance trends"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "Financial Analysis & Performance Reporting",
+   "task": "Learn Business Drivers And Metrics",
+   "category": "Learning",
+   "hours_month": 4.92,
+   "desc": "Understand key business drivers, performance metrics, and analysis methodologies relevant to the organization"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "Financial Analysis & Performance Reporting",
+   "task": "Validate Report Data And Calculations",
+   "category": "Validation",
+   "hours_month": 3.69,
+   "desc": "Verify report calculations, data sources, and accuracy before distribution to stakeholders"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "Financial Analysis & Performance Reporting",
+   "task": "Interpret Strategic Financial Results Implications",
+   "category": "Negligibility",
+   "hours_month": 2.47,
+   "desc": "Provide executive-level strategic interpretation of financial results and recommend business actions"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "Financial Close & Period-End Processes",
+   "task": "Consolidate Account Balances From General Ledger",
+   "category": "Directive",
+   "hours_month": 10.66,
+   "desc": "Pull and consolidate account balances from general ledger into close checklists using standard templates"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "Financial Close & Period-End Processes",
+   "task": "Investigate And Adjust Reconciling Items",
+   "category": "Feedback Loop",
+   "hours_month": 7.11,
+   "desc": "Investigate reconciling items and adjust account entries based on resolution findings"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "Financial Close & Period-End Processes",
+   "task": "Resolve Period-End Close Items",
+   "category": "Task Iteration",
+   "hours_month": 7.11,
+   "desc": "Collaborate with accounting teams to resolve outstanding close items and finalize period-end balances"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "Financial Close & Period-End Processes",
+   "task": "Learn Close Procedures And Timelines",
+   "category": "Learning",
+   "hours_month": 3.55,
+   "desc": "Understand close procedures, timelines, and accounting treatment requirements for period-end activities"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "Financial Close & Period-End Processes",
+   "task": "Verify Account Reconciliation Completeness",
+   "category": "Validation",
+   "hours_month": 3.55,
+   "desc": "Review close checklists to verify all accounts are reconciled and supporting documentation is complete"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "Financial Close & Period-End Processes",
+   "task": "Obtain Management Approval On Financial Statements",
+   "category": "Negligibility",
+   "hours_month": 3.56,
+   "desc": "Obtain final management sign-off on financial statements and make judgment calls on complex accounting treatments"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "Forecast Development & Consolidation",
+   "task": "Consolidate Business Unit Forecasts Into Master Model",
+   "category": "Directive",
+   "hours_month": 5.33,
+   "desc": "Consolidate submitted forecasts from business units into master forecast models and apply standard adjustments"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "Forecast Development & Consolidation",
+   "task": "Request Forecast Revisions And Consolidate",
+   "category": "Feedback Loop",
+   "hours_month": 3.56,
+   "desc": "Request forecast revisions based on validation results and adjust consolidation based on updated submissions"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "Forecast Development & Consolidation",
+   "task": "Validate Forecast Assumptions With Stakeholders",
+   "category": "Task Iteration",
+   "hours_month": 3.56,
+   "desc": "Collaborate with business units on forecast assumptions and work with finance team on model refinements"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "Forecast Development & Consolidation",
+   "task": "Learn Forecasting Methodologies And Business Drivers",
+   "category": "Learning",
+   "hours_month": 1.78,
+   "desc": "Understand forecasting methodologies and learn key business drivers that impact forecast accuracy"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "Forecast Development & Consolidation",
+   "task": "Validate Forecast Reasonableness And Trends",
+   "category": "Validation",
+   "hours_month": 1.78,
+   "desc": "Check forecast reasonableness against historical trends and verify consolidation accuracy"
+  },
+  {
+   "role": "FP&A Senior Coordinator",
+   "workload": "Forecast Development & Consolidation",
+   "task": "Determine Forecasting Methodology And Assumptions",
+   "category": "Negligibility",
+   "hours_month": 1.77,
+   "desc": "Determine overall forecasting methodology and make judgment calls on significant assumption changes"
+  },
+  {
+   "role": "FP&A Assistant Analyst",
+   "workload": "Budget Planning & Forecasting",
+   "task": "Populate Budget Templates With Historical Data",
+   "category": "Directive",
+   "hours_month": 3.59,
+   "desc": "Populate budget templates with historical data and apply standard assumptions to generate initial forecasts"
+  },
+  {
+   "role": "FP&A Assistant Analyst",
+   "workload": "Budget Planning & Forecasting",
+   "task": "Revise Forecasts Based On Feedback",
+   "category": "Feedback Loop",
+   "hours_month": 3.59,
+   "desc": "Revise forecasts and budget assumptions based on management feedback and changing business conditions"
+  },
+  {
+   "role": "FP&A Assistant Analyst",
+   "workload": "Budget Planning & Forecasting",
+   "task": "Gather Budget Inputs From Stakeholders",
+   "category": "Task Iteration",
+   "hours_month": 5.98,
+   "desc": "Collaborate with department heads and managers to gather budget inputs, assumptions, and business drivers"
+  },
+  {
+   "role": "FP&A Assistant Analyst",
+   "workload": "Budget Planning & Forecasting",
+   "task": "Learn Budgeting Methodologies And Forecasting Techniques",
+   "category": "Learning",
+   "hours_month": 4.78,
+   "desc": "Understand budgeting methodologies, forecasting techniques, and key business drivers affecting budgets"
+  },
+  {
+   "role": "FP&A Assistant Analyst",
+   "workload": "Budget Planning & Forecasting",
+   "task": "Validate Budget Calculations And Consistency",
+   "category": "Validation",
+   "hours_month": 3.59,
+   "desc": "Check budget calculations for accuracy and ensure alignment with company strategy and constraints"
+  },
+  {
+   "role": "FP&A Assistant Analyst",
+   "workload": "Budget Planning & Forecasting",
+   "task": "Set Strategic Budget Priorities And Approvals",
+   "category": "Negligibility",
+   "hours_month": 2.38,
+   "desc": "Set strategic budget priorities or make final budget approval decisions"
+  },
+  {
+   "role": "FP&A Assistant Analyst",
+   "workload": "Data Collection & Collaboration",
+   "task": "Extract And Consolidate Financial Data",
+   "category": "Directive",
+   "hours_month": 9.93,
+   "desc": "Extract and consolidate financial data from designated systems into standardized spreadsheets and formats"
+  },
+  {
+   "role": "FP&A Assistant Analyst",
+   "workload": "Data Collection & Collaboration",
+   "task": "Adjust Data Collection Parameters",
+   "category": "Feedback Loop",
+   "hours_month": 6.62,
+   "desc": "Adjust data collection parameters and sources based on data quality issues and completeness gaps identified"
+  },
+  {
+   "role": "FP&A Assistant Analyst",
+   "workload": "Data Collection & Collaboration",
+   "task": "Clarify Data Requirements With Teams",
+   "category": "Task Iteration",
+   "hours_month": 6.62,
+   "desc": "Work with cross-functional teams to clarify data requirements, definitions, and source system locations"
+  },
+  {
+   "role": "FP&A Assistant Analyst",
+   "workload": "Data Collection & Collaboration",
+   "task": "Learn Data Structures And System Navigation",
+   "category": "Learning",
+   "hours_month": 3.31,
+   "desc": "Understand data structures, system navigation, data definitions, and collaboration protocols"
+  },
+  {
+   "role": "FP&A Assistant Analyst",
+   "workload": "Data Collection & Collaboration",
+   "task": "Verify Data Quality And Completeness",
+   "category": "Validation",
+   "hours_month": 3.31,
+   "desc": "Verify data accuracy and completeness by comparing collected data against source systems"
+  },
+  {
+   "role": "FP&A Assistant Analyst",
+   "workload": "Data Collection & Collaboration",
+   "task": "Negotiate Data Access And Resolve Conflicts",
+   "category": "Negligibility",
+   "hours_month": 3.31,
+   "desc": "Negotiate data access permissions or resolve interpersonal conflicts between departments"
+  },
+  {
+   "role": "FP&A Assistant Analyst",
+   "workload": "Financial Analysis & Reporting",
+   "task": "Generate Standardized Financial Reports",
+   "category": "Directive",
+   "hours_month": 14.35,
+   "desc": "Generate standardized financial reports from existing data templates and financial systems"
+  },
+  {
+   "role": "FP&A Assistant Analyst",
+   "workload": "Financial Analysis & Reporting",
+   "task": "Refine Financial Analysis And Reports",
+   "category": "Feedback Loop",
+   "hours_month": 9.56,
+   "desc": "Refine financial analysis and report content based on stakeholder feedback on accuracy and presentation"
+  },
+  {
+   "role": "FP&A Assistant Analyst",
+   "workload": "Financial Analysis & Reporting",
+   "task": "Interpret Financial Trends With Analysts",
+   "category": "Task Iteration",
+   "hours_month": 9.56,
+   "desc": "Collaborate with senior analysts to interpret complex financial trends and support analysis development"
+  },
+  {
+   "role": "FP&A Assistant Analyst",
+   "workload": "Financial Analysis & Reporting",
+   "task": "Learn Financial Metrics And Accounting Principles",
+   "category": "Learning",
+   "hours_month": 4.78,
+   "desc": "Acquire knowledge of financial metrics, accounting principles, and company reporting standards"
+  },
+  {
+   "role": "FP&A Assistant Analyst",
+   "workload": "Financial Analysis & Reporting",
+   "task": "Validate Calculations And Accuracy",
+   "category": "Validation",
+   "hours_month": 4.78,
+   "desc": "Review calculated figures and ensure report consistency with source data and accounting standards"
+  },
+  {
+   "role": "FP&A Assistant Analyst",
+   "workload": "Financial Analysis & Reporting",
+   "task": "Make Strategic Financial Recommendations",
+   "category": "Negligibility",
+   "hours_month": 4.79,
+   "desc": "Make strategic financial recommendations requiring business judgment and executive decision-making"
+  },
+  {
+   "role": "FP&A Assistant Analyst",
+   "workload": "Financial Systems & Tools Management",
+   "task": "Run Standard Reports From ERP Systems",
+   "category": "Directive",
+   "hours_month": 9.93,
+   "desc": "Run standard reports from ERP or financial systems using established procedures and parameters"
+  },
+  {
+   "role": "FP&A Assistant Analyst",
+   "workload": "Financial Systems & Tools Management",
+   "task": "Adjust System Configurations And Settings",
+   "category": "Feedback Loop",
+   "hours_month": 6.62,
+   "desc": "Adjust system configurations and report settings based on output issues or formatting requirements"
+  },
+  {
+   "role": "FP&A Assistant Analyst",
+   "workload": "Financial Systems & Tools Management",
+   "task": "Resolve System Issues With IT Support",
+   "category": "Task Iteration",
+   "hours_month": 6.62,
+   "desc": "Troubleshoot system issues collaboratively with IT support and finance team members"
+  },
+  {
+   "role": "FP&A Assistant Analyst",
+   "workload": "Financial Systems & Tools Management",
+   "task": "Learn System Functionality And Financial Tools",
+   "category": "Learning",
+   "hours_month": 3.31,
+   "desc": "Learn system functionality, navigation, user workflows, and best practices for financial tools"
+  },
+  {
+   "role": "FP&A Assistant Analyst",
+   "workload": "Financial Systems & Tools Management",
+   "task": "Test System Outputs And Results",
+   "category": "Validation",
+   "hours_month": 3.31,
+   "desc": "Test system outputs and reports against expected results and historical data"
+  },
+  {
+   "role": "FP&A Assistant Analyst",
+   "workload": "Financial Systems & Tools Management",
+   "task": "Make Architectural Decisions And Evaluate Vendors",
+   "category": "Negligibility",
+   "hours_month": 3.31,
+   "desc": "Make architectural decisions about system implementations or evaluate vendor solutions"
+  },
+  {
+   "role": "FP&A Assistant Analyst",
+   "workload": "Market & Economic Research",
+   "task": "Compile Market Data And Economic Information",
+   "category": "Directive",
+   "hours_month": 1.47,
+   "desc": "Compile market data and economic information from provided sources into research summaries and reports"
+  },
+  {
+   "role": "FP&A Assistant Analyst",
+   "workload": "Market & Economic Research",
+   "task": "Refine Research Focus Based On Feedback",
+   "category": "Feedback Loop",
+   "hours_month": 1.47,
+   "desc": "Refine research focus and scope based on analyst feedback on relevance and usefulness"
+  },
+  {
+   "role": "FP&A Assistant Analyst",
+   "workload": "Market & Economic Research",
+   "task": "Contextualize Research Findings With Analysts",
+   "category": "Task Iteration",
+   "hours_month": 2.21,
+   "desc": "Discuss research findings with senior analysts to contextualize insights and support analysis"
+  },
+  {
+   "role": "FP&A Assistant Analyst",
+   "workload": "Market & Economic Research",
+   "task": "Learn Market Dynamics And Competitive Landscape",
+   "category": "Learning",
+   "hours_month": 4.41,
+   "desc": "Understand market dynamics, economic indicators, industry trends, and competitive landscape"
+  },
+  {
+   "role": "FP&A Assistant Analyst",
+   "workload": "Market & Economic Research",
+   "task": "Verify Data Quality And Completeness",
+   "category": "Validation",
+   "hours_month": 2.94,
+   "desc": "Verify data sources and ensure research accuracy and completeness"
+  },
+  {
+   "role": "FP&A Assistant Analyst",
+   "workload": "Market & Economic Research",
+   "task": "Make Strategic Investment And Business Recommendations",
+   "category": "Negligibility",
+   "hours_month": 2.21,
+   "desc": "Make strategic investment decisions or business recommendations based on market analysis"
+  },
+  {
+   "role": "FP&A Assistant Analyst",
+   "workload": "Process Improvement & Team Support",
+   "task": "Document Financial Processes In Standard Formats",
+   "category": "Directive",
+   "hours_month": 2.21,
+   "desc": "Document existing financial processes in standardized formats and templates"
+  },
+  {
+   "role": "FP&A Assistant Analyst",
+   "workload": "Process Improvement & Team Support",
+   "task": "Refine Process Documentation Based On Feedback",
+   "category": "Feedback Loop",
+   "hours_month": 1.47,
+   "desc": "Refine process documentation and improvement recommendations based on team feedback"
+  },
+  {
+   "role": "FP&A Assistant Analyst",
+   "workload": "Process Improvement & Team Support",
+   "task": "Identify Process Improvement Opportunities",
+   "category": "Task Iteration",
+   "hours_month": 1.47,
+   "desc": "Collaborate with team members to identify process bottlenecks and improvement opportunities"
+  },
+  {
+   "role": "FP&A Assistant Analyst",
+   "workload": "Process Improvement & Team Support",
+   "task": "Learn Finance Operations And Efficiency Standards",
+   "category": "Learning",
+   "hours_month": 0.74,
+   "desc": "Understand current workflows, finance operations best practices, and efficiency standards"
+  },
+  {
+   "role": "FP&A Assistant Analyst",
+   "workload": "Process Improvement & Team Support",
+   "task": "Test Process Functionality And Benefits",
+   "category": "Validation",
+   "hours_month": 0.74,
+   "desc": "Test improved processes to ensure they function as designed and deliver expected benefits"
+  },
+  {
+   "role": "FP&A Assistant Analyst",
+   "workload": "Process Improvement & Team Support",
+   "task": "Make Final Process Change Decisions",
+   "category": "Negligibility",
+   "hours_month": 0.73,
+   "desc": "Make final decisions on process changes, resource allocation, or organizational restructuring"
+  },
+  {
+   "role": "FP&A Associate Analyst",
+   "workload": "Executive Presentation & Communication",
+   "task": "Format Financial Data Into Presentations",
+   "category": "Directive",
+   "hours_month": 10.41,
+   "desc": "Format financial data into presentation slides and create standard charts and visualizations for executive materials"
+  },
+  {
+   "role": "FP&A Associate Analyst",
+   "workload": "Executive Presentation & Communication",
+   "task": "Revise Presentations Based On Feedback",
+   "category": "Feedback Loop",
+   "hours_month": 6.94,
+   "desc": "Revise presentations based on executive feedback and adjust messaging to align with strategic priorities"
+  },
+  {
+   "role": "FP&A Associate Analyst",
+   "workload": "Executive Presentation & Communication",
+   "task": "Refine Presentation Messages With Executives",
+   "category": "Task Iteration",
+   "hours_month": 6.94,
+   "desc": "Work with executives to refine key messages, talking points, and narrative flow of presentations"
+  },
+  {
+   "role": "FP&A Associate Analyst",
+   "workload": "Executive Presentation & Communication",
+   "task": "Learn Executive Communication And Presentation Best Practices",
+   "category": "Learning",
+   "hours_month": 3.47,
+   "desc": "Understand executive communication preferences and learn presentation best practices for senior leadership"
+  },
+  {
+   "role": "FP&A Associate Analyst",
+   "workload": "Executive Presentation & Communication",
+   "task": "Verify Presentation Accuracy",
+   "category": "Validation",
+   "hours_month": 3.47,
+   "desc": "Review presentation accuracy and fact-check all data and calculations included in executive materials"
+  },
+  {
+   "role": "FP&A Associate Analyst",
+   "workload": "Executive Presentation & Communication",
+   "task": "Determine Strategic Narrative For Executives",
+   "category": "Negligibility",
+   "hours_month": 3.47,
+   "desc": "Determine strategic narrative and decide which key messages are most critical for executive audience"
+  },
+  {
+   "role": "FP&A Associate Analyst",
+   "workload": "Financial Analysis & Reporting",
+   "task": "Extract And Format Financial Data Reports",
+   "category": "Directive",
+   "hours_month": 15.04,
+   "desc": "Extract financial data from systems, format reports using standard templates, and calculate routine financial metrics and ratios"
+  },
+  {
+   "role": "FP&A Associate Analyst",
+   "workload": "Financial Analysis & Reporting",
+   "task": "Adjust Analysis Scope Based On Feedback",
+   "category": "Feedback Loop",
+   "hours_month": 10.02,
+   "desc": "Adjust analysis scope and refine report structure based on stakeholder questions and feedback on presentation"
+  },
+  {
+   "role": "FP&A Associate Analyst",
+   "workload": "Financial Analysis & Reporting",
+   "task": "Investigate Financial Variances And Anomalies",
+   "category": "Task Iteration",
+   "hours_month": 10.02,
+   "desc": "Work with finance team members to investigate and interpret complex variances and financial anomalies"
+  },
+  {
+   "role": "FP&A Associate Analyst",
+   "workload": "Financial Analysis & Reporting",
+   "task": "Learn Financial Statements And Analysis Frameworks",
+   "category": "Learning",
+   "hours_month": 5.01,
+   "desc": "Understand financial statement relationships, company accounting policies, and standard financial analysis frameworks"
+  },
+  {
+   "role": "FP&A Associate Analyst",
+   "workload": "Financial Analysis & Reporting",
+   "task": "Verify Calculation Accuracy",
+   "category": "Validation",
+   "hours_month": 5.01,
+   "desc": "Verify calculation accuracy, cross-check data sources, and review report completeness and consistency"
+  },
+  {
+   "role": "FP&A Associate Analyst",
+   "workload": "Financial Analysis & Reporting",
+   "task": "Determine Root Causes Of Financial Variances",
+   "category": "Negligibility",
+   "hours_month": 5.02,
+   "desc": "Determine root causes of significant financial variances and make judgment calls on accounting treatment implications"
+  },
+  {
+   "role": "FP&A Associate Analyst",
+   "workload": "Financial Planning & Forecasting",
+   "task": "Generate Standard Forecast Templates",
+   "category": "Directive",
+   "hours_month": 5.21,
+   "desc": "Generate standard forecast templates and consolidate financial data from multiple business units into predefined planning models"
+  },
+  {
+   "role": "FP&A Associate Analyst",
+   "workload": "Financial Planning & Forecasting",
+   "task": "Revise Forecasts Based On Feedback",
+   "category": "Feedback Loop",
+   "hours_month": 5.21,
+   "desc": "Adjust forecast assumptions and refine projection models based on actual versus projected performance and stakeholder feedback"
+  },
+  {
+   "role": "FP&A Associate Analyst",
+   "workload": "Financial Planning & Forecasting",
+   "task": "Validate Forecast Assumptions With Stakeholders",
+   "category": "Task Iteration",
+   "hours_month": 8.68,
+   "desc": "Collaborate with business unit leaders to validate forecast drivers, key assumptions, and reasonableness of projections"
+  },
+  {
+   "role": "FP&A Associate Analyst",
+   "workload": "Financial Planning & Forecasting",
+   "task": "Learn Financial Drivers And Planning Patterns",
+   "category": "Learning",
+   "hours_month": 6.94,
+   "desc": "Understand company-specific financial drivers, forecasting methodologies, and historical planning patterns"
+  },
+  {
+   "role": "FP&A Associate Analyst",
+   "workload": "Financial Planning & Forecasting",
+   "task": "Validate Forecast Reasonableness And Trends",
+   "category": "Validation",
+   "hours_month": 5.21,
+   "desc": "Review forecast accuracy by comparing projections against actual results and identify significant variances"
+  },
+  {
+   "role": "FP&A Associate Analyst",
+   "workload": "Financial Planning & Forecasting",
+   "task": "Determine Forecasting Methodology And Assumptions",
+   "category": "Negligibility",
+   "hours_month": 3.45,
+   "desc": "Make strategic decisions on forecast direction and interpret complex business scenarios affecting planning assumptions"
+  },
+  {
+   "role": "FP&A Associate Analyst",
+   "workload": "Market & Competitive Intelligence",
+   "task": "Compile Market Data And Competitor Information",
+   "category": "Directive",
+   "hours_month": 1.54,
+   "desc": "Compile publicly available market data and organize competitor information into standard intelligence tracking formats"
+  },
+  {
+   "role": "FP&A Associate Analyst",
+   "workload": "Market & Competitive Intelligence",
+   "task": "Refine Research Focus Based On Feedback",
+   "category": "Feedback Loop",
+   "hours_month": 1.54,
+   "desc": "Refine intelligence gathering approach based on evolving strategic priorities and adjust research focus areas"
+  },
+  {
+   "role": "FP&A Associate Analyst",
+   "workload": "Market & Competitive Intelligence",
+   "task": "Assess Competitive Implications With Teams",
+   "category": "Task Iteration",
+   "hours_month": 2.31,
+   "desc": "Collaborate with strategy and business teams to interpret competitive findings and assess implications"
+  },
+  {
+   "role": "FP&A Associate Analyst",
+   "workload": "Market & Competitive Intelligence",
+   "task": "Learn Market Dynamics And Competitive Landscape",
+   "category": "Learning",
+   "hours_month": 4.63,
+   "desc": "Understand market dynamics, industry terminology, and the competitive landscape relevant to the company"
+  },
+  {
+   "role": "FP&A Associate Analyst",
+   "workload": "Market & Competitive Intelligence",
+   "task": "Verify Data Source Accuracy",
+   "category": "Validation",
+   "hours_month": 3.08,
+   "desc": "Verify data sources for accuracy and cross-check competitor information against multiple sources"
+  },
+  {
+   "role": "FP&A Associate Analyst",
+   "workload": "Market & Competitive Intelligence",
+   "task": "Make Strategic Competitive Analysis Recommendations",
+   "category": "Negligibility",
+   "hours_month": 2.32,
+   "desc": "Make strategic recommendations based on competitive analysis and assess competitive threats to business strategy"
+  },
+  {
+   "role": "FP&A Associate Analyst",
+   "workload": "Process Optimization & Best Practices",
+   "task": "Document Financial Processes In Standard Formats",
+   "category": "Directive",
+   "hours_month": 3.76,
+   "desc": "Document current financial planning processes and create process flowcharts from existing procedures and workflows"
+  },
+  {
+   "role": "FP&A Associate Analyst",
+   "workload": "Process Optimization & Best Practices",
+   "task": "Refine Process Improvements Based On Feedback",
+   "category": "Feedback Loop",
+   "hours_month": 3.76,
+   "desc": "Refine proposed process improvements based on implementation feedback and adjust optimization recommendations"
+  },
+  {
+   "role": "FP&A Associate Analyst",
+   "workload": "Process Optimization & Best Practices",
+   "task": "Identify Process Improvement Opportunities",
+   "category": "Task Iteration",
+   "hours_month": 6.26,
+   "desc": "Collaborate with process owners and finance team to identify optimization opportunities and efficiency gaps"
+  },
+  {
+   "role": "FP&A Associate Analyst",
+   "workload": "Process Optimization & Best Practices",
+   "task": "Learn Planning And Forecasting Processes",
+   "category": "Learning",
+   "hours_month": 5.01,
+   "desc": "Understand current planning and forecasting processes and learn financial planning best practices"
+  },
+  {
+   "role": "FP&A Associate Analyst",
+   "workload": "Process Optimization & Best Practices",
+   "task": "Test Process Improvements",
+   "category": "Validation",
+   "hours_month": 3.76,
+   "desc": "Test optimized processes and verify that improvements achieve intended efficiency and accuracy outcomes"
+  },
+  {
+   "role": "FP&A Associate Analyst",
+   "workload": "Process Optimization & Best Practices",
+   "task": "Make Final Process Change Decisions",
+   "category": "Negligibility",
+   "hours_month": 2.51,
+   "desc": "Decide which processes to prioritize for optimization and determine strategic process changes aligned with business goals"
+  },
+  {
+   "role": "FP&A Analyst",
+   "workload": "Commodity & Cost Management",
+   "task": "Track Commodity Prices And Variances",
+   "category": "Directive",
+   "hours_month": 3.12,
+   "desc": "Track commodity prices and calculate standard cost variances against budgeted amounts"
+  },
+  {
+   "role": "FP&A Analyst",
+   "workload": "Commodity & Cost Management",
+   "task": "Adjust Cost Models Based On Feedback",
+   "category": "Feedback Loop",
+   "hours_month": 3.12,
+   "desc": "Adjust cost models and variance thresholds based on actual spend analysis and market changes"
+  },
+  {
+   "role": "FP&A Analyst",
+   "workload": "Commodity & Cost Management",
+   "task": "Develop Cost Optimization Strategies",
+   "category": "Task Iteration",
+   "hours_month": 5.2,
+   "desc": "Develop hedging strategies and cost optimization initiatives with procurement and treasury teams"
+  },
+  {
+   "role": "FP&A Analyst",
+   "workload": "Commodity & Cost Management",
+   "task": "Learn Commodity Markets And Supply Chain Impacts",
+   "category": "Learning",
+   "hours_month": 4.16,
+   "desc": "Understand commodity market dynamics, cost drivers, and supply chain impacts on financial performance"
+  },
+  {
+   "role": "FP&A Analyst",
+   "workload": "Commodity & Cost Management",
+   "task": "Verify Cost Allocations",
+   "category": "Validation",
+   "hours_month": 3.12,
+   "desc": "Verify cost allocations, validate variance explanations, and reconcile cost data across systems"
+  },
+  {
+   "role": "FP&A Analyst",
+   "workload": "Commodity & Cost Management",
+   "task": "Negotiate Supplier Contracts And Procurement Decisions",
+   "category": "Negligibility",
+   "hours_month": 2.08,
+   "desc": "Negotiate supplier contracts or make procurement decisions based on strategic sourcing considerations"
+  },
+  {
+   "role": "FP&A Analyst",
+   "workload": "Data Management & Governance",
+   "task": "Standardize Data Formats And Validation",
+   "category": "Directive",
+   "hours_month": 8.64,
+   "desc": "Standardize data formats and automate data validation rules across financial systems"
+  },
+  {
+   "role": "FP&A Analyst",
+   "workload": "Data Management & Governance",
+   "task": "Correct Data Quality Issues",
+   "category": "Feedback Loop",
+   "hours_month": 5.76,
+   "desc": "Correct identified data quality issues and refine validation rules based on error patterns"
+  },
+  {
+   "role": "FP&A Analyst",
+   "workload": "Data Management & Governance",
+   "task": "Design Data Governance Frameworks",
+   "category": "Task Iteration",
+   "hours_month": 5.76,
+   "desc": "Design data governance frameworks and policies in collaboration with IT and business stakeholders"
+  },
+  {
+   "role": "FP&A Analyst",
+   "workload": "Data Management & Governance",
+   "task": "Learn Data Architecture And System Integration",
+   "category": "Learning",
+   "hours_month": 2.88,
+   "desc": "Understand data architecture, governance best practices, and system integration requirements"
+  },
+  {
+   "role": "FP&A Analyst",
+   "workload": "Data Management & Governance",
+   "task": "Audit Data Integrity",
+   "category": "Validation",
+   "hours_month": 2.88,
+   "desc": "Audit data integrity, trace data lineage, and verify compliance with established governance policies"
+  },
+  {
+   "role": "FP&A Analyst",
+   "workload": "Data Management & Governance",
+   "task": "Negotiate Data Access And Resolve Conflicts",
+   "category": "Negligibility",
+   "hours_month": 2.88,
+   "desc": "Make decisions on data access permissions and ownership based on organizational structure and confidentiality requirements"
+  },
+  {
+   "role": "FP&A Analyst",
+   "workload": "Financial Analysis & Reporting",
+   "task": "Extract And Format Financial Data",
+   "category": "Directive",
+   "hours_month": 8.64,
+   "desc": "Extract and format financial data from source systems into standardized report templates"
+  },
+  {
+   "role": "FP&A Analyst",
+   "workload": "Financial Analysis & Reporting",
+   "task": "Adjust Report Metrics Based On Feedback",
+   "category": "Feedback Loop",
+   "hours_month": 5.76,
+   "desc": "Adjust report metrics and presentation based on stakeholder feedback and evolving requirements"
+  },
+  {
+   "role": "FP&A Analyst",
+   "workload": "Financial Analysis & Reporting",
+   "task": "Develop Custom Financial Analyses",
+   "category": "Task Iteration",
+   "hours_month": 5.76,
+   "desc": "Develop custom financial analyses in collaboration with finance team members and business partners"
+  },
+  {
+   "role": "FP&A Analyst",
+   "workload": "Financial Analysis & Reporting",
+   "task": "Learn Accounting Standards And Regulatory Requirements",
+   "category": "Learning",
+   "hours_month": 2.88,
+   "desc": "Understand new accounting standards, reporting frameworks, and regulatory requirements"
+  },
+  {
+   "role": "FP&A Analyst",
+   "workload": "Financial Analysis & Reporting",
+   "task": "Verify Report Accuracy",
+   "category": "Validation",
+   "hours_month": 2.88,
+   "desc": "Verify report accuracy, completeness, and consistency with underlying financial data"
+  },
+  {
+   "role": "FP&A Analyst",
+   "workload": "Financial Analysis & Reporting",
+   "task": "Interpret Business Implications And Provide Insights",
+   "category": "Negligibility",
+   "hours_month": 2.88,
+   "desc": "Interpret nuanced business implications and provide strategic financial insights requiring professional judgment"
+  },
+  {
+   "role": "FP&A Analyst",
+   "workload": "Financial Planning & Forecasting",
+   "task": "Generate standard forecast templates",
+   "category": "Directive",
+   "hours_month": 6.24,
+   "desc": "Generate standard forecast templates and consolidate historical financial data into baseline models"
+  },
+  {
+   "role": "FP&A Analyst",
+   "workload": "Financial Planning & Forecasting",
+   "task": "Revise Forecasts Based On Feedback",
+   "category": "Feedback Loop",
+   "hours_month": 6.24,
+   "desc": "Refine forecast assumptions based on actual versus projected variance reviews and performance feedback"
+  },
+  {
+   "role": "FP&A Analyst",
+   "workload": "Financial Planning & Forecasting",
+   "task": "Build Multi-Scenario Financial Models",
+   "category": "Task Iteration",
+   "hours_month": 10.4,
+   "desc": "Build complex multi-scenario financial models in collaboration with business stakeholders and finance teams"
+  },
+  {
+   "role": "FP&A Analyst",
+   "workload": "Financial Planning & Forecasting",
+   "task": "Learn Forecasting Methodologies And Business Drivers",
+   "category": "Learning",
+   "hours_month": 8.32,
+   "desc": "Acquire knowledge of new forecasting methodologies and understand key business drivers affecting projections"
+  },
+  {
+   "role": "FP&A Analyst",
+   "workload": "Financial Planning & Forecasting",
+   "task": "Verify Forecast Accuracy",
+   "category": "Validation",
+   "hours_month": 6.24,
+   "desc": "Review forecast accuracy against actuals and stress-test assumptions for reasonableness"
+  },
+  {
+   "role": "FP&A Analyst",
+   "workload": "Financial Planning & Forecasting",
+   "task": "Determine Forecasting Methodology And Assumptions",
+   "category": "Negligibility",
+   "hours_month": 4.16,
+   "desc": "Make strategic directional decisions on forecast outcomes based on market intuition and business judgment"
+  },
+  {
+   "role": "FP&A Analyst",
+   "workload": "Process Optimization & Compliance",
+   "task": "Document Financial Processes And Compliance",
+   "category": "Directive",
+   "hours_month": 3.12,
+   "desc": "Document current financial processes and generate compliance checklists against regulatory requirements"
+  },
+  {
+   "role": "FP&A Analyst",
+   "workload": "Process Optimization & Compliance",
+   "task": "Refine Process Improvements Based On Feedback",
+   "category": "Feedback Loop",
+   "hours_month": 4.16,
+   "desc": "Refine process improvements based on implementation feedback and compliance testing results"
+  },
+  {
+   "role": "FP&A Analyst",
+   "workload": "Process Optimization & Compliance",
+   "task": "Redesign Financial Workflows And Controls",
+   "category": "Task Iteration",
+   "hours_month": 2.08,
+   "desc": "Redesign financial workflows and control procedures in collaboration with cross-functional teams"
+  },
+  {
+   "role": "FP&A Analyst",
+   "workload": "Process Optimization & Compliance",
+   "task": "Understand Regulatory Requirements",
+   "category": "Learning",
+   "hours_month": 3.12,
+   "desc": "Understand regulatory requirements, compliance frameworks, and internal control standards"
+  },
+  {
+   "role": "FP&A Analyst",
+   "workload": "Process Optimization & Compliance",
+   "task": "Test Process Changes",
+   "category": "Validation",
+   "hours_month": 6.24,
+   "desc": "Test process changes, verify compliance adherence, and validate control effectiveness"
+  },
+  {
+   "role": "FP&A Analyst",
+   "workload": "Process Optimization & Compliance",
+   "task": "Make Compliance Risk Tolerance Decisions",
+   "category": "Negligibility",
+   "hours_month": 2.08,
+   "desc": "Make judgment calls on compliance risk tolerance and prioritize remediation efforts based on organizational risk appetite"
+  },
+  {
+   "role": "FP&A Analyst",
+   "workload": "Stakeholder Communication & Coordination",
+   "task": "Schedule Meetings And Distribute Reports",
+   "category": "Directive",
+   "hours_month": 3.56,
+   "desc": "Schedule stakeholder meetings and distribute standard financial reports and updates"
+  },
+  {
+   "role": "FP&A Analyst",
+   "workload": "Stakeholder Communication & Coordination",
+   "task": "Adjust Communication Cadence Based On Feedback",
+   "category": "Feedback Loop",
+   "hours_month": 2.84,
+   "desc": "Adjust communication cadence, format, and content based on stakeholder feedback and preferences"
+  },
+  {
+   "role": "FP&A Analyst",
+   "workload": "Stakeholder Communication & Coordination",
+   "task": "Develop Financial Presentation Materials",
+   "category": "Task Iteration",
+   "hours_month": 2.13,
+   "desc": "Collaborate on presentation development and financial communication materials with business partners"
+  },
+  {
+   "role": "FP&A Analyst",
+   "workload": "Stakeholder Communication & Coordination",
+   "task": "Understand Stakeholder Needs And Preferences",
+   "category": "Learning",
+   "hours_month": 1.42,
+   "desc": "Understand stakeholder needs, communication preferences, and organizational decision-making processes"
+  },
+  {
+   "role": "FP&A Analyst",
+   "workload": "Stakeholder Communication & Coordination",
+   "task": "Navigate Organizational Dynamics And Stakeholders",
+   "category": "Negligibility",
+   "hours_month": 2.85,
+   "desc": "Navigate organizational dynamics and influence stakeholder priorities based on political and strategic considerations"
+  },
+  {
+   "role": "FP&A Analyst",
+   "workload": "Strategic Financial Insights & Risk Management",
+   "task": "Compile Risk Metrics And Dashboards",
+   "category": "Directive",
+   "hours_month": 0.96,
+   "desc": "Compile risk metrics and generate standard risk dashboards and monitoring reports"
+  },
+  {
+   "role": "FP&A Analyst",
+   "workload": "Strategic Financial Insights & Risk Management",
+   "task": "Update Risk Models Based On Feedback",
+   "category": "Feedback Loop",
+   "hours_month": 0.96,
+   "desc": "Update risk models and assumptions based on new market data, actual results, and emerging risks"
+  },
+  {
+   "role": "FP&A Analyst",
+   "workload": "Strategic Financial Insights & Risk Management",
+   "task": "Develop Risk Scenarios And Mitigation",
+   "category": "Task Iteration",
+   "hours_month": 1.6,
+   "desc": "Develop risk scenarios and mitigation strategies in collaboration with senior finance leadership"
+  },
+  {
+   "role": "FP&A Analyst",
+   "workload": "Strategic Financial Insights & Risk Management",
+   "task": "Understand Emerging Financial Risks",
+   "category": "Learning",
+   "hours_month": 1.28,
+   "desc": "Understand emerging financial risks, market trends, and macroeconomic factors affecting the organization"
+  },
+  {
+   "role": "FP&A Analyst",
+   "workload": "Strategic Financial Insights & Risk Management",
+   "task": "Validate Risk Model Assumptions",
+   "category": "Validation",
+   "hours_month": 0.96,
+   "desc": "Stress-test risk models, validate assumptions, and verify risk calculations for accuracy"
+  },
+  {
+   "role": "FP&A Analyst",
+   "workload": "Strategic Financial Insights & Risk Management",
+   "task": "Determine Strategic Risk Appetite And Mitigation",
+   "category": "Negligibility",
+   "hours_month": 0.64,
+   "desc": "Make strategic decisions on risk appetite, prioritize risk mitigation initiatives, and determine acceptable risk levels"
+  },
+  {
+   "role": "FP&A Senior Analyst",
+   "workload": "Cross-Functional Collaboration & Alignment",
+   "task": "Schedule Meetings And Distribute Reports",
+   "category": "Directive",
+   "hours_month": 7.75,
+   "desc": "Schedule cross-functional meetings and distribute standardized financial communication templates to stakeholders"
+  },
+  {
+   "role": "FP&A Senior Analyst",
+   "workload": "Cross-Functional Collaboration & Alignment",
+   "task": "Adjust Communication Cadence Based On Feedback",
+   "category": "Feedback Loop",
+   "hours_month": 6.2,
+   "desc": "Adjust communication frequency, format, and content based on stakeholder feedback and engagement levels"
+  },
+  {
+   "role": "FP&A Senior Analyst",
+   "workload": "Cross-Functional Collaboration & Alignment",
+   "task": "Facilitate Cross-Departmental Financial Planning",
+   "category": "Task Iteration",
+   "hours_month": 4.65,
+   "desc": "Facilitate discussions between departments to understand financial needs and collaboratively develop aligned financial plans"
+  },
+  {
+   "role": "FP&A Senior Analyst",
+   "workload": "Cross-Functional Collaboration & Alignment",
+   "task": "Build Knowledge Of Department Objectives",
+   "category": "Learning",
+   "hours_month": 3.1,
+   "desc": "Build knowledge of different departments' business objectives, financial constraints, and operational requirements"
+  },
+  {
+   "role": "FP&A Senior Analyst",
+   "workload": "Cross-Functional Collaboration & Alignment",
+   "task": "Verify Cross-Department Alignment",
+   "category": "Validation",
+   "hours_month": 3.1,
+   "desc": "Confirm alignment across departments by verifying that all stakeholders agree on financial targets, timelines, and responsibilities"
+  },
+  {
+   "role": "FP&A Senior Analyst",
+   "workload": "Cross-Functional Collaboration & Alignment",
+   "task": "Resolve Resource Allocation Disputes And Conflicts",
+   "category": "Negligibility",
+   "hours_month": 6.22,
+   "desc": "Make final decisions on resource allocation disputes and resolve conflicting departmental priorities"
+  },
+  {
+   "role": "FP&A Senior Analyst",
+   "workload": "Financial Analysis & Reporting",
+   "task": "Generate Standardized Financial Reports",
+   "category": "Directive",
+   "hours_month": 9.3,
+   "desc": "Generate standardized monthly/quarterly financial reports from structured data sources and consolidate figures into templates"
+  },
+  {
+   "role": "FP&A Senior Analyst",
+   "workload": "Financial Analysis & Reporting",
+   "task": "Adjust Report Format Based On Feedback",
+   "category": "Feedback Loop",
+   "hours_month": 9.3,
+   "desc": "Adjust report formats, metrics, and presentation layouts based on stakeholder feedback and evolving reporting requirements"
+  },
+  {
+   "role": "FP&A Senior Analyst",
+   "workload": "Financial Analysis & Reporting",
+   "task": "Investigate Variance Explanations",
+   "category": "Task Iteration",
+   "hours_month": 15.51,
+   "desc": "Investigate variance explanations and anomalies in financial data through collaborative analysis with finance team members"
+  },
+  {
+   "role": "FP&A Senior Analyst",
+   "workload": "Financial Analysis & Reporting",
+   "task": "Acquire Knowledge Of Accounting Standards",
+   "category": "Learning",
+   "hours_month": 12.41,
+   "desc": "Acquire knowledge of new accounting standards, regulatory requirements, and financial analysis methodologies applicable to the organization"
+  },
+  {
+   "role": "FP&A Senior Analyst",
+   "workload": "Financial Analysis & Reporting",
+   "task": "Verify Calculation Accuracy",
+   "category": "Validation",
+   "hours_month": 9.3,
+   "desc": "Verify accuracy of calculations, reconcile data sources, and identify errors or inconsistencies in financial reports before distribution"
+  },
+  {
+   "role": "FP&A Senior Analyst",
+   "workload": "Financial Analysis & Reporting",
+   "task": "Interpret Financial Results For Strategic Implications",
+   "category": "Negligibility",
+   "hours_month": 6.21,
+   "desc": "Interpret strategic implications of financial results and provide business recommendations to leadership"
+  },
+  {
+   "role": "FP&A Senior Analyst",
+   "workload": "Process Automation & Improvement",
+   "task": "Document Financial Processes And Compliance",
+   "category": "Directive",
+   "hours_month": 12.88,
+   "desc": "Document current financial processes and create process maps showing workflow steps, inputs, and outputs"
+  },
+  {
+   "role": "FP&A Senior Analyst",
+   "workload": "Process Automation & Improvement",
+   "task": "Test Automated Workflows",
+   "category": "Feedback Loop",
+   "hours_month": 8.59,
+   "desc": "Test automated workflows and refine automation rules based on performance results and identified issues"
+  },
+  {
+   "role": "FP&A Senior Analyst",
+   "workload": "Process Automation & Improvement",
+   "task": "Design Automated Process Workflows",
+   "category": "Task Iteration",
+   "hours_month": 8.59,
+   "desc": "Design new automated workflows by collaborating with process owners and IT to balance efficiency with control requirements"
+  },
+  {
+   "role": "FP&A Senior Analyst",
+   "workload": "Process Automation & Improvement",
+   "task": "Develop Understanding Of Automation Tools",
+   "category": "Learning",
+   "hours_month": 4.3,
+   "desc": "Develop understanding of automation tools, best practices in process improvement, and emerging technologies for financial operations"
+  },
+  {
+   "role": "FP&A Senior Analyst",
+   "workload": "Process Automation & Improvement",
+   "task": "Test Automated Processes",
+   "category": "Validation",
+   "hours_month": 4.3,
+   "desc": "Test automated processes to ensure they execute correctly, maintain data integrity, and meet compliance and control standards"
+  },
+  {
+   "role": "FP&A Senior Analyst",
+   "workload": "Process Automation & Improvement",
+   "task": "Prioritize Process Automation Based On Impact",
+   "category": "Negligibility",
+   "hours_month": 4.29,
+   "desc": "Prioritize which processes to automate based on business impact, resource constraints, and organizational strategy"
+  },
+  {
+   "role": "FP&A Associate Manager",
+   "workload": "Commodity Cost Planning & Forecasting",
+   "task": "Generate Commodity Price Forecasts",
+   "category": "Directive",
+   "hours_month": 3.96,
+   "desc": "Generate commodity price forecasts using historical data and predefined forecasting models"
+  },
+  {
+   "role": "FP&A Associate Manager",
+   "workload": "Commodity Cost Planning & Forecasting",
+   "task": "Revise Forecasts Based On Feedback",
+   "category": "Feedback Loop",
+   "hours_month": 3.96,
+   "desc": "Refine forecasts based on actual vs. predicted cost variances and market feedback"
+  },
+  {
+   "role": "FP&A Associate Manager",
+   "workload": "Commodity Cost Planning & Forecasting",
+   "task": "Adjust Forecasts With Supply Chain Insights",
+   "category": "Task Iteration",
+   "hours_month": 6.08,
+   "desc": "Collaborate with procurement teams to adjust forecasts incorporating supply chain insights and sourcing strategy changes"
+  },
+  {
+   "role": "FP&A Associate Manager",
+   "workload": "Commodity Cost Planning & Forecasting",
+   "task": "Acquire Knowledge Of Market Dynamics",
+   "category": "Learning",
+   "hours_month": 4.49,
+   "desc": "Acquire knowledge of commodity market dynamics, pricing trends, and forecasting methodologies"
+  },
+  {
+   "role": "FP&A Associate Manager",
+   "workload": "Commodity Cost Planning & Forecasting",
+   "task": "Verify Forecast Accuracy",
+   "category": "Validation",
+   "hours_month": 3.96,
+   "desc": "Verify forecast accuracy by comparing predictions against actual commodity costs and market data"
+  },
+  {
+   "role": "FP&A Associate Manager",
+   "workload": "Commodity Cost Planning & Forecasting",
+   "task": "Determine Strategic Sourcing And Procurement Strategy",
+   "category": "Negligibility",
+   "hours_month": 3.97,
+   "desc": "Determine strategic commodity sourcing decisions and long-term procurement strategies"
+  },
+  {
+   "role": "FP&A Associate Manager",
+   "workload": "Financial Analysis & Performance Monitoring",
+   "task": "Extract And Format Financial Data",
+   "category": "Directive",
+   "hours_month": 5.73,
+   "desc": "Compile and organize procurement financial data from systems into standardized financial reports"
+  },
+  {
+   "role": "FP&A Associate Manager",
+   "workload": "Financial Analysis & Performance Monitoring",
+   "task": "Adjust Analysis Scope Based On Feedback",
+   "category": "Feedback Loop",
+   "hours_month": 5.73,
+   "desc": "Adjust analysis parameters and report structure based on stakeholder feedback on usefulness and clarity"
+  },
+  {
+   "role": "FP&A Associate Manager",
+   "workload": "Financial Analysis & Performance Monitoring",
+   "task": "Investigate Variance Explanations",
+   "category": "Task Iteration",
+   "hours_month": 8.78,
+   "desc": "Collaborate with finance and procurement teams to investigate variances and develop variance explanations"
+  },
+  {
+   "role": "FP&A Associate Manager",
+   "workload": "Financial Analysis & Performance Monitoring",
+   "task": "Understand Finance Metrics And KPIs",
+   "category": "Learning",
+   "hours_month": 6.49,
+   "desc": "Understand procurement finance metrics, KPIs, performance benchmarks, and analytical frameworks"
+  },
+  {
+   "role": "FP&A Associate Manager",
+   "workload": "Financial Analysis & Performance Monitoring",
+   "task": "Verify Calculation Accuracy",
+   "category": "Validation",
+   "hours_month": 5.73,
+   "desc": "Review financial calculations, reconcile data across systems, and verify report accuracy"
+  },
+  {
+   "role": "FP&A Associate Manager",
+   "workload": "Financial Analysis & Performance Monitoring",
+   "task": "Interpret Financial Results For Strategic Implications",
+   "category": "Negligibility",
+   "hours_month": 5.72,
+   "desc": "Interpret business implications of financial performance and recommend strategic actions"
+  },
+  {
+   "role": "FP&A Associate Manager",
+   "workload": "Process Governance & Compliance",
+   "task": "Execute Compliance Checks And Validation",
+   "category": "Directive",
+   "hours_month": 2.86,
+   "desc": "Execute compliance checks against predefined policies, procedures, and regulatory requirements"
+  },
+  {
+   "role": "FP&A Associate Manager",
+   "workload": "Process Governance & Compliance",
+   "task": "Update Compliance Procedures And Controls",
+   "category": "Feedback Loop",
+   "hours_month": 3.82,
+   "desc": "Update compliance procedures and controls based on audit findings and regulatory changes"
+  },
+  {
+   "role": "FP&A Associate Manager",
+   "workload": "Process Governance & Compliance",
+   "task": "Implement Governance Requirements And Controls",
+   "category": "Task Iteration",
+   "hours_month": 1.53,
+   "desc": "Collaborate with compliance and procurement teams to implement new governance requirements and controls"
+  },
+  {
+   "role": "FP&A Associate Manager",
+   "workload": "Process Governance & Compliance",
+   "task": "Understand regulatory requirements",
+   "category": "Learning",
+   "hours_month": 2.29,
+   "desc": "Understand regulatory requirements, internal policies, compliance frameworks, and audit standards"
+  },
+  {
+   "role": "FP&A Associate Manager",
+   "workload": "Process Governance & Compliance",
+   "task": "Verify Compliance Adherence",
+   "category": "Validation",
+   "hours_month": 5.72,
+   "desc": "Verify compliance adherence, document evidence, and reconcile findings with compliance records"
+  },
+  {
+   "role": "FP&A Associate Manager",
+   "workload": "Process Governance & Compliance",
+   "task": "Make Judgment Calls On Policy Exceptions",
+   "category": "Negligibility",
+   "hours_month": 2.86,
+   "desc": "Make judgment calls on policy exceptions, compliance trade-offs, and risk acceptance decisions"
+  },
+  {
+   "role": "FP&A Associate Manager",
+   "workload": "Risk Assessment & Sensitivity Analysis",
+   "task": "Execute Sensitivity Analysis On Models",
+   "category": "Directive",
+   "hours_month": 2.86,
+   "desc": "Execute sensitivity analyses on predefined cost scenarios and financial models"
+  },
+  {
+   "role": "FP&A Associate Manager",
+   "workload": "Risk Assessment & Sensitivity Analysis",
+   "task": "Adjust Risk Parameters And Assumptions",
+   "category": "Feedback Loop",
+   "hours_month": 2.86,
+   "desc": "Adjust risk parameters and assumptions based on actual market conditions and historical outcomes"
+  },
+  {
+   "role": "FP&A Associate Manager",
+   "workload": "Risk Assessment & Sensitivity Analysis",
+   "task": "Develop Risk Scenarios And Mitigation",
+   "category": "Task Iteration",
+   "hours_month": 4.39,
+   "desc": "Collaborate with risk and procurement teams to identify, model, and stress-test new risk scenarios"
+  },
+  {
+   "role": "FP&A Associate Manager",
+   "workload": "Risk Assessment & Sensitivity Analysis",
+   "task": "Understand Risk Assessment Frameworks",
+   "category": "Learning",
+   "hours_month": 3.24,
+   "desc": "Understand risk assessment frameworks, sensitivity analysis methodologies, and procurement-specific risks"
+  },
+  {
+   "role": "FP&A Associate Manager",
+   "workload": "Risk Assessment & Sensitivity Analysis",
+   "task": "Validate Risk Model Assumptions",
+   "category": "Validation",
+   "hours_month": 2.86,
+   "desc": "Verify risk calculations, validate stress-test results against historical data and benchmarks"
+  },
+  {
+   "role": "FP&A Associate Manager",
+   "workload": "Risk Assessment & Sensitivity Analysis",
+   "task": "Determine Strategic Risk Appetite And Mitigation",
+   "category": "Negligibility",
+   "hours_month": 2.87,
+   "desc": "Determine organizational risk appetite and establish strategic risk mitigation strategies"
+  },
+  {
+   "role": "FP&A Associate Manager",
+   "workload": "Stakeholder Coordination & Reporting",
+   "task": "Distribute Reports To Stakeholders",
+   "category": "Directive",
+   "hours_month": 3.96,
+   "desc": "Distribute standardized reports to defined stakeholder groups according to established schedules"
+  },
+  {
+   "role": "FP&A Associate Manager",
+   "workload": "Stakeholder Coordination & Reporting",
+   "task": "Adjust Report Format And Delivery",
+   "category": "Feedback Loop",
+   "hours_month": 2.64,
+   "desc": "Adjust report format, content, and delivery frequency based on stakeholder requests and feedback"
+  },
+  {
+   "role": "FP&A Associate Manager",
+   "workload": "Stakeholder Coordination & Reporting",
+   "task": "Clarify Requirements With Stakeholders",
+   "category": "Task Iteration",
+   "hours_month": 3.43,
+   "desc": "Collaborate with stakeholders to clarify requirements, refine deliverables, and address questions"
+  },
+  {
+   "role": "FP&A Associate Manager",
+   "workload": "Stakeholder Coordination & Reporting",
+   "task": "Understand Stakeholder Information Needs",
+   "category": "Learning",
+   "hours_month": 1.85,
+   "desc": "Understand stakeholder information needs, reporting standards, and communication protocols"
+  },
+  {
+   "role": "FP&A Associate Manager",
+   "workload": "Stakeholder Coordination & Reporting",
+   "task": "Verify Report Completeness",
+   "category": "Validation",
+   "hours_month": 2.64,
+   "desc": "Ensure reports are complete, accurate, timely, and meet stakeholder requirements"
+  },
+  {
+   "role": "FP&A Associate Manager",
+   "workload": "Stakeholder Coordination & Reporting",
+   "task": "Build Stakeholder Relationships And Manage Expectations",
+   "category": "Negligibility",
+   "hours_month": 11.9,
+   "desc": "Build stakeholder relationships and manage expectations through strategic dialogue"
+  },
+  {
+   "role": "FP&A Associate Manager",
+   "workload": "Strategic Initiative Management",
+   "task": "Adjust Initiative Plans And Timelines",
+   "category": "Feedback Loop",
+   "hours_month": 1.3,
+   "desc": "Adjust initiative plans and timelines based on progress tracking and stakeholder feedback"
+  },
+  {
+   "role": "FP&A Associate Manager",
+   "workload": "Strategic Initiative Management",
+   "task": "Develop Strategic Initiatives",
+   "category": "Task Iteration",
+   "hours_month": 1.7,
+   "desc": "Collaborate with cross-functional teams to develop, refine, and execute strategic initiatives"
+  },
+  {
+   "role": "FP&A Associate Manager",
+   "workload": "Strategic Initiative Management",
+   "task": "Understand Strategic Planning Methodologies",
+   "category": "Learning",
+   "hours_month": 1.56,
+   "desc": "Understand strategic planning methodologies, business objectives, and industry trends relevant to procurement finance"
+  },
+  {
+   "role": "FP&A Associate Manager",
+   "workload": "Strategic Initiative Management",
+   "task": "Track Initiative Progress",
+   "category": "Validation",
+   "hours_month": 1.3,
+   "desc": "Track initiative progress against milestones, deliverables, and success metrics"
+  },
+  {
+   "role": "FP&A Associate Manager",
+   "workload": "Strategic Initiative Management",
+   "task": "Set Strategic Direction And Prioritize Initiatives",
+   "category": "Negligibility",
+   "hours_month": 5.88,
+   "desc": "Set strategic direction, prioritize initiatives, and make trade-off decisions among competing objectives"
+  },
+  {
+   "role": "FP&A Associate Manager",
+   "workload": "Team Leadership & Management",
+   "task": "Acquire Knowledge Of Team Development",
+   "category": "Learning",
+   "hours_month": 10.96,
+   "desc": "Acquire knowledge of team development principles, management practices, and organizational dynamics"
+  },
+  {
+   "role": "FP&A Associate Manager",
+   "workload": "Team Leadership & Management",
+   "task": "Coach Mentor And Develop Team Members",
+   "category": "Negligibility",
+   "hours_month": 8.12,
+   "desc": "Coach and mentor team members, resolve conflicts, conduct performance evaluations, and make staffing decisions"
+  },
+  {
+   "role": "FP&A Manager",
+   "workload": "Compliance & Governance",
+   "task": "Generate Compliance Documentation And Reports",
+   "category": "Directive",
+   "hours_month": 2.17,
+   "desc": "Generate compliance checklists, documentation templates, and governance reports from established policies and procedures"
+  },
+  {
+   "role": "FP&A Manager",
+   "workload": "Compliance & Governance",
+   "task": "Update Compliance Procedures And Controls",
+   "category": "Feedback Loop",
+   "hours_month": 2.9,
+   "desc": "Update compliance procedures and governance frameworks based on new regulatory requirements and policy changes"
+  },
+  {
+   "role": "FP&A Manager",
+   "workload": "Compliance & Governance",
+   "task": "Acquire Knowledge Of Regulatory Requirements",
+   "category": "Learning",
+   "hours_month": 1.74,
+   "desc": "Acquire knowledge of new regulatory requirements, internal policies, and governance best practices"
+  },
+  {
+   "role": "FP&A Manager",
+   "workload": "Compliance & Governance",
+   "task": "Audit Compliance Adherence Across Processes",
+   "category": "Validation",
+   "hours_month": 4.35,
+   "desc": "Audit compliance adherence across processes and identify governance gaps or control weaknesses"
+  },
+  {
+   "role": "FP&A Manager",
+   "workload": "Compliance & Governance",
+   "task": "Make Judgment Calls On Regulatory Compliance",
+   "category": "Negligibility",
+   "hours_month": 2.17,
+   "desc": "Make judgment calls on regulatory interpretation, approve compliance exceptions, and determine enforcement actions"
+  },
+  {
+   "role": "FP&A Manager",
+   "workload": "Executive Advisory & Stakeholder Engagement",
+   "task": "Refine Analytical Recommendations And Cases",
+   "category": "Feedback Loop",
+   "hours_month": 4,
+   "desc": "Refine executive recommendations and advisory materials based on feedback from leadership and stakeholders"
+  },
+  {
+   "role": "FP&A Manager",
+   "workload": "Executive Advisory & Stakeholder Engagement",
+   "task": "Develop Financial Presentation Materials",
+   "category": "Task Iteration",
+   "hours_month": 5.2,
+   "desc": "Prepare executive presentations, dashboards, and advisory materials through collaborative development with stakeholders"
+  },
+  {
+   "role": "FP&A Manager",
+   "workload": "Executive Advisory & Stakeholder Engagement",
+   "task": "Understand Executive Priorities",
+   "category": "Learning",
+   "hours_month": 2.8,
+   "desc": "Understand executive priorities, stakeholder concerns, and organizational context for advisory recommendations"
+  },
+  {
+   "role": "FP&A Manager",
+   "workload": "Executive Advisory & Stakeholder Engagement",
+   "task": "Present Recommendations To Executive Leadership",
+   "category": "Negligibility",
+   "hours_month": 18,
+   "desc": "Present findings and recommendations to executives, negotiate stakeholder alignment, and provide strategic counsel"
+  },
+  {
+   "role": "FP&A Manager",
+   "workload": "Financial Planning & Forecasting",
+   "task": "Generate Standardized Financial Forecasts",
+   "category": "Directive",
+   "hours_month": 6.5,
+   "desc": "Generate standardized financial forecasts and budget models from structured historical data and input assumptions"
+  },
+  {
+   "role": "FP&A Manager",
+   "workload": "Financial Planning & Forecasting",
+   "task": "Refine Financial Forecasts And Assumptions",
+   "category": "Feedback Loop",
+   "hours_month": 6.5,
+   "desc": "Refine financial forecasts based on updated business assumptions and revised input parameters"
+  },
+  {
+   "role": "FP&A Manager",
+   "workload": "Financial Planning & Forecasting",
+   "task": "Develop Scenario Models And Sensitivity",
+   "category": "Task Iteration",
+   "hours_month": 9.97,
+   "desc": "Develop scenario models and sensitivity analyses through collaborative exploration of key business drivers"
+  },
+  {
+   "role": "FP&A Manager",
+   "workload": "Financial Planning & Forecasting",
+   "task": "Acquire Knowledge Of Forecasting Methodologies",
+   "category": "Learning",
+   "hours_month": 7.37,
+   "desc": "Acquire knowledge of new forecasting methodologies, business drivers, and industry benchmarks relevant to planning cycles"
+  },
+  {
+   "role": "FP&A Manager",
+   "workload": "Financial Planning & Forecasting",
+   "task": "Verify Forecast Accuracy",
+   "category": "Validation",
+   "hours_month": 6.5,
+   "desc": "Review forecast accuracy against actual results and validate model assumptions for continuous improvement"
+  },
+  {
+   "role": "FP&A Manager",
+   "workload": "Financial Planning & Forecasting",
+   "task": "Determine Strategic Forecast Scenarios And Priorities",
+   "category": "Negligibility",
+   "hours_month": 6.49,
+   "desc": "Determine strategic forecast scenarios and business priorities that warrant detailed modeling"
+  },
+  {
+   "role": "FP&A Manager",
+   "workload": "Process & Initiative Oversight",
+   "task": "Track Project Status And Metrics",
+   "category": "Directive",
+   "hours_month": 5.42,
+   "desc": "Track project status, generate progress reports, and compile initiative metrics from structured tracking data"
+  },
+  {
+   "role": "FP&A Manager",
+   "workload": "Process & Initiative Oversight",
+   "task": "Adjust Initiative Plans And Timelines",
+   "category": "Feedback Loop",
+   "hours_month": 4.33,
+   "desc": "Adjust project timelines, resource allocation, and initiative scope based on progress updates and constraint changes"
+  },
+  {
+   "role": "FP&A Manager",
+   "workload": "Process & Initiative Oversight",
+   "task": "Design Process Improvements And Roadmaps",
+   "category": "Task Iteration",
+   "hours_month": 2.82,
+   "desc": "Design process improvements and initiative roadmaps through collaborative analysis with cross-functional teams"
+  },
+  {
+   "role": "FP&A Manager",
+   "workload": "Process & Initiative Oversight",
+   "task": "Understand Process Bottlenecks",
+   "category": "Learning",
+   "hours_month": 1.52,
+   "desc": "Understand process bottlenecks, improvement methodologies, and best practices for initiative execution"
+  },
+  {
+   "role": "FP&A Manager",
+   "workload": "Process & Initiative Oversight",
+   "task": "Monitor Initiative KPIs And Success Metrics",
+   "category": "Validation",
+   "hours_month": 2.17,
+   "desc": "Monitor initiative KPIs, validate success metrics, and assess process efficiency improvements"
+  },
+  {
+   "role": "FP&A Manager",
+   "workload": "Process & Initiative Oversight",
+   "task": "Prioritize Competing Initiatives And Resolve Conflicts",
+   "category": "Negligibility",
+   "hours_month": 5.41,
+   "desc": "Prioritize competing initiatives, resolve resource conflicts, and make go/no-go decisions on projects"
+  },
+  {
+   "role": "FP&A Manager",
+   "workload": "Strategic Analysis & Problem-Solving",
+   "task": "Refine Analytical Recommendations And Cases",
+   "category": "Feedback Loop",
+   "hours_month": 3.33,
+   "desc": "Refine analytical recommendations and business cases based on stakeholder feedback and additional context"
+  },
+  {
+   "role": "FP&A Manager",
+   "workload": "Strategic Analysis & Problem-Solving",
+   "task": "Develop Business Cases And Recommendations",
+   "category": "Task Iteration",
+   "hours_month": 4.33,
+   "desc": "Develop business cases and strategic recommendations through iterative analysis with AI-assisted modeling"
+  },
+  {
+   "role": "FP&A Manager",
+   "workload": "Strategic Analysis & Problem-Solving",
+   "task": "Understand Complex Business Problems",
+   "category": "Learning",
+   "hours_month": 4,
+   "desc": "Understand complex business problems, market dynamics, and competitive landscape relevant to strategic decisions"
+  },
+  {
+   "role": "FP&A Manager",
+   "workload": "Strategic Analysis & Problem-Solving",
+   "task": "Validate Analytical Conclusions Through Peer Review",
+   "category": "Validation",
+   "hours_month": 3.33,
+   "desc": "Validate analytical conclusions through peer review and cross-functional stakeholder input"
+  },
+  {
+   "role": "FP&A Manager",
+   "workload": "Strategic Analysis & Problem-Solving",
+   "task": "Make Strategic Recommendations On Business Priorities",
+   "category": "Negligibility",
+   "hours_month": 15.01,
+   "desc": "Make final strategic recommendations and determine business priorities based on organizational objectives"
+  },
+  {
+   "role": "FP&A Manager",
+   "workload": "Team Leadership & Development",
+   "task": "Coach Team On Analytical Techniques",
+   "category": "Task Iteration",
+   "hours_month": 4.7,
+   "desc": "Coach team members on analytical techniques and problem-solving approaches with AI-assisted learning resources"
+  },
+  {
+   "role": "FP&A Manager",
+   "workload": "Team Leadership & Development",
+   "task": "Identify Team Skill Gaps",
+   "category": "Learning",
+   "hours_month": 9.75,
+   "desc": "Identify team skill gaps and stay current on professional development needs and training opportunities"
+  },
+  {
+   "role": "FP&A Manager",
+   "workload": "Team Leadership & Development",
+   "task": "Coach Mentor And Develop Team Members",
+   "category": "Negligibility",
+   "hours_month": 7.22,
+   "desc": "Conduct one-on-one mentoring conversations, provide career guidance, and resolve interpersonal conflicts"
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "workload": "Business Performance Analysis & Insights",
+   "task": "Extract And Organize Performance Metrics",
+   "category": "Directive",
+   "hours_month": 2.67,
+   "desc": "Extract and organize key performance metrics and operational data from source systems"
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "workload": "Business Performance Analysis & Insights",
+   "task": "Generate Performance Dashboards And Metrics",
+   "category": "Feedback Loop",
+   "hours_month": 2.67,
+   "desc": "Generate performance dashboards and refine metrics based on stakeholder feedback"
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "workload": "Business Performance Analysis & Insights",
+   "task": "Investigate Variance Explanations",
+   "category": "Task Iteration",
+   "hours_month": 4.09,
+   "desc": "Analyze root causes of performance variances with input from business units"
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "workload": "Business Performance Analysis & Insights",
+   "task": "Understand Business Drivers And KPIs",
+   "category": "Learning",
+   "hours_month": 3.02,
+   "desc": "Develop understanding of business drivers, KPIs, and performance measurement frameworks"
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "workload": "Business Performance Analysis & Insights",
+   "task": "Verify Data Accuracy Against Source Information",
+   "category": "Validation",
+   "hours_month": 2.67,
+   "desc": "Verify data accuracy and validate analytical conclusions against source information"
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "workload": "Business Performance Analysis & Insights",
+   "task": "Interpret Performance Trends Strategically",
+   "category": "Negligibility",
+   "hours_month": 2.66,
+   "desc": "Provide strategic interpretation of performance trends and business recommendations"
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "workload": "Corporate Development Financial Analysis",
+   "task": "Compile Financial Data For M&A",
+   "category": "Directive",
+   "hours_month": 1.64,
+   "desc": "Compile and organize financial data for M&A target companies and deal candidates"
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "workload": "Corporate Development Financial Analysis",
+   "task": "Generate Valuation Models And Assumptions",
+   "category": "Feedback Loop",
+   "hours_month": 1.64,
+   "desc": "Generate valuation models and refine assumptions based on due diligence findings"
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "workload": "Corporate Development Financial Analysis",
+   "task": "Build Deal Analysis Models Collaboratively",
+   "category": "Task Iteration",
+   "hours_month": 2.52,
+   "desc": "Build deal analysis models collaboratively with corporate development and business teams"
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "workload": "Corporate Development Financial Analysis",
+   "task": "Understand Valuation Methodologies And M&A Analysis",
+   "category": "Learning",
+   "hours_month": 1.86,
+   "desc": "Develop knowledge of valuation methodologies, deal structures, and M&A financial analysis"
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "workload": "Corporate Development Financial Analysis",
+   "task": "Verify Financial Due Diligence Findings And Conclusions",
+   "category": "Validation",
+   "hours_month": 1.64,
+   "desc": "Verify financial due diligence findings and validate valuation conclusions"
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "workload": "Corporate Development Financial Analysis",
+   "task": "Assess Deal Fit And Synergy Potential",
+   "category": "Negligibility",
+   "hours_month": 1.64,
+   "desc": "Make strategic assessments of deal fit, synergy potential, and negotiation strategy"
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "workload": "Cross-Functional Collaboration & Stakeholder Management",
+   "task": "Schedule Cross-Functional Meetings",
+   "category": "Directive",
+   "hours_month": 3.65,
+   "desc": "Schedule cross-functional meetings and distribute standard financial communications"
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "workload": "Cross-Functional Collaboration & Stakeholder Management",
+   "task": "Coordinate Financial Data From Departments",
+   "category": "Task Iteration",
+   "hours_month": 3.17,
+   "desc": "Coordinate financial inputs and data from multiple departments for consolidated reporting"
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "workload": "Cross-Functional Collaboration & Stakeholder Management",
+   "task": "Negotiate Stakeholder Priorities And Relationships",
+   "category": "Negligibility",
+   "hours_month": 10.96,
+   "desc": "Negotiate priorities with stakeholders, build relationships, and communicate executive-level insights"
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "workload": "Financial Planning & Analysis",
+   "task": "Consolidate Financial Data And Reports",
+   "category": "Directive",
+   "hours_month": 5.33,
+   "desc": "Consolidate financial data from multiple sources and generate standardized planning reports"
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "workload": "Financial Planning & Analysis",
+   "task": "Generate Variance Analysis Reports",
+   "category": "Feedback Loop",
+   "hours_month": 5.33,
+   "desc": "Generate variance analysis reports and refine assumptions based on business feedback"
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "workload": "Financial Planning & Analysis",
+   "task": "Build Financial Models With Stakeholders",
+   "category": "Task Iteration",
+   "hours_month": 8.17,
+   "desc": "Build and refine financial models with input from business stakeholders and finance team"
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "workload": "Financial Planning & Analysis",
+   "task": "Acquire Knowledge Of Forecasting Methodologies",
+   "category": "Learning",
+   "hours_month": 6.04,
+   "desc": "Acquire knowledge of new forecasting methodologies and financial analysis techniques"
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "workload": "Financial Planning & Analysis",
+   "task": "Validate Financial Projections Against Historical Trends",
+   "category": "Validation",
+   "hours_month": 5.33,
+   "desc": "Review and validate financial projections against historical trends and business drivers"
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "workload": "Financial Planning & Analysis",
+   "task": "Make Strategic Recommendations On Business Priorities",
+   "category": "Negligibility",
+   "hours_month": 5.34,
+   "desc": "Make strategic judgments on financial direction and resource allocation priorities"
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "workload": "Financial Reporting & Period Close",
+   "task": "Automate Account Reconciliation And Consolidation",
+   "category": "Directive",
+   "hours_month": 6.51,
+   "desc": "Automate reconciliation of accounts and consolidate financial data for reporting"
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "workload": "Financial Reporting & Period Close",
+   "task": "Generate Financial Statements And Adjustments",
+   "category": "Feedback Loop",
+   "hours_month": 4.34,
+   "desc": "Generate draft financial statements and adjust based on review comments and corrections"
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "workload": "Financial Reporting & Period Close",
+   "task": "Understand Accounting Standards And Regulations",
+   "category": "Learning",
+   "hours_month": 1.52,
+   "desc": "Stay current with new accounting standards and regulatory reporting requirements"
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "workload": "Financial Reporting & Period Close",
+   "task": "Verify Financial Statement Accuracy And Completeness",
+   "category": "Validation",
+   "hours_month": 2.17,
+   "desc": "Verify accuracy of financial statements, account balances, and required disclosures"
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "workload": "Financial Reporting & Period Close",
+   "task": "Make Accounting Treatment Judgments",
+   "category": "Negligibility",
+   "hours_month": 3.24,
+   "desc": "Make judgment calls on accounting treatments, estimates, and disclosure decisions"
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "workload": "Process & Standards Management",
+   "task": "Document And Distribute Financial Procedures",
+   "category": "Directive",
+   "hours_month": 2.73,
+   "desc": "Document and distribute standardized financial procedures and process guidelines"
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "workload": "Process & Standards Management",
+   "task": "Update Process Documentation And Standards",
+   "category": "Feedback Loop",
+   "hours_month": 2.19,
+   "desc": "Update process documentation and standards based on team feedback and lessons learned"
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "workload": "Process & Standards Management",
+   "task": "Implement Financial Processes With Team Input",
+   "category": "Task Iteration",
+   "hours_month": 1.42,
+   "desc": "Implement new financial processes with team input and iterative refinement"
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "workload": "Process & Standards Management",
+   "task": "Understand Regulatory Requirements And Compliance",
+   "category": "Learning",
+   "hours_month": 0.77,
+   "desc": "Understand regulatory requirements, compliance standards, and financial best practices"
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "workload": "Process & Standards Management",
+   "task": "Audit Compliance Adherence Across Processes",
+   "category": "Validation",
+   "hours_month": 1.09,
+   "desc": "Audit team compliance with established financial processes and standards"
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "workload": "Process & Standards Management",
+   "task": "Make Process Design And Governance Judgments",
+   "category": "Negligibility",
+   "hours_month": 2.74,
+   "desc": "Make judgments on process design, governance structure, and control framework decisions"
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "workload": "Strategic Planning & Forecasting",
+   "task": "Compile Historical Data For Analysis",
+   "category": "Directive",
+   "hours_month": 2.46,
+   "desc": "Compile historical financial and operational data to support trend analysis"
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "workload": "Strategic Planning & Forecasting",
+   "task": "Generate Forecast Models And Scenarios",
+   "category": "Feedback Loop",
+   "hours_month": 2.46,
+   "desc": "Generate multi-scenario forecast models and adjust based on strategic feedback"
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "workload": "Strategic Planning & Forecasting",
+   "task": "Develop Long-Term Financial Forecasts",
+   "category": "Task Iteration",
+   "hours_month": 3.2,
+   "desc": "Develop long-term forecasts collaboratively with business leaders and finance team"
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "workload": "Strategic Planning & Forecasting",
+   "task": "Understand Market Trends And Dynamics",
+   "category": "Learning",
+   "hours_month": 2.95,
+   "desc": "Understand market trends, competitive dynamics, and key business drivers affecting forecasts"
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "workload": "Strategic Planning & Forecasting",
+   "task": "Stress Test Forecasts Under Various Scenarios",
+   "category": "Validation",
+   "hours_month": 2.46,
+   "desc": "Stress-test forecasts under various scenarios and validate underlying assumptions"
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "workload": "Strategic Planning & Forecasting",
+   "task": "Make Strategic Business Direction Decisions",
+   "category": "Negligibility",
+   "hours_month": 11.09,
+   "desc": "Make strategic decisions on business direction and long-term financial targets"
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "workload": "Team Leadership & Development",
+   "task": "Assign Tasks And Schedule Check-Ins",
+   "category": "Directive",
+   "hours_month": 3.37,
+   "desc": "Assign tasks to team members and schedule regular check-ins based on project timelines"
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "workload": "Team Leadership & Development",
+   "task": "Generate Performance Review Summaries",
+   "category": "Feedback Loop",
+   "hours_month": 3.37,
+   "desc": "Generate draft performance review summaries for refinement and discussion with team members"
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "workload": "Team Leadership & Development",
+   "task": "Coach Team On Analytical Techniques",
+   "category": "Task Iteration",
+   "hours_month": 4.38,
+   "desc": "Collaborate with team on developing financial analysis skills through guided problem-solving"
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "workload": "Team Leadership & Development",
+   "task": "Verify Team Competency Against Role Requirements",
+   "category": "Validation",
+   "hours_month": 6.75,
+   "desc": "Verify team competency assessments against role requirements and skill benchmarks"
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "workload": "Team Leadership & Development",
+   "task": "Coach Mentor And Develop Team Members",
+   "category": "Negligibility",
+   "hours_month": 6.75,
+   "desc": "Conduct one-on-one coaching sessions and build interpersonal relationships with direct reports"
+  },
+  {
+   "role": "FP&A Director",
+   "workload": "Financial Governance & Compliance",
+   "task": "Generate Compliance Checklists And Documentation",
+   "category": "Directive",
+   "hours_month": 1.92,
+   "desc": "Generate compliance checklists and consolidate audit documentation and evidence"
+  },
+  {
+   "role": "FP&A Director",
+   "workload": "Financial Governance & Compliance",
+   "task": "Adjust Control Procedures And Governance",
+   "category": "Feedback Loop",
+   "hours_month": 2.56,
+   "desc": "Adjust control procedures and governance policies based on audit findings and recommendations"
+  },
+  {
+   "role": "FP&A Director",
+   "workload": "Financial Governance & Compliance",
+   "task": "Develop Governance Frameworks With Team Input",
+   "category": "Task Iteration",
+   "hours_month": 0.9,
+   "desc": "Develop governance frameworks and control procedures with compliance and audit team input"
+  },
+  {
+   "role": "FP&A Director",
+   "workload": "Financial Governance & Compliance",
+   "task": "Understand Regulatory Requirements And Compliance",
+   "category": "Learning",
+   "hours_month": 1.28,
+   "desc": "Understand regulatory requirements, governance standards, and compliance obligations"
+  },
+  {
+   "role": "FP&A Director",
+   "workload": "Financial Governance & Compliance",
+   "task": "Verify Compliance With Policies And Regulations",
+   "category": "Validation",
+   "hours_month": 3.84,
+   "desc": "Verify compliance with policies, regulations, and internal control requirements"
+  },
+  {
+   "role": "FP&A Director",
+   "workload": "Financial Governance & Compliance",
+   "task": "Make Final Compliance Decisions",
+   "category": "Negligibility",
+   "hours_month": 2.3,
+   "desc": "Make final compliance decisions and provide legal interpretations of regulatory requirements"
+  },
+  {
+   "role": "FP&A Director",
+   "workload": "Financial Planning & Analysis",
+   "task": "Consolidate Financial Data And Generate Reports",
+   "category": "Directive",
+   "hours_month": 6.24,
+   "desc": "Consolidate financial data from multiple sources and generate standard financial reports"
+  },
+  {
+   "role": "FP&A Director",
+   "workload": "Financial Planning & Analysis",
+   "task": "Refine Financial Forecasts And Assumptions",
+   "category": "Feedback Loop",
+   "hours_month": 6.24,
+   "desc": "Refine forecast models and assumptions based on actual vs. planned variances"
+  },
+  {
+   "role": "FP&A Director",
+   "workload": "Financial Planning & Analysis",
+   "task": "Build Complex Financial Models Iteratively",
+   "category": "Task Iteration",
+   "hours_month": 9.15,
+   "desc": "Build and develop complex financial models with iterative human review and refinement"
+  },
+  {
+   "role": "FP&A Director",
+   "workload": "Financial Planning & Analysis",
+   "task": "Understand Analytical Frameworks And Methodologies",
+   "category": "Learning",
+   "hours_month": 6.24,
+   "desc": "Understand new analytical frameworks, business drivers, and financial methodologies"
+  },
+  {
+   "role": "FP&A Director",
+   "workload": "Financial Planning & Analysis",
+   "task": "Verify Financial Analysis Accuracy And Assumptions",
+   "category": "Validation",
+   "hours_month": 6.24,
+   "desc": "Verify accuracy of financial analyses, assumptions, and calculations before distribution"
+  },
+  {
+   "role": "FP&A Director",
+   "workload": "Financial Planning & Analysis",
+   "task": "Judge Financial Implications Strategically",
+   "category": "Negligibility",
+   "hours_month": 7.49,
+   "desc": "Make strategic judgments on financial implications and negotiate budget trade-offs with stakeholders"
+  },
+  {
+   "role": "FP&A Director",
+   "workload": "P&L Management & Reporting",
+   "task": "Generate Standard Financial Reports",
+   "category": "Directive",
+   "hours_month": 4.32,
+   "desc": "Generate standard P&L reports and consolidate departmental financial results"
+  },
+  {
+   "role": "FP&A Director",
+   "workload": "P&L Management & Reporting",
+   "task": "Adjust Variance Explanations And Narratives",
+   "category": "Feedback Loop",
+   "hours_month": 2.88,
+   "desc": "Adjust variance explanations and narratives based on business unit and management feedback"
+  },
+  {
+   "role": "FP&A Director",
+   "workload": "P&L Management & Reporting",
+   "task": "Develop P&L Narratives With Stakeholder Input",
+   "category": "Task Iteration",
+   "hours_month": 3.46,
+   "desc": "Develop P&L narratives and commentary with iterative input from business leaders"
+  },
+  {
+   "role": "FP&A Director",
+   "workload": "P&L Management & Reporting",
+   "task": "Understand Accounting Standards And Regulations",
+   "category": "Learning",
+   "hours_month": 1.44,
+   "desc": "Understand new accounting standards, reporting requirements, and financial regulations"
+  },
+  {
+   "role": "FP&A Director",
+   "workload": "P&L Management & Reporting",
+   "task": "Verify P&L Accuracy And Compliance Standards",
+   "category": "Validation",
+   "hours_month": 2.88,
+   "desc": "Verify P&L accuracy, completeness, and compliance with accounting standards before distribution"
+  },
+  {
+   "role": "FP&A Director",
+   "workload": "P&L Management & Reporting",
+   "task": "Hold P&L Accountability And Outcomes",
+   "category": "Negligibility",
+   "hours_month": 13.82,
+   "desc": "Hold accountability for P&L outcomes and conduct executive-level P&L discussions"
+  },
+  {
+   "role": "FP&A Director",
+   "workload": "Process Improvement & Systems Management",
+   "task": "Document Processes And Create Flowcharts",
+   "category": "Directive",
+   "hours_month": 1.6,
+   "desc": "Document current processes and generate process flowcharts and procedure documentation"
+  },
+  {
+   "role": "FP&A Director",
+   "workload": "Process Improvement & Systems Management",
+   "task": "Refine Process Improvements And Enhancements",
+   "category": "Feedback Loop",
+   "hours_month": 1.28,
+   "desc": "Refine process improvements and system enhancements based on user and stakeholder feedback"
+  },
+  {
+   "role": "FP&A Director",
+   "workload": "Process Improvement & Systems Management",
+   "task": "Design Systems And Processes Collaboratively",
+   "category": "Task Iteration",
+   "hours_month": 0.77,
+   "desc": "Design new systems and processes with cross-functional collaboration and testing"
+  },
+  {
+   "role": "FP&A Director",
+   "workload": "Process Improvement & Systems Management",
+   "task": "Understand Tools Systems And Platforms",
+   "category": "Learning",
+   "hours_month": 0.32,
+   "desc": "Understand new tools, systems, platforms, and process improvement methodologies"
+  },
+  {
+   "role": "FP&A Director",
+   "workload": "Process Improvement & Systems Management",
+   "task": "Test Processes And Validate Effectiveness Metrics",
+   "category": "Validation",
+   "hours_month": 0.64,
+   "desc": "Test improved processes and validate effectiveness against defined metrics and objectives"
+  },
+  {
+   "role": "FP&A Director",
+   "workload": "Process Improvement & Systems Management",
+   "task": "Make Change Management Decisions",
+   "category": "Negligibility",
+   "hours_month": 1.79,
+   "desc": "Make change management decisions and drive organizational adoption of new processes"
+  },
+  {
+   "role": "FP&A Director",
+   "workload": "Stakeholder Collaboration & Communication",
+   "task": "Schedule Stakeholder Meetings",
+   "category": "Directive",
+   "hours_month": 3.12,
+   "desc": "Schedule stakeholder meetings and distribute standard communications and updates"
+  },
+  {
+   "role": "FP&A Director",
+   "workload": "Stakeholder Collaboration & Communication",
+   "task": "Adjust Messaging And Communication Approach",
+   "category": "Feedback Loop",
+   "hours_month": 2.08,
+   "desc": "Adjust messaging, tone, and communication approach based on stakeholder feedback"
+  },
+  {
+   "role": "FP&A Director",
+   "workload": "Stakeholder Collaboration & Communication",
+   "task": "Develop Presentations With Iterative Refinement",
+   "category": "Task Iteration",
+   "hours_month": 2.5,
+   "desc": "Develop presentations and communications with iterative stakeholder input and refinement"
+  },
+  {
+   "role": "FP&A Director",
+   "workload": "Stakeholder Collaboration & Communication",
+   "task": "Understand Stakeholder Needs And Preferences",
+   "category": "Learning",
+   "hours_month": 1.04,
+   "desc": "Understand stakeholder needs, preferences, communication styles, and organizational context"
+  },
+  {
+   "role": "FP&A Director",
+   "workload": "Stakeholder Collaboration & Communication",
+   "task": "Review Communications For Clarity And Accuracy",
+   "category": "Validation",
+   "hours_month": 2.08,
+   "desc": "Review communications for clarity, accuracy, completeness, and alignment with organizational messaging"
+  },
+  {
+   "role": "FP&A Director",
+   "workload": "Stakeholder Collaboration & Communication",
+   "task": "Negotiate Conflicting Stakeholder Interests",
+   "category": "Negligibility",
+   "hours_month": 9.98,
+   "desc": "Negotiate conflicting stakeholder interests and conduct executive-level relationship management"
+  },
+  {
+   "role": "FP&A Director",
+   "workload": "Strategic Planning & Direction Setting",
+   "task": "Compile Market Data And Competitive Analysis",
+   "category": "Directive",
+   "hours_month": 2.88,
+   "desc": "Compile market data, historical trends, and competitive information into summary documents"
+  },
+  {
+   "role": "FP&A Director",
+   "workload": "Strategic Planning & Direction Setting",
+   "task": "Adjust Strategic Recommendations And Scenarios",
+   "category": "Feedback Loop",
+   "hours_month": 2.88,
+   "desc": "Adjust strategic recommendations and scenarios based on leadership and board feedback"
+  },
+  {
+   "role": "FP&A Director",
+   "workload": "Strategic Planning & Direction Setting",
+   "task": "Develop Strategic Scenarios With Cross-Functional Input",
+   "category": "Task Iteration",
+   "hours_month": 3.46,
+   "desc": "Develop strategic scenarios and plans with iterative refinement from cross-functional teams"
+  },
+  {
+   "role": "FP&A Director",
+   "workload": "Strategic Planning & Direction Setting",
+   "task": "Understand Market Trends And Dynamics",
+   "category": "Learning",
+   "hours_month": 2.88,
+   "desc": "Acquire knowledge of market conditions, competitive landscape, and business strategy"
+  },
+  {
+   "role": "FP&A Director",
+   "workload": "Strategic Planning & Direction Setting",
+   "task": "Review Strategic Plans For Consistency And Alignment",
+   "category": "Validation",
+   "hours_month": 2.88,
+   "desc": "Review strategic plans for internal consistency, alignment with organizational goals, and feasibility"
+  },
+  {
+   "role": "FP&A Director",
+   "workload": "Strategic Planning & Direction Setting",
+   "task": "Make Final Strategic Decisions",
+   "category": "Negligibility",
+   "hours_month": 13.82,
+   "desc": "Make final strategic decisions and set organizational vision and direction"
+  },
+  {
+   "role": "FP&A Director",
+   "workload": "Team Leadership & Development",
+   "task": "Generate Performance Review Templates",
+   "category": "Directive",
+   "hours_month": 3.12,
+   "desc": "Generate performance review templates and schedule team meetings"
+  },
+  {
+   "role": "FP&A Director",
+   "workload": "Team Leadership & Development",
+   "task": "Adjust Coaching And Development Strategies",
+   "category": "Feedback Loop",
+   "hours_month": 2.08,
+   "desc": "Adjust coaching and development strategies based on team feedback and performance outcomes"
+  },
+  {
+   "role": "FP&A Director",
+   "workload": "Team Leadership & Development",
+   "task": "Develop Career Development Plans Collaboratively",
+   "category": "Task Iteration",
+   "hours_month": 2.5,
+   "desc": "Collaborate with team members on career development plans and growth objectives"
+  },
+  {
+   "role": "FP&A Director",
+   "workload": "Team Leadership & Development",
+   "task": "Understand Leadership Frameworks And Development",
+   "category": "Learning",
+   "hours_month": 1.04,
+   "desc": "Acquire knowledge of leadership frameworks, development methodologies, and organizational culture"
+  },
+  {
+   "role": "FP&A Director",
+   "workload": "Team Leadership & Development",
+   "task": "Review Team Deliverables For Quality And Completeness",
+   "category": "Validation",
+   "hours_month": 2.08,
+   "desc": "Review team outputs and deliverables for quality, completeness, and alignment with standards"
+  },
+  {
+   "role": "FP&A Director",
+   "workload": "Team Leadership & Development",
+   "task": "Conduct One-On-One Mentoring Conversations",
+   "category": "Negligibility",
+   "hours_month": 9.98,
+   "desc": "Conduct one-on-one mentoring conversations and resolve interpersonal conflicts"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Financial Analysis and Reporting",
+   "task": "Extract Financial Data From Systems",
+   "category": "Directive",
+   "hours_month": 2.89,
+   "desc": "Extract financial data from systems and generate standard reports and dashboards"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Financial Analysis and Reporting",
+   "task": "Adjust Report Metrics And Visualizations",
+   "category": "Feedback Loop",
+   "hours_month": 2.89,
+   "desc": "Adjust report metrics and visualizations based on user feedback"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Financial Analysis and Reporting",
+   "task": "Build Analytical Models Iteratively",
+   "category": "Task Iteration",
+   "hours_month": 4.24,
+   "desc": "Build complex analytical models through iterative refinement with stakeholders"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Financial Analysis and Reporting",
+   "task": "Learn Financial Metrics And Principles",
+   "category": "Learning",
+   "hours_month": 2.89,
+   "desc": "Understand financial metrics, accounting principles, and business drivers"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Financial Analysis and Reporting",
+   "task": "Verify Analysis Accuracy",
+   "category": "Validation",
+   "hours_month": 2.89,
+   "desc": "Review analysis accuracy, fact-check calculations, and validate data integrity"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Financial Analysis and Reporting",
+   "task": "Interpret Financial Results For Strategy",
+   "category": "Negligibility",
+   "hours_month": 3.46,
+   "desc": "Interpret financial results for strategic implications and make executive recommendations"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Financial Planning and Forecasting",
+   "task": "Consolidate Historical Financial Data",
+   "category": "Directive",
+   "hours_month": 3.85,
+   "desc": "Consolidate historical financial data and generate standard forecast templates"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Financial Planning and Forecasting",
+   "task": "Adjust Forecast Models Based On Variance",
+   "category": "Feedback Loop",
+   "hours_month": 3.85,
+   "desc": "Adjust forecast models based on actual versus projected variance analysis"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Financial Planning and Forecasting",
+   "task": "Build Multi-Scenario Financial Models Iteratively",
+   "category": "Task Iteration",
+   "hours_month": 4.62,
+   "desc": "Build multi-scenario financial models through iterative refinement with business units"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Financial Planning and Forecasting",
+   "task": "Learn Accounting Standards And Methodologies",
+   "category": "Learning",
+   "hours_month": 3.85,
+   "desc": "Understand new accounting standards, market dynamics, and forecasting methodologies"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Financial Planning and Forecasting",
+   "task": "Verify Forecast Accuracy",
+   "category": "Validation",
+   "hours_month": 3.85,
+   "desc": "Review forecast accuracy, stress-test assumptions, and validate model outputs"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Financial Planning and Forecasting",
+   "task": "Make Strategic Market Condition Judgments",
+   "category": "Negligibility",
+   "hours_month": 18.49,
+   "desc": "Make strategic judgments on market conditions and executive decisions on resource allocation"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Leadership and Talent Development",
+   "task": "Compile Talent Roster Data",
+   "category": "Directive",
+   "hours_month": 1.78,
+   "desc": "Compile talent roster data and schedule training sessions"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Leadership and Talent Development",
+   "task": "Adjust Performance Review Summaries",
+   "category": "Feedback Loop",
+   "hours_month": 1.19,
+   "desc": "Adjust performance review summaries based on manager feedback"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Leadership and Talent Development",
+   "task": "Develop Leadership Competency Frameworks Iteratively",
+   "category": "Task Iteration",
+   "hours_month": 1.42,
+   "desc": "Develop leadership competency frameworks through iterative refinement with HR partners"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Leadership and Talent Development",
+   "task": "Learn Organizational Culture And Leadership",
+   "category": "Learning",
+   "hours_month": 0.59,
+   "desc": "Acquire knowledge of organizational culture, leadership philosophies, and development best practices"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Leadership and Talent Development",
+   "task": "Review Training Effectiveness Metrics",
+   "category": "Validation",
+   "hours_month": 1.19,
+   "desc": "Review training effectiveness metrics and assess individual development progress"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Leadership and Talent Development",
+   "task": "Conduct One-On-One Mentoring Sessions",
+   "category": "Negligibility",
+   "hours_month": 5.68,
+   "desc": "Conduct one-on-one mentoring sessions and provide interpersonal coaching"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Operational Oversight and Compliance",
+   "task": "Monitor Compliance Checklists",
+   "category": "Directive",
+   "hours_month": 0.89,
+   "desc": "Monitor compliance checklists and generate compliance status reports"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Operational Oversight and Compliance",
+   "task": "Adjust Control Procedures And Governance",
+   "category": "Feedback Loop",
+   "hours_month": 1.19,
+   "desc": "Adjust internal controls based on audit findings and compliance gaps"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Operational Oversight and Compliance",
+   "task": "Design Compliance Frameworks Iteratively",
+   "category": "Task Iteration",
+   "hours_month": 0.42,
+   "desc": "Design compliance frameworks through iterative refinement with legal and audit teams"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Operational Oversight and Compliance",
+   "task": "Learn Regulatory Requirements And Compliance",
+   "category": "Learning",
+   "hours_month": 0.59,
+   "desc": "Understand regulatory requirements, compliance standards, and industry regulations"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Operational Oversight and Compliance",
+   "task": "Review Compliance Status",
+   "category": "Validation",
+   "hours_month": 1.78,
+   "desc": "Review compliance status, assess control effectiveness, and validate audit readiness"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Operational Oversight and Compliance",
+   "task": "Make Compliance And Risk Judgment Calls",
+   "category": "Negligibility",
+   "hours_month": 1.06,
+   "desc": "Make compliance judgment calls and determine organizational risk tolerance levels"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Process Design and Optimization",
+   "task": "Document Current Processes",
+   "category": "Directive",
+   "hours_month": 1.19,
+   "desc": "Document current processes and create standardized process templates"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Process Design and Optimization",
+   "task": "Refine Process Designs Based On Testing",
+   "category": "Feedback Loop",
+   "hours_month": 1.19,
+   "desc": "Refine process designs based on testing feedback and pilot results"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Process Design and Optimization",
+   "task": "Design Optimized Processes Iteratively",
+   "category": "Task Iteration",
+   "hours_month": 1.42,
+   "desc": "Design optimized processes through iterative testing and refinement cycles"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Process Design and Optimization",
+   "task": "Learn Process Improvement Methodologies",
+   "category": "Learning",
+   "hours_month": 1.19,
+   "desc": "Understand process improvement methodologies and operational constraints"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Process Design and Optimization",
+   "task": "Assess Process Efficiency Gains",
+   "category": "Validation",
+   "hours_month": 1.19,
+   "desc": "Assess process efficiency gains and review design effectiveness against targets"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Process Design and Optimization",
+   "task": "Make Process Trade-Off Judgment Calls",
+   "category": "Negligibility",
+   "hours_month": 5.67,
+   "desc": "Make judgment calls on process trade-offs and determine implementation priorities"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Stakeholder Engagement and Influence",
+   "task": "Prepare Stakeholder Contact Lists",
+   "category": "Directive",
+   "hours_month": 4,
+   "desc": "Prepare stakeholder contact lists and schedule engagement meetings"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Stakeholder Engagement and Influence",
+   "task": "Adjust Messaging And Communication Approach",
+   "category": "Feedback Loop",
+   "hours_month": 2.67,
+   "desc": "Refine engagement messaging based on stakeholder response and feedback"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Stakeholder Engagement and Influence",
+   "task": "Develop Stakeholder Engagement Strategies",
+   "category": "Task Iteration",
+   "hours_month": 3.2,
+   "desc": "Develop stakeholder engagement strategies through iterative refinement"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Stakeholder Engagement and Influence",
+   "task": "Learn Stakeholder Priorities And Dynamics",
+   "category": "Learning",
+   "hours_month": 1.33,
+   "desc": "Understand stakeholder priorities, concerns, and organizational dynamics"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Stakeholder Engagement and Influence",
+   "task": "Assess Engagement Effectiveness",
+   "category": "Validation",
+   "hours_month": 2.67,
+   "desc": "Assess engagement effectiveness and track stakeholder sentiment and alignment"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Stakeholder Engagement and Influence",
+   "task": "Conduct Stakeholder Negotiations And Relationships",
+   "category": "Negligibility",
+   "hours_month": 12.8,
+   "desc": "Conduct direct stakeholder negotiations and build executive relationships"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Strategic Planning and Direction Setting",
+   "task": "Compile Strategic Planning Templates",
+   "category": "Directive",
+   "hours_month": 2.67,
+   "desc": "Compile strategic planning templates and organize planning calendars"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Strategic Planning and Direction Setting",
+   "task": "Refine Strategic Priorities And Initiatives",
+   "category": "Feedback Loop",
+   "hours_month": 2.67,
+   "desc": "Refine strategic initiatives based on stakeholder and executive feedback"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Strategic Planning and Direction Setting",
+   "task": "Develop Strategic Roadmaps Collaboratively",
+   "category": "Task Iteration",
+   "hours_month": 3.2,
+   "desc": "Develop strategic roadmaps through collaborative refinement with cross-functional leaders"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Strategic Planning and Direction Setting",
+   "task": "Learn Industry Trends And Competitive Landscape",
+   "category": "Learning",
+   "hours_month": 2.67,
+   "desc": "Understand competitive landscape, industry trends, and organizational capabilities"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Strategic Planning and Direction Setting",
+   "task": "Assess Strategic Alignment",
+   "category": "Validation",
+   "hours_month": 2.67,
+   "desc": "Assess strategic alignment with organizational goals and review plan feasibility"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Strategic Planning and Direction Setting",
+   "task": "Establish Organizational Vision And Strategy",
+   "category": "Negligibility",
+   "hours_month": 12.79,
+   "desc": "Set organizational vision and make strategic trade-offs between competing priorities"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Transformation and Change Management",
+   "task": "Create Change Communication Templates",
+   "category": "Directive",
+   "hours_month": 2.89,
+   "desc": "Create change communication templates and schedule transformation initiatives"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Transformation and Change Management",
+   "task": "Adjust Change Plans Based On Metrics",
+   "category": "Feedback Loop",
+   "hours_month": 1.93,
+   "desc": "Adjust change plans based on adoption metrics and stakeholder feedback"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Transformation and Change Management",
+   "task": "Design Transformation Roadmaps Iteratively",
+   "category": "Task Iteration",
+   "hours_month": 2.31,
+   "desc": "Design transformation roadmaps through iterative collaboration with change teams"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Transformation and Change Management",
+   "task": "Learn Change Management Methodologies",
+   "category": "Learning",
+   "hours_month": 0.96,
+   "desc": "Understand change management methodologies and assess organizational readiness"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Transformation and Change Management",
+   "task": "Monitor Change Adoption Progress",
+   "category": "Validation",
+   "hours_month": 1.93,
+   "desc": "Monitor change adoption rates and assess transformation progress against milestones"
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "workload": "Transformation and Change Management",
+   "task": "Lead Organizational Change Conversations",
+   "category": "Negligibility",
+   "hours_month": 9.24,
+   "desc": "Lead change conversations and manage organizational resistance to transformation"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Financial Decision Support",
+   "task": "Compile Financial Data For Analysis",
+   "category": "Directive",
+   "hours_month": 4,
+   "desc": "Compile financial data and metrics into comparison matrices and decision support documents"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Financial Decision Support",
+   "task": "Update Financial Recommendations And Analyses",
+   "category": "Feedback Loop",
+   "hours_month": 4,
+   "desc": "Update financial recommendations and analyses based on new information, changed circumstances, or stakeholder feedback"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Financial Decision Support",
+   "task": "Develop Financial Scenarios With Stakeholders",
+   "category": "Task Iteration",
+   "hours_month": 5.87,
+   "desc": "Collaborate with stakeholders to develop financial scenarios, stress tests, and refine decision recommendations"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Financial Decision Support",
+   "task": "Understand Business Context And Financial Strategy",
+   "category": "Learning",
+   "hours_month": 4,
+   "desc": "Understand business context and implications of financial decisions, learn about new financial instruments and strategies"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Financial Decision Support",
+   "task": "Verify Financial Analysis Accuracy",
+   "category": "Validation",
+   "hours_month": 4,
+   "desc": "Verify accuracy of financial analysis supporting recommendations, stress-test assumptions, and validate data sources"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Financial Decision Support",
+   "task": "Make Final Financial Decisions",
+   "category": "Negligibility",
+   "hours_month": 4.8,
+   "desc": "Make final financial decisions, determine organizational risk tolerance, approve major transactions and capital commitments"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Financial Planning and Analysis",
+   "task": "Generate standard financial reports",
+   "category": "Directive",
+   "hours_month": 5.78,
+   "desc": "Generate standard financial reports, consolidate departmental budget submissions, and create variance analysis templates"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Financial Planning and Analysis",
+   "task": "Adjust Financial Forecasts And Assumptions",
+   "category": "Feedback Loop",
+   "hours_month": 5.78,
+   "desc": "Adjust financial forecasts and budget assumptions based on actual performance data and changing business conditions"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Financial Planning and Analysis",
+   "task": "Build Financial Models With Business Units",
+   "category": "Task Iteration",
+   "hours_month": 8.47,
+   "desc": "Collaborate with business units to develop financial models, scenarios, and refine budget proposals"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Financial Planning and Analysis",
+   "task": "Understand Accounting Standards And Regulations",
+   "category": "Learning",
+   "hours_month": 5.78,
+   "desc": "Acquire knowledge of new accounting standards, advanced financial modeling techniques, and industry-specific financial practices"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Financial Planning and Analysis",
+   "task": "Verify Financial Analysis Accuracy And Assumptions",
+   "category": "Validation",
+   "hours_month": 5.78,
+   "desc": "Review financial analyses for mathematical accuracy, verify assumptions, and validate calculations in forecasts and models"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Financial Planning and Analysis",
+   "task": "Make Final Investment Decisions",
+   "category": "Negligibility",
+   "hours_month": 6.92,
+   "desc": "Make final investment decisions, determine capital allocation strategy, approve major financial commitments and expenditures"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Operational Management",
+   "task": "Generate Operational Performance Reports",
+   "category": "Directive",
+   "hours_month": 2.96,
+   "desc": "Generate operational performance reports, track and compile KPIs, and schedule operational review meetings"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Operational Management",
+   "task": "Adjust Operational Targets And Strategies",
+   "category": "Feedback Loop",
+   "hours_month": 2.37,
+   "desc": "Adjust operational targets and strategies based on performance data, trends, and feedback from operational teams"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Operational Management",
+   "task": "Develop Operational Improvements Collaboratively",
+   "category": "Task Iteration",
+   "hours_month": 1.42,
+   "desc": "Collaborate with operational teams to identify problems, develop solutions, and iterate on operational improvements"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Operational Management",
+   "task": "Understand Operational Best Practices And Benchmarks",
+   "category": "Learning",
+   "hours_month": 0.59,
+   "desc": "Understand operational challenges and constraints, learn operational best practices and industry benchmarks"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Operational Management",
+   "task": "Review Operational Metrics Accuracy",
+   "category": "Validation",
+   "hours_month": 1.19,
+   "desc": "Review operational metrics for accuracy and completeness, validate performance against targets and standards"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Operational Management",
+   "task": "Make Final Operational Decisions",
+   "category": "Negligibility",
+   "hours_month": 3.32,
+   "desc": "Make final operational decisions, resolve escalated operational issues, determine resource allocation and staffing levels"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Organizational Culture and Excellence",
+   "task": "Distribute Culture And Engagement Communications",
+   "category": "Directive",
+   "hours_month": 1.48,
+   "desc": "Distribute culture-related communications, schedule culture initiatives and programs, compile employee engagement survey data"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Organizational Culture and Excellence",
+   "task": "Adjust Culture Initiatives And Programs",
+   "category": "Feedback Loop",
+   "hours_month": 1.19,
+   "desc": "Adjust culture initiatives and excellence programs based on employee feedback and engagement survey results"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Organizational Culture and Excellence",
+   "task": "Develop Culture Programs With HR Partners",
+   "category": "Task Iteration",
+   "hours_month": 0.71,
+   "desc": "Collaborate with HR on culture program design and excellence standards, iterate on cultural initiatives based on outcomes"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Organizational Culture and Excellence",
+   "task": "Understand Organizational Culture And Values",
+   "category": "Learning",
+   "hours_month": 0.3,
+   "desc": "Understand organizational values and culture, learn culture assessment frameworks and excellence models"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Organizational Culture and Excellence",
+   "task": "Review Culture Initiative Alignment",
+   "category": "Validation",
+   "hours_month": 0.59,
+   "desc": "Review culture initiatives and programs for alignment with stated organizational values and excellence standards"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Organizational Culture and Excellence",
+   "task": "Establish Organizational Values And Culture",
+   "category": "Negligibility",
+   "hours_month": 1.66,
+   "desc": "Set organizational values and cultural direction, make decisions about cultural fit in hiring and promotions, address cultural conflicts, model desired behaviors and values"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Stakeholder Engagement and Communication",
+   "task": "Schedule stakeholder meetings",
+   "category": "Directive",
+   "hours_month": 2.89,
+   "desc": "Schedule stakeholder meetings, distribute standard financial reports and updates, send meeting reminders and agendas"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Stakeholder Engagement and Communication",
+   "task": "Adjust Messaging And Communication Approach",
+   "category": "Feedback Loop",
+   "hours_month": 1.93,
+   "desc": "Adjust communication approach, frequency, and content based on stakeholder feedback and engagement levels"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Stakeholder Engagement and Communication",
+   "task": "Develop Presentation Content With Communications Teams",
+   "category": "Task Iteration",
+   "hours_month": 2.31,
+   "desc": "Collaborate with communications and marketing teams to develop messaging and iterate on presentation content and materials"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Stakeholder Engagement and Communication",
+   "task": "Understand Stakeholder Needs And Preferences",
+   "category": "Learning",
+   "hours_month": 0.96,
+   "desc": "Understand stakeholder priorities, concerns, and communication preferences; learn about different stakeholder perspectives"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Stakeholder Engagement and Communication",
+   "task": "Review Communications For Accuracy",
+   "category": "Validation",
+   "hours_month": 1.93,
+   "desc": "Review communications and presentations for accuracy, clarity, and alignment with organizational messaging before distribution"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Stakeholder Engagement and Communication",
+   "task": "Deliver Executive Presentations And Speeches",
+   "category": "Negligibility",
+   "hours_month": 9.24,
+   "desc": "Deliver executive presentations and speeches, negotiate with external stakeholders, build and maintain key relationships, make commitments on behalf of organization"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Strategic Planning and Vision Setting",
+   "task": "Compile Market Data And Strategic Reports",
+   "category": "Directive",
+   "hours_month": 2.67,
+   "desc": "Compile market research data into standardized strategic reports and schedule strategy development sessions"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Strategic Planning and Vision Setting",
+   "task": "Refine Strategic Priorities And Initiatives",
+   "category": "Feedback Loop",
+   "hours_month": 2.67,
+   "desc": "Refine strategic priorities and initiatives based on market feedback, competitive intelligence, and performance metrics"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Strategic Planning and Vision Setting",
+   "task": "Develop Strategic Initiatives With Cross-Functional Leaders",
+   "category": "Task Iteration",
+   "hours_month": 3.2,
+   "desc": "Collaborate with cross-functional leaders to develop, test, and refine strategic initiatives and roadmaps"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Strategic Planning and Vision Setting",
+   "task": "Understand Market Trends And Dynamics",
+   "category": "Learning",
+   "hours_month": 2.67,
+   "desc": "Research industry trends, competitive landscape, and emerging strategic frameworks relevant to organizational direction"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Strategic Planning and Vision Setting",
+   "task": "Review Strategic Plans For Feasibility And Viability",
+   "category": "Validation",
+   "hours_month": 2.67,
+   "desc": "Review strategic plans for feasibility, financial viability, and alignment with organizational mission and goals"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Strategic Planning and Vision Setting",
+   "task": "Make final strategic decisions",
+   "category": "Negligibility",
+   "hours_month": 12.79,
+   "desc": "Make final strategic decisions, articulate organizational vision to executive stakeholders, determine long-term organizational direction"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Team Leadership and Development",
+   "task": "Generate Performance Summary Reports",
+   "category": "Directive",
+   "hours_month": 2.89,
+   "desc": "Generate standardized team performance summary reports and distribute development plan templates to team members"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Team Leadership and Development",
+   "task": "Adjust Coaching Strategies And Development",
+   "category": "Feedback Loop",
+   "hours_month": 1.93,
+   "desc": "Adjust coaching strategies and development priorities based on team performance data and feedback from previous coaching cycles"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Team Leadership and Development",
+   "task": "Develop Career Development Plans Collaboratively",
+   "category": "Task Iteration",
+   "hours_month": 2.31,
+   "desc": "Collaborate with HR and team members to refine individual development plans and mentorship approaches"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Team Leadership and Development",
+   "task": "Understand Leadership Frameworks And Development",
+   "category": "Learning",
+   "hours_month": 0.96,
+   "desc": "Acquire knowledge of new leadership frameworks and understand team member career aspirations and skill gaps"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Team Leadership and Development",
+   "task": "Review Team Deliverables For Quality And Completeness",
+   "category": "Validation",
+   "hours_month": 1.93,
+   "desc": "Review team deliverables and work products for quality, completeness, and alignment with organizational standards"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Team Leadership and Development",
+   "task": "Conduct One-On-One Coaching Conversations",
+   "category": "Negligibility",
+   "hours_month": 9.24,
+   "desc": "Conduct one-on-one coaching conversations, make final hiring and termination decisions, build interpersonal trust with team members"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Transformation and Process Design",
+   "task": "Document Processes And Create Flowcharts",
+   "category": "Directive",
+   "hours_month": 2.96,
+   "desc": "Document current state processes, create process flow templates, and schedule process design workshops"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Transformation and Process Design",
+   "task": "Refine Process Designs Based On Testing",
+   "category": "Feedback Loop",
+   "hours_month": 2.37,
+   "desc": "Refine process designs based on pilot testing results, user feedback, and performance metrics from implementation"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Transformation and Process Design",
+   "task": "Design Process Improvements Collaboratively",
+   "category": "Task Iteration",
+   "hours_month": 1.42,
+   "desc": "Collaborate with process owners and operational teams to design new workflows and iterate on process improvements"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Transformation and Process Design",
+   "task": "Understand Process Design And Change Management",
+   "category": "Learning",
+   "hours_month": 0.59,
+   "desc": "Understand current state processes and pain points, learn process design best practices and change management principles"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Transformation and Process Design",
+   "task": "Review Process Design Efficiency",
+   "category": "Validation",
+   "hours_month": 1.19,
+   "desc": "Review process designs for operational efficiency, feasibility, and alignment with business requirements and constraints"
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "workload": "Transformation and Process Design",
+   "task": "Make Final Process Change Decisions",
+   "category": "Negligibility",
+   "hours_month": 3.32,
+   "desc": "Make final decisions on process changes and implementation approach, manage organizational resistance to transformation, determine resource allocation for change initiatives"
+  }
+ ],
+ "roles": [
+  {
+   "role": "FP&A Senior Coordinator",
+   "level": "Individual Contributor",
+   "headcount": 44,
+   "salary": 30572,
+   "turnover_level": "Para-professional",
+   "etter_score": 0.329
+  },
+  {
+   "role": "FP&A Assistant Analyst",
+   "level": "Individual Contributor",
+   "headcount": 185,
+   "salary": 51532,
+   "turnover_level": "Professional",
+   "etter_score": 0.41
+  },
+  {
+   "role": "FP&A Associate Analyst",
+   "level": "Individual Contributor",
+   "headcount": 371,
+   "salary": 58896,
+   "turnover_level": "Professional",
+   "etter_score": 0.334
+  },
+  {
+   "role": "FP&A Analyst",
+   "level": "Individual Contributor",
+   "headcount": 310,
+   "salary": 79661,
+   "turnover_level": "Professional",
+   "etter_score": 0.306
+  },
+  {
+   "role": "FP&A Senior Analyst",
+   "level": "Individual Contributor",
+   "headcount": 253,
+   "salary": 104211,
+   "turnover_level": "Professional",
+   "etter_score": 0.24
+  },
+  {
+   "role": "FP&A Associate Manager",
+   "level": "Manager",
+   "headcount": 140,
+   "salary": 138408,
+   "turnover_level": "Management",
+   "etter_score": 0.322
+  },
+  {
+   "role": "FP&A Manager",
+   "level": "Manager",
+   "headcount": 89,
+   "salary": 163670,
+   "turnover_level": "Management",
+   "etter_score": 0.261
+  },
+  {
+   "role": "FP&A Senior Manager",
+   "level": "Senior Manager",
+   "headcount": 58,
+   "salary": 198825,
+   "turnover_level": "Management",
+   "etter_score": 0.13
+  },
+  {
+   "role": "FP&A Director",
+   "level": "Director",
+   "headcount": 46,
+   "salary": 304094,
+   "turnover_level": "Executive",
+   "etter_score": 0.044
+  },
+  {
+   "role": "FP&A Senior Director (Band B)",
+   "level": "Director",
+   "headcount": 17,
+   "salary": 381174,
+   "turnover_level": "Executive",
+   "etter_score": 0.09699999999999999
+  },
+  {
+   "role": "FP&A Senior Director (Band A)",
+   "level": "Director",
+   "headcount": 10,
+   "salary": 416678,
+   "turnover_level": "Executive",
+   "etter_score": 0.12
+  }
+ ]
+}
