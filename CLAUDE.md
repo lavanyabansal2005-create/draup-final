@@ -104,8 +104,8 @@ question 1 below. Do not "correct" it.
 - `review` is a flat 0.30 across all bands. Two studies (Dell'Acqua; Brynjolfsson v2) show the
   cost of unreviewed output rises with seniority. This is a structural change, not a parameter.
 - `standard_task_hours_month` is a flat 160. FR3 asks for productive hours per level.
-- The score-gap check raises warnings on 5 of 11 roles for a mismatch the source workbook
-  states is expected. These are not defects and should not be presented as warnings.
+- The score-gap check flags 5 of 11 roles for a mismatch the source workbook states is
+  expected. Since 5 Nov 2026 these are `info` notes, not warnings, worded as a second opinion.
 - Three workbook sheets are unused: Workloads (per-workload category splits), Skills (545 rows,
   current/emerging/declining), Read me.
 

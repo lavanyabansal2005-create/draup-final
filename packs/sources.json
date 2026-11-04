@@ -519,6 +519,6 @@
   "data_quality.score_tolerance": {
     "status": "judgment",
     "default": 0.1,
-    "note": "The workbook states on the How to use it sheet that the role-level Automation % will NOT equal the AI-bucket share of task hours, in either direction, because the two are produced independently, and advises building on task hours while treating the role score as a second opinion. The model currently raises this as a data-quality WARNING on 5 of 11 roles. Those are not data errors. Reword to an informational second-opinion note, or a reviewer reads 5 warnings as 5 defects."
+    "note": "The workbook states on the How to use it sheet that the role-level Automation % will NOT equal the AI-bucket share of task hours, in either direction, because the two are produced independently, and advises building on task hours while treating the role score as a second opinion. The model flags this on 5 of 11 roles. Those are not data errors, so since 5 Nov 2026 the flag is level 'info' (was 'warn') and is worded as an expected second-opinion gap, so a reviewer does not read 5 warnings as 5 defects."
   }
 }

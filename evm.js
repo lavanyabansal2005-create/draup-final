@@ -81,7 +81,7 @@
       if (R.etter_score != null) {
         R.score_gap = R.auto_share - R.etter_score;
         if (Math.abs(R.score_gap) > P.data_quality.score_tolerance)
-          flags.push(['warn', `${R.role}: tasks give ${(R.auto_share * 100).toFixed(1)}% AI-able, Etter role score is ${(R.etter_score * 100).toFixed(1)}%`]);
+          flags.push(['info', `${R.role}: tasks give ${(R.auto_share * 100).toFixed(1)}% AI-able, Etter role score is ${(R.etter_score * 100).toFixed(1)}%. Expected, not an error: Etter produces the two independently. The model builds on task hours and keeps the role score as a second opinion`]);
       }
     }
     if (basis === 'role_score') {

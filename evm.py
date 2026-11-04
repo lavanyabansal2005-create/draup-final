@@ -144,8 +144,10 @@ def prepare(data, pack, basis='tasks'):
         if R['etter_score'] is not None:
             R['score_gap'] = R['auto_share'] - R['etter_score']
             if abs(R['score_gap']) > P['data_quality']['score_tolerance']:
-                flags.append(('warn', f"{R['role']}: tasks give {R['auto_share']*100:.1f}% AI-able, "
-                                      f"Etter role score is {R['etter_score']*100:.1f}%"))
+                flags.append(('info', f"{R['role']}: tasks give {R['auto_share']*100:.1f}% AI-able, "
+                                      f"Etter role score is {R['etter_score']*100:.1f}%. Expected, not an error: "
+                                      f"Etter produces the two independently. The model builds on task hours "
+                                      f"and keeps the role score as a second opinion"))
     if basis == 'role_score':
         for R in roles.values():
             if R['etter_score'] is not None and R['auto_share'] > 0:
