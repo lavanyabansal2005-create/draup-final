@@ -23,7 +23,7 @@
     },
     "source_workbook": "Etter_FPandA_11roles_tasks_hours_automation.xlsx (team-provided)",
     "CONFLICT": {
-      "issue": "The source workbook states the Etter potential ceilings TWICE, with different numbers, and the pack matches neither.",
+      "issue": "The source workbook states the Etter potential ceilings TWICE, and the two tables disagree on five of six categories (only Negligibility agrees, both 0.10). The pack matches neither.",
       "read_me_sheet": {
         "Directive": 0.9,
         "Feedback Loop": 0.85,
@@ -48,13 +48,16 @@
         "Validation": 0.5,
         "Negligibility": 0.0
       },
-      "which_is_authoritative": "The Tasks sheet column is the per-row data actually shipped on all 420 rows, and the How to use it sheet reproduces it. The Read me table disagrees on four of six categories.",
+      "which_is_authoritative": "The Tasks sheet column is the per-row data actually shipped on all 420 rows, and the How to use it sheet reproduces it. The Read me table disagrees with it on five of six categories; only Negligibility agrees (both 0.10).",
       "priced_impact_5y_cash_npv": {
         "pack": "$9.38M",
         "read_me_table": "$9.75M",
         "tasks_column": "$5.80M",
         "coarse_bucket_ceiling": "$11.48M"
       },
+      "what_moves_the_headline": "Only Directive and Feedback Loop. Assistant savings are the smaller of the category ceiling and the band rate, and the band rate tops out at 0.20, so it binds before any assistant ceiling does (every reading puts them at 0.25 or above). Task Iteration, Learning and Validation therefore disagree at zero financial cost: swapping in the Read me or bucket values leaves the headline at $9,376,169.02. Negligibility maps to Human and is never read.",
+      "the_real_question": "The Directive / Feedback Loop pair. 0.90 for Directive matches the Read me table; 0.80 for Feedback Loop matches no table in the source (Read me 0.85, Tasks column 0.55). The question for Chandan is what 0.80 rests on.",
+      "locked_by": "tests/test_ceiling_sets.py prices all four readings and asserts each headline.",
       "note": "A 2x spread on the headline from a choice the brief puts out of scope. This belongs in the validation pack as the first-named limitation, and in a question to Chandan."
     },
     "negligibility_note": "Pack uses 0.00 where both workbook tables say 0.10. Currently harmless: CAT_TYPE maps Negligibility to human, so the ceiling is never read. It is dead config that implies a decision was made. Either wire it or delete the key."
