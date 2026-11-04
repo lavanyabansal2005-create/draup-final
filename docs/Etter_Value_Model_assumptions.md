@@ -26,7 +26,7 @@
 |---|---|---|---|---|---|---|---|---|
 | 2.1 | **AI takeover**: share of AI-able work the agent actually does | 25% | **40%** | 60% | 20–62% | C | ✔ | Indirect: finance AI deployments report low-to-moderate impact (Gartner, May 2026); accounts payable, the most automated finance process, averages ~33% touchless (Ardent Partners 2025). |
 | 2.2 | **Human review**: hours people spend checking per 100 AI hours | 40% | **30%** | 20% | 15–45% | C | ✔ | Estimate; measured in the pilot as checking time per AI hour. |
-| 2.3 | **Net realisation** = takeover × (1 − review) | 15% | **28%** | 48% | — | derived | ✔ | The single number the answer turns on. Break-even at the default: **14.3%**. |
+| 2.3 | **Net realisation** = takeover × (1 − review) | 15% | **28%** | 48% | — | derived | ✔ | The single number the answer turns on. Break-even at the default: **14.3%**. Cross-check: agents followed AI recommendations ~35% of the time in a live deployment (Brynjolfsson, Li and Raymond, v2, PDF p. 23); an assistant-acceptance rate, so magnitude support only. |
 | 2.4 | Months to full use after go-live (S-curve) | 18 | **12** | 6 | 6–24 | C | ✔ | MIT NANDA, State of AI in Business 2025. |
 | 2.5 | Assistant active use (share of seat holders who save time) | 55% | **70%** | 85% | 50–85% | C | ✔ | Published weekly-active use of purchased assistant seats; estimate. |
 | 2.6 | Assistant saving multiplier | 0.50 | **1.00** | 1.25 | 0.4–1.6 | C | ✔ | Scales the band rates in 4.4. |

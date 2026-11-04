@@ -95,6 +95,7 @@ AI hours     = AI-able hours × takeover × ramp-up          (running cost is pa
 drag         = 1 − 0.30 × (share of the role's time freed)
 ```
 - **Takeover 40%**: share of AI-able work the agent actually does. **Review 30%**: hours people spend checking per 100 AI hours. **Net realisation = 40% × 70% = 28%** — the number the answer turns on, and the one a pilot measures.
+  - **Cross-check on 28%.** The closest thing in the literature to a measured realisation rate is Brynjolfsson, Li and Raymond, *Generative AI at Work* (v2, Nov 2024; PDF p. 23, printed p. 22). In a live deployment to customer-support agents, agents followed the AI's recommendations **about 35% of the time on average**. Returns were highest for those who followed them, and adherence rose over time. Our 28% sits a little below that. The study measures suggestions an assistant makes and a person accepts, not the share of a workload an agent takes over, so it supports the size of the number; it is not a source for `takeover`.
 - **Ramp-up**: each agent's use follows an S-curve from its go-live, full after 12 months; assistant seats roll out from month 2 over 6 months.
 - **Complexity drag**: the work left behind is harder, so freed time is trimmed more the more of a role is automated (a simple stand-in, grade D).
 

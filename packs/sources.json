@@ -154,8 +154,12 @@
     ],
     "mapping_caveat": "EVERY source above measures assistant-style augmentation, not agentic takeover of a workload. The mapping onto `takeover` is our judgment, not a measured quantity. State this in the spec; it is the first thing a careful reviewer will ask.",
     "strongest_single_anchor": {
-      "finding": "Brynjolfsson et al. report that agents followed the AI recommendation about 35% of the time on average, and returns were highest for workers who followed them.",
-      "pdf": "2304.11771v2.pdf p23",
+      "finding": "Brynjolfsson et al. report that agents followed the AI recommendation about 35% of the time on average, and returns were highest for workers who followed them. Adherence rose over time for all workers, especially more experienced ones.",
+      "pdf": "2304.11771v2.pdf PDF p23 (printed page 22), section 5 opening and 5.1 'Adherence to AI recommendations'",
+      "verified": "2026-11-05, read from the PDF on file",
+      "against_our_number": "35% measured adherence vs our net realisation of 28% (takeover 0.40 x (1 - review 0.30)).",
+      "caveat": "Adherence is the share of an assistant's suggestions a person accepts, not the share of a workload an agent takes over. Use it to support the magnitude of net realisation, never as the source of takeover itself (see mapping_caveat).",
+      "in_spec": "docs/Etter_Value_Model_how_it_works.md (takeover bullet) and docs/Etter_Value_Model_assumptions.md row 2.3",
       "why_it_matters": "This is the closest thing in the literature to a directly measured realisation rate: the share of AI output a human actually accepts. Your net realisation is takeover x (1 - review) = 0.40 x 0.70 = 28%. An independently measured 35% adherence rate in a production deployment lands in the same neighbourhood. That is the single most defensible sentence available to you for the Tier 1 parameters, and it was not in the abstract."
     }
   },
