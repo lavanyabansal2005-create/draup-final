@@ -40,6 +40,7 @@
     { grp: 'economics', key: 'discount_rate', label: 'Discount rate', t: PCT, range: '5.6 to 9.3%', grade: 'A', kind: 'Fact', src: 'Damodaran WACC by industry, January 2026' },
     { grp: 'economics', key: 'turnover_multiplier', label: 'Turnover multiplier on the band rates', t: NUM, range: 'x0.59 to x1.3', grade: 'B', kind: 'Fact, client overrides', src: 'Mercer band rates; JOLTS 2025 industry quits' },
     { grp: 'economics', key: 'on_cost', label: 'On-cost multiplier on salary', t: NUM, range: 'fixed', grade: 'A', kind: 'Fact', src: 'BLS ECEC June 2026, Table 5, full-time private: 1/(68.5% + 8.1%)' },
+    { grp: 'economics', key: 'wage_growth', label: 'Pay growth per year (nominal)', t: PCT, range: '2.5 to 4.5%', grade: 'A', kind: 'Fact', src: 'BLS Employment Cost Index, private industry, 12 months to Sept 2026: 3.4%' },
     { grp: 'economics', key: 'cost_per_hire', label: 'Cost per hire avoided, $', t: NUM, range: '$4,100 to $10,000', grade: 'B', kind: 'Fact', src: 'SHRM benchmarking' },
     { grp: 'costs', key: 'build_workflow', label: 'Build cost, single-role workload, $', t: NUM, range: 'x0.85 to x1.6', grade: 'C', kind: 'Measure in pilot', src: 'Team cost build-up' },
     { grp: 'costs', key: 'build_enterprise', label: 'Build cost, multi-role workload, $', t: NUM, range: 'x0.85 to x1.6', grade: 'C', kind: 'Measure in pilot', src: 'Team cost build-up' },

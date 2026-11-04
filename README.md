@@ -1,5 +1,7 @@
 # Etter Value Model: reference implementation (final model)
 
+> **5 Nov 2026: wage growth added (3.4% a year).** The default headline is now **$11,549,980.85**, payback **month 31**, 43 workloads, 79% chance positive. Figures below that predate the change are at flat pay ($9.38M, month 33). Full before/after: `docs/spec_delta_wage_growth.md`.
+
 Turns Etter task data into a month-by-month financial estimate: cash vs today, cost avoided vs plan, and capacity at cost, never added together.
 
 **Version:** final model, 23 October 2026. Agent ceilings set by Chandan (Draup): **Directive 90%, Feedback Loop 80%**.

@@ -117,7 +117,10 @@
     const P = prep.pack, E = P.economics, C = P.costs;
     const T = horizon || E.horizon_months, d = E.discount_rate;
     const net = S.takeover * (1 - S.review), lead = C.build_lead_months;
+    const wg = E.wage_growth == null ? 0.0 : E.wage_growth;
     let ann = 0; for (let m = 1; m <= T; m++) ann += smoothstep((m - lead) / S.adopt_months) * df(m, d);
+    // the work taken over is paid at grown wages; running and maintenance are not
+    let annW = 0; for (let m = 1; m <= T; m++) annW += smoothstep((m - lead) / S.adopt_months) * df(m, d) * Math.pow(1 + wg, m / 12);
     const ranked = [];
     const rm = S.run_mult == null ? 1.0 : S.run_mult;
     for (const X of prep.workloads.values()) {
@@ -133,14 +136,14 @@
       let best = null;
       for (const [name, rate, up, maint, ms] of opts) {
         const run = X.auto_hours * S.takeover * rate;
-        const npv = (benefit - run - maint) * ann - up;
+        const npv = benefit * annW - (run + maint) * ann - up;
         if (best == null || npv > best[0]) best = [npv, name, rate, up, maint, ms, run];
       }
       const [npv, name, rate, up, maint, ms, run] = best;
       const sc = S.cost_mult, rr = S.cost_mult * rm;
       ranked.push(Object.assign({}, X, { benefit, run, maint, build_s: up, npv_at_cost: npv, option: name,
         run_rate: rate, maint_share: ms, up_base: up / sc, rate_base: rate / rr,
-        ratio: up ? (benefit - run - maint) * ann / up : 0 }));
+        ratio: up ? (benefit * annW - (run + maint) * ann) / up : 0 }));
     }
     ranked.sort((a, b) => b.ratio - a.ratio);
     let chosen;
@@ -183,6 +186,7 @@
     const ramp = o.ramp === 's' ? smoothstep : linearRamp;
     const kap = S.drag == null ? P.nonlinear.complexity_drag : S.drag;
     const g = E.function_growth || 0.0;
+    const wg = E.wage_growth == null ? 0.0 : E.wage_growth;   // nominal pay growth; see docs/spec_delta_wage_growth.md
     const countAvoid = o.count_avoidance == null ? g > 0 : o.count_avoidance;
     let chosen = o.chosen;
     if (chosen == null) chosen = scope(prep, S, o.scope_rule, o.top_k, T)[0];
@@ -236,6 +240,7 @@
     const prevP = {}, prevAv = {}; for (const R of roles) { prevP[R.role] = 0; prevAv[R.role] = 0; }
     for (let m = 1; m <= T; m++) {
       const decay = Math.pow(1 - C.run_cost_decline_per_year, m / 12);
+      const wf = Math.pow(1 + wg, m / 12);   // wage index: C and rate escalate together
       for (const R of roles) {
         const s = st[R.role], nm = R.role, src = 'role: ' + nm;
         let faH = 0, aiTot = 0;
@@ -270,13 +275,13 @@
         const Av = (g > 0 && (Q.absorb_growth == null ? true : Q.absorb_growth)) ? Math.max(0, Math.min(floor(spare + 1e-9), floor(planned + 1e-9))) : 0;
         const capH = Fh - Pm * R.H - Av * R.H;
         const newP = Pm - prevP[nm], newAv = Math.max(0, Av - prevAv[nm]);
-        const items = [['hard', Pm * R.C / 12], ['seats_reclaimed', Pm * R.seat_cost / 12],
-          ['avoidance', Av * R.C / 12 + newAv * E.cost_per_hire], ['capacity', capH * R.rate],
+        const items = [['hard', Pm * R.C * wf / 12], ['seats_reclaimed', Pm * R.seat_cost / 12],
+          ['avoidance', Av * R.C * wf / 12 + newAv * E.cost_per_hire], ['capacity', capH * R.rate * wf],
           ['licences', seats * C.assistant_licence_per_seat_year / 12 * S.cost_mult]];
         if (Q.mechanism === 'attrition') items.push(['recruit_avoided', newP * E.cost_per_hire]);
-        else items.push(['severance', newP * Q.severance_weeks * R.S / 52]);
+        else items.push(['severance', newP * Q.severance_weeks * R.S * wf / 52]);
         if (s.exposed != null && m === Math.max(1, s.exposed))
-          items.push(['training', R.N * (C.training_spend_per_head + C.training_hours_per_head * R.rate)]);
+          items.push(['training', R.N * (C.training_spend_per_head + C.training_hours_per_head * R.rate * wf)]);
         for (const [line, amt] of items) if (amt) { ser[line][m] += amt; book(line, src, m, amt); }
         ser.freed_h[m] += Fh; ser.reduced_h[m] += Pm * R.H; ser.absorbed_h[m] += Av * R.H; ser.capacity_h[m] += capH;
         ser.positions[m] += Pm; ser.avoided_hires[m] += Av; ser.seats_active[m] += seats; ser.ai_hours[m] += aiTot;

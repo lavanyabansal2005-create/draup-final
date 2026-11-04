@@ -1,5 +1,7 @@
 # Etter Value Model — final list of assumptions
 
+> **5 Nov 2026: wage growth added (3.4% a year).** The default headline is now **$11,549,980.85**, payback **month 31**, 43 workloads, 79% chance positive. Figures below that predate the change are at flat pay ($9.38M, month 33). Full before/after: `docs/spec_delta_wage_growth.md`.
+
 **Version:** final model, 23 October 2026, with the agent ceilings set by Chandan in the review meeting (Directive 90%, Feedback Loop 80%) · **Default case:** Etter FP&A data (11 roles, 1,523 people, 420 tasks), Moderate scenario, Attrition only policy, cross-industry defaults, assistant tools on.
 **Where they live:** every number below is an input on the **Inputs** sheet of `Etter_Value_Model_FPA.xlsx` (blue text) and in the engine's parameter pack (`packs/base.json`). Change it there and the whole model follows.
 
@@ -64,6 +66,7 @@ Harvest share is the largest single driver: −$1.4M at 25% to +$20.5M at 75% (d
 | 4.6 | Role level → turnover band | Etter level mapped to band (e.g. Individual Contributor → Professional; Clerk → Para-professional) | Design | Turnover band given per role in the data. |
 | 4.7 | Cost per hire (saved when a leaver is not replaced, or a planned hire is avoided) | **$4,700** | B | SHRM cost-per-hire benchmark. |
 | 4.8 | Equipment and software per position (saved when not refilled) | **$468 a year** | C | Estimate. |
+| 4.9 | Wage growth (nominal) | **3.4% a year** (range 2.5–4.5%) | A | BLS Employment Cost Index, private industry, 12 months to Sept 2026. One monthly index, (1 + 3.4%)^(m/12), on salary **and** cost per hour together: positions, hires avoided, capacity, severance, training time and the cost test. Cost per hire, seats, licences and programme costs stay flat. See `docs/spec_delta_wage_growth.md`. |
 
 **On-cost convention (4.1).** 1.3055 reconciles to BLS ECEC **only with paid leave excluded from the on-cost**. ECEC counts paid leave (holidays, vacation, sick leave) as a benefit, separate from "wages and salaries", but an annual salary already includes the pay for that leave. So the right multiplier on an annual salary is total compensation ÷ (wages + paid leave) = 100 ÷ (68.5 + 8.1) = **1.3055** (Table 5, full-time private industry). The hourly rate then spreads the full loaded cost over 1,920 working hours (row 4.3), so leave is paid for once, not twice.
 
@@ -124,7 +127,7 @@ Assistant savings are the smaller of the category ceiling and the band rate, and
 
 High to low is a 2.0x spread on the headline, from an input the brief puts out of scope. The ceilings are not among the uncertainty draws, so the P10–P90 band (−$4.2M to +$21.2M) assumes the pack reading is correct. It does not cover this question.
 
-These four figures are locked in by `tests/test_ceiling_sets.py`. Changing the ceilings, or anything that moves their price, fails that test.
+These four figures are at flat pay. With wage growth (5 Nov 2026) they become $7,455,039 / $11,549,981 / $11,939,578 / $13,865,232, a 1.86x spread; see `docs/spec_delta_wage_growth.md`. The flat-pay figures are still the ones locked in by `tests/test_ceiling_sets.py`. Changing the ceilings, or anything that moves their price, fails that test.
 
 #### Reproducing this in the workbook
 

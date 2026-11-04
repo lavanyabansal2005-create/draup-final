@@ -55,7 +55,8 @@ one archetype must conclude the payback does not justify the programme.
 **11. The Excel workbook is the reproducibility artifact.** The brief requires that someone
 with a spreadsheet and no access to this code can reproduce the headline number in under an
 hour. `docs/Etter_Value_Model_FPA.xlsx` currently satisfies that — its Summary sheet carries
-$9,376,169.02, matching the engine to the cent. Any change that moves the headline must
+$11,549,980.85 (with wage growth, 5 Nov 2026), matching the engine to the cent. `tests/reference.json`
+still holds the flat-pay $9,376,169.02 until its owner updates it. Any change that moves the headline must
 regenerate that workbook in the same session. A stale workbook fails the requirement silently,
 which is worse than failing it loudly.
 
@@ -88,7 +89,8 @@ question 1 below. Do not "correct" it.
 ## Open questions for Chandan — do not resolve unilaterally
 1. **Ceilings.** The source workbook states the Etter potential ceilings twice and the two
    tables disagree on five of six categories (only Negligibility agrees, both 0.10). The pack matches neither. Priced on this engine
-   the readings give $5.80M / $9.38M / $9.75M / $11.48M of 5-year cash NPV. See
+   the readings give $5.80M / $9.38M / $9.75M / $11.48M of 5-year cash NPV at flat pay, and
+   $7.46M / $11.55M / $11.94M / $13.87M with wage growth. See
    `packs/sources.json` → `categories.*.ceiling` → `CONFLICT`. The question is not "which table
    is right" — `engine_v2.py` shows we once used the shipped column, so the override to 90 / 80
    was intentional. The question is what it rests on, so it can go in the parameter book with a
@@ -99,8 +101,8 @@ question 1 below. Do not "correct" it.
 ## Known gaps, already diagnosed
 - `on_cost` 1.3055 reconciles to BLS ECEC only if paid leave is excluded; the headline ECEC
   multiplier is 1.4287. Convention documented in the parameter book (assumptions row 4.1).
-- No wage escalation: salaries are flat for 60 months while run cost declines 13%/yr, under a
-  nominal discount rate. Asymmetric, and it understates savings.
+- Wage escalation added 5 Nov 2026 (`economics.wage_growth` 3.4%, BLS ECI); salary and cost per
+  hour escalate together. It is not in the uncertainty draws. See `docs/spec_delta_wage_growth.md`.
 - `review` is a flat 0.30 across all bands. Two studies (Dell'Acqua; Brynjolfsson v2) show the
   cost of unreviewed output rises with seniority. This is a structural change, not a parameter.
 - `standard_task_hours_month` is a flat 160. FR3 asks for productive hours per level.

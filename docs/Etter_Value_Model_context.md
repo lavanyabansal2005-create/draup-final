@@ -1,5 +1,7 @@
 # Etter Value Model — complete context for answering questions
 
+> **5 Nov 2026: wage growth added (3.4% a year).** The default headline is now **$11,549,980.85**, payback **month 31**, 43 workloads, 79% chance positive. Figures below that predate the change are at flat pay ($9.38M, month 33). Full before/after: `docs/spec_delta_wage_growth.md`.
+
 > **Purpose of this file.** Everything an agent needs to answer questions about the Draup / Etter AI value model accurately: the problem, the history of versions, exactly how the final model works (formulas and parameters), the reference results, the deliverables, the known weaknesses and the likely questions. Numbers are exact outputs of the reference engine unless marked otherwise. When in doubt, prefer the numbers in Section 6 and the formulas in Section 5.
 >
 > As of: 23 October 2026 (after the review meeting in which Chandan set the agent ceilings to **Directive 90%, Feedback Loop 80%**). Currency: USD. Default case throughout: **Etter FP&A dataset, Moderate scenario, Attrition only policy, cross-industry defaults, assistants on.**

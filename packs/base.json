@@ -39,6 +39,7 @@
   },
   "economics": {
     "on_cost": 1.3055,
+    "wage_growth": 0.034,
     "standard_task_hours_month": 160,
     "discount_rate": 0.0696,
     "horizon_months": 60,

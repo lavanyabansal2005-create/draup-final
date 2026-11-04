@@ -133,8 +133,9 @@ class Invariants(unittest.TestCase):
         self.assertEqual(r['payback_month'], REF['payback'])
 
     def test_earlier_engine_is_reproduced(self):
-        # build-only, every cost-effective workload, ceilings 85% / 55%: the v0 engine to the cent
+        # build-only, every cost-effective workload, ceilings 85% / 55%, flat pay: the v0 engine to the cent
         p = copy.deepcopy(PACK); p['costs']['allow_buy'] = False
+        p['economics']['wage_growth'] = 0.0   # v0 had no wage escalation (added 5 Nov 2026)
         p['categories']['Directive']['ceiling'] = 0.85; p['categories']['Feedback Loop']['ceiling'] = 0.55
         r = evm.simulate(evm.prepare(DATA, p), evm.scenario(p, 'Moderate'), evm.policy(p, 'Attrition only'))
         self.assertAlmostEqual(r['npv_cash'], 3096839.06, delta=0.5)

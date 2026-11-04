@@ -55,6 +55,13 @@
         "tasks_column": "$5.80M",
         "coarse_bucket_ceiling": "$11.48M"
       },
+      "priced_impact_with_wage_growth_5y_cash_npv": {
+        "pack": "$11.55M",
+        "read_me_table": "$11.94M",
+        "tasks_column": "$7.46M",
+        "coarse_bucket_ceiling": "$13.87M",
+        "note": "Same four readings after economics.wage_growth (5 Nov 2026). The figures above are at flat pay and are the ones tests/test_ceiling_sets.py still locks."
+      },
       "what_moves_the_headline": "Only Directive and Feedback Loop. Assistant savings are the smaller of the category ceiling and the band rate, and the band rate tops out at 0.20, so it binds before any assistant ceiling does (every reading puts them at 0.25 or above). Task Iteration, Learning and Validation therefore disagree at zero financial cost: swapping in the Read me or bucket values leaves the headline at $9,376,169.02. Negligibility maps to Human and is never read.",
       "the_real_question": "The Directive / Feedback Loop pair. 0.90 for Directive matches the Read me table; 0.80 for Feedback Loop matches no table in the source (Read me 0.85, Tasks column 0.55). The question for Chandan is what 0.80 rests on.",
       "locked_by": "tests/test_ceiling_sets.py prices all four readings and asserts each headline.",
@@ -98,7 +105,7 @@
   },
   "economics.wage_growth": {
     "status": "sourced",
-    "proposed_new_key": true,
+    "in_pack_since": "2026-11-05",
     "default": 0.034,
     "p10": 0.025,
     "p90": 0.045,
@@ -106,7 +113,9 @@
     "url": "https://www.bls.gov/news.release/pdf/eci.pdf",
     "verified": "2026-11-04",
     "reconciles": "Compensation costs for private industry workers rose 3.4% (not seasonally adjusted) for the 12 months ending September 2026.",
-    "note": "Fixes the asymmetry flagged in review: run cost declines 13%/yr while salaries sit flat for 60 months under a nominal discount rate. Understates savings."
+    "note": "Fixes the asymmetry flagged in review: run cost declines 13%/yr while salaries sat flat for 60 months under a nominal discount rate, which understated savings.",
+    "applies_to": "One monthly index (1 + g)^(m/12) on R['C'] and R['rate'] together (positions, hires avoided, capacity, severance, training time) and on the value of work in the cost test. Not in uncertainty.params: P10/P90 here are for the sensitivity check only (swing $1.31M, 7th of 11). Spec: docs/spec_delta_wage_growth.md.",
+    "priced": "Default headline $9,376,169.02 at flat pay -> $11,549,980.85 at 3.4%; payback month 33 -> 31."
   },
   "uncertainty.params.takeover": {
     "status": "sourced",

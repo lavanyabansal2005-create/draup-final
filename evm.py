@@ -180,7 +180,10 @@ def scope(prep, S, rule='cost_effective', top_k=None, horizon=None):
     P = prep['pack']; E = P['economics']; C = P['costs']
     T = horizon or E['horizon_months']; d = E['discount_rate']
     net = S['takeover'] * (1 - S['review']); lead = C['build_lead_months']
+    wg = E.get('wage_growth', 0.0)
     ann = sum(smoothstep((m - lead) / S['adopt_months']) * df(m, d) for m in range(1, T + 1))
+    # the work taken over is paid at grown wages; running and maintenance are not
+    ann_w = sum(smoothstep((m - lead) / S['adopt_months']) * df(m, d) * (1 + wg) ** (m / 12) for m in range(1, T + 1))
     ranked = []
     for X in prep['workloads'].values():
         benefit = X['value'] * net
@@ -197,14 +200,14 @@ def scope(prep, S, rule='cost_effective', top_k=None, horizon=None):
         best = None
         for name, rate, up, maint, ms in opts:
             run = X['auto_hours'] * S['takeover'] * rate
-            npv = (benefit - run - maint) * ann - up
+            npv = benefit * ann_w - (run + maint) * ann - up
             if best is None or npv > best[0]:
                 best = (npv, name, rate, up, maint, ms, run)
         npv, name, rate, up, maint, ms, run = best
         sc = S['cost_mult']; rm = S['cost_mult'] * S.get('run_mult', 1.0)
         ranked.append(dict(X, benefit=benefit, run=run, maint=maint, build_s=up, npv_at_cost=npv, option=name,
                            run_rate=rate, maint_share=ms, up_base=up / sc, rate_base=rate / rm,
-                           ratio=(benefit - run - maint) * ann / up if up else 0.0))
+                           ratio=(benefit * ann_w - (run + maint) * ann) / up if up else 0.0))
     ranked.sort(key=lambda x: -x['ratio'])
     if rule == 'all':
         chosen = [x for x in ranked if x['auto_hours'] > 0]
@@ -253,6 +256,7 @@ def simulate(prep, S, Q, opts=None):
     ramp = smoothstep if o['ramp'] == 's' else linear_ramp
     kap = S.get('drag', P['nonlinear']['complexity_drag'])
     g = E.get('function_growth', 0.0)
+    wg = E.get('wage_growth', 0.0)                 # nominal pay growth; see docs/spec_delta_wage_growth.md
     count_avoid = (g > 0) if o['count_avoidance'] is None else o['count_avoidance']
     chosen = o['chosen']
     if chosen is None:
@@ -312,6 +316,7 @@ def simulate(prep, S, Q, opts=None):
     prevP = {R['role']: 0 for R in roles}; prevAv = {R['role']: 0 for R in roles}
     for m in range(1, T + 1):
         decay = (1 - C['run_cost_decline_per_year']) ** (m / 12)
+        wf = (1 + wg) ** (m / 12)                  # wage index: C and rate escalate together
         for R in roles:
             s = st[R['role']]; nm = R['role']; src = 'role: ' + nm
             fa_h = 0.0; ai_h_tot = 0.0
@@ -350,17 +355,17 @@ def simulate(prep, S, Q, opts=None):
             cap_h = F_h - Pm * R['H'] - Av * R['H']
             # money, booked to the role it comes from
             newP = Pm - prevP[nm]; newAv = max(0, Av - prevAv[nm])
-            items = [('hard', Pm * R['C'] / 12), ('seats_reclaimed', Pm * R['seat_cost'] / 12),
-                     ('avoidance', Av * R['C'] / 12 + newAv * E['cost_per_hire']),
-                     ('capacity', cap_h * R['rate']),
+            items = [('hard', Pm * R['C'] * wf / 12), ('seats_reclaimed', Pm * R['seat_cost'] / 12),
+                     ('avoidance', Av * R['C'] * wf / 12 + newAv * E['cost_per_hire']),
+                     ('capacity', cap_h * R['rate'] * wf),
                      ('licences', seats * C['assistant_licence_per_seat_year'] / 12 * S['cost_mult'])]
             if Q['mechanism'] == 'attrition':
                 items.append(('recruit_avoided', newP * E['cost_per_hire']))
             else:
-                items.append(('severance', newP * Q['severance_weeks'] * R['S'] / 52))
+                items.append(('severance', newP * Q['severance_weeks'] * R['S'] * wf / 52))
             if s['exposed'] is not None and m == max(1, s['exposed']):
                 items.append(('training', R['N'] * (C['training_spend_per_head']
-                                                    + C['training_hours_per_head'] * R['rate'])))
+                                                    + C['training_hours_per_head'] * R['rate'] * wf)))
             for line, amt in items:
                 if amt:
                     ser[line][m] += amt; book(line, src, m, amt)
