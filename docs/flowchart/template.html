@@ -333,9 +333,9 @@
     <div class="col">
       <div class="lab"><b>B</b>Five fixes from the finance review</div>
       <div class="box">
-        <div class="item"><p><b class="k">1 Capacity.</b> Positions were whole people, but every leftover sliver counted as capacity at full cost. Now freed time below {{block_h}} hours a month per person is stranded at zero value. <span class="eff">Capacity {{o_cap}} → {{capacity}}; cash unchanged.</span></p></div>
+        <div class="item"><p><b class="k">1 Capacity.</b> Positions were whole people, but every leftover sliver counted as capacity at full cost. Now freed time below {{block_h}} hours a month per person is stranded at zero value. <span class="eff">Capacity {{capacity}} with the floor, {{cap0}} without it; cash unchanged.</span></p></div>
         <div class="item"><p><b class="k">2 Training.</b> It was paid once, for the day-one headcount. Now {{joiners}} joiners are trained as they arrive, and everyone in post gets a {{refresh}} refresher each year. <span class="eff">{{s_join}} joiners, {{s_ref}} refresher.</span></p></div>
-        <div class="item"><p><b class="k">3 Licences.</b> Seats were paid for all {{headcount}} people forever. Now they follow people in post and are trued down at each contract anniversary. <span class="eff">{{s_lic}}.</span></p></div>
+        <div class="item"><p><b class="k">3 Licences.</b> Seats stayed sized on the day-one headcount of {{headcount}} for all five years. Now they follow people in post and are trued down at each contract anniversary. <span class="eff">{{s_lic}}.</span></p></div>
         <div class="item"><p><b class="k">4 Payback.</b> It was undiscounted next to a discounted NPV. Now both are shown and labelled. <span class="eff">Month {{pay_d}} discounted, {{pay_u}} undiscounted.</span></p></div>
         <div class="item"><p><b class="k">5 Stopping.</b> The model could not show a programme that was tried and stopped. Now it can: AI off, the work comes back, positions are refilled at {{cph}} each. A gate at month {{gate_m}} stops every future that misses the break-even. <span class="eff">{{p_stop}} of futures stop, {{stop_cost}} each. Gartner forecast at least 30% of GenAI projects abandoned after proof of concept.</span></p></div>
       </div>
