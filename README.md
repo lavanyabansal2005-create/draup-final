@@ -22,7 +22,7 @@ Turns Etter task data into a month-by-month financial estimate: cash vs today, c
 - `tests/`: acceptance tests (`test_evm.py`), reference numbers (`reference.json`), JS parity (`parity.py`).
 - `site/`: website prototype (`etter_value_model.html` is the built single page).
 - `experiments/`: the experiments behind the strategy doc. They were run on the earlier engine (build only, ceilings 85% / 55%) and are kept for the record; their outputs in `experiments/out/` are not the current numbers.
-- `docs/`: how the model works, the assumption list, the full context file, the flowchart and the Excel workbook.
+- `docs/`: how the model works, the assumption list, the full context file, the flowchart (rebuilt from the engine by `docs/flowchart/build.py`) and the Excel workbook.
 
 ## Model in three sentences
 Etter says which tasks AI can do; the model keeps only the workloads where an agent (built or bought, whichever is cheaper) costs less than the work, and only the share AI really takes over once people have checked it.

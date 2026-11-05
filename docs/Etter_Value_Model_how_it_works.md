@@ -265,4 +265,4 @@ The plan (which workloads, when) is fixed, then reality is drawn **1,000 times**
 - `etter_value_model.zip` — the Python engine, browser engine, packs, data, tests, website prototype and these documents.
 - `Etter_Value_Model_assumptions.md` — every assumption with value, range, grade and source.
 - `Etter_Value_Model_context.md` — full background, version history and Q&A for anyone (or any agent) answering questions on the model.
-- `Etter_Value_Model_flowchart.pdf` — the model on one page.
+- `Etter_Value_Model_flowchart.pdf` — the model on one page, then what changed since 23 October and the questions for Chandan (page 2). Rebuilt from the engine by `python3 docs/flowchart/build.py`, which also checks the Excel against the engine.

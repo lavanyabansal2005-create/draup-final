@@ -113,6 +113,7 @@ question 1 below. Do not "correct" it.
     python3 -m unittest discover tests              # full suite, must stay green
     python3 tests/parity.py                         # evm.js matches evm.py
     python3 site/build.py                           # rebuild the site after engine changes
+    python3 docs/flowchart/build.py                 # rebuild the flowchart PDF (needs Node Playwright); checks the Excel
 
 ## Style
 Minimal dependencies — the engine is pure Python with none, keep it that way. Clean, tested,
