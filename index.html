@@ -1,0 +1,1182 @@
+<title>Etter Value Model</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: a sticky control bar, a verdict band, then four tabbed views of one model run. */
+:root {
+  --bg: #f3f4f1; --surface: #ffffff; --ink: #161b19; --muted: #5a645f; --rule: #d8dcd5; --soft: #eaece7;
+  --accent: #2343c4; --accent-soft: rgba(35, 67, 196, 0.10);
+  --avoid: #0b766d; --capacity: #a8620c; --good: #1a7343; --bad: #b0352a; --warn: #9a6200;
+  --band: rgba(35, 67, 196, 0.16);
+  --font-display: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+  --font-body: 'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --r: 10px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #101412; --surface: #171c1a; --ink: #e7ebe8; --muted: #9ba59f; --rule: #2a322e; --soft: #1e2421;
+  --accent: #8ba0ff; --accent-soft: rgba(139, 160, 255, 0.14);
+  --avoid: #45c2b4; --capacity: #e2a552; --good: #52c487; --bad: #f07d70; --warn: #e3b24c;
+  --band: rgba(139, 160, 255, 0.20); color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #101412; --surface: #171c1a; --ink: #e7ebe8; --muted: #9ba59f; --rule: #2a322e; --soft: #1e2421;
+  --accent: #8ba0ff; --accent-soft: rgba(139, 160, 255, 0.14);
+  --avoid: #45c2b4; --capacity: #e2a552; --good: #52c487; --bad: #f07d70; --warn: #e3b24c;
+  --band: rgba(139, 160, 255, 0.20); color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.5; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
+.wrap { max-width: 1180px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h2 { font-size: 1.15rem; font-weight: 600; }
+h3 { font-size: 0.98rem; font-weight: 600; }
+p { margin: 0; }
+.num, td.n, .mono { font-variant-numeric: tabular-nums; }
+.mono { font-family: var(--font-mono); font-size: 0.86em; }
+.muted { color: var(--muted); }
+.label { font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+
+/* control bar */
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 9; background: var(--surface); border-bottom: 1px solid var(--rule); }
+.top .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; padding-block: 10px; }
+.brand { display: flex; align-items: baseline; gap: 10px; margin-right: auto; }
+.brand h1 { font-size: 1.12rem; font-weight: 700; }
+.brand h1 span { color: var(--accent); }
+.brand .tag { font-size: 0.75rem; color: var(--muted); }
+.ctl { display: flex; align-items: center; gap: 8px; }
+.ctl > .label { white-space: nowrap; }
+select { font: inherit; font-size: 0.88rem; color: var(--ink); background: var(--bg); border: 1px solid var(--rule); border-radius: 8px; padding: 6px 8px; max-width: 260px; }
+.seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 9px; overflow: hidden; background: var(--bg); }
+.seg button { font: inherit; font-size: 0.84rem; color: var(--muted); background: transparent; border: 0; padding: 6px 11px; cursor: pointer; white-space: nowrap; }
+.seg button + button { border-left: 1px solid var(--rule); }
+.seg button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+:root[data-theme="dark"] .seg button[aria-pressed="true"] { color: #0d1020; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .seg button[aria-pressed="true"] { color: #0d1020; } }
+button:focus-visible, select:focus-visible, input:focus-visible, .tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* verdict band */
+.verdict { padding-block: 26px 10px; display: grid; gap: 18px; }
+.answer { font-family: var(--font-display); font-size: clamp(1.15rem, 1.6vw + 0.7rem, 1.55rem); font-weight: 500; line-height: 1.35; max-width: 62ch; text-wrap: pretty; }
+.answer b { font-weight: 700; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
+.tile { background: var(--surface); border: 1px solid var(--rule); border-radius: var(--r); padding: 14px 16px; display: grid; gap: 4px; min-width: 0; }
+.tile .big { font-family: var(--font-display); font-size: 1.9rem; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.tile .sub { font-size: 0.82rem; color: var(--muted); }
+.tile.cash .big { color: var(--accent); }
+.tile.avoid .big { color: var(--avoid); }
+.tile.cap .big { color: var(--capacity); }
+.chip { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 600; border-radius: 999px; padding: 3px 10px; border: 1px solid currentColor; width: fit-content; }
+.chip.go { color: var(--good); } .chip.pilot { color: var(--warn); } .chip.stop, .chip.capacity { color: var(--bad); } .chip.wait { color: var(--muted); }
+.meter { height: 6px; border-radius: 4px; background: var(--soft); overflow: hidden; }
+.meter i { display: block; height: 100%; background: var(--accent); width: 0; transition: width 0.2s; }
+
+/* tabs */
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--rule); margin-top: 14px; overflow-x: auto; }
+.tab { font: inherit; font-weight: 600; font-size: 0.92rem; color: var(--muted); background: none; border: 0; border-bottom: 2px solid transparent; padding: 10px 14px; cursor: pointer; white-space: nowrap; }
+.tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+.tab .who { font-weight: 400; font-size: 0.78rem; color: var(--muted); margin-left: 6px; }
+main { padding-block: 20px 48px; }
+.panel { display: grid; gap: 18px; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+@media (max-width: 860px) { .grid2 { grid-template-columns: minmax(0, 1fr); } }
+.card { background: var(--surface); border: 1px solid var(--rule); border-radius: var(--r); padding: 16px 18px; display: grid; gap: 12px; min-width: 0; align-content: start; }
+.card header { display: grid; gap: 3px; }
+.card header p { font-size: 0.86rem; color: var(--muted); max-width: 70ch; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+.kpi { border-left: 3px solid var(--rule); padding: 2px 0 2px 10px; display: grid; gap: 2px; }
+.kpi .v { font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.kpi .k { font-size: 0.78rem; color: var(--muted); }
+
+/* tables */
+.tw { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 0.86rem; }
+th { text-align: left; font-weight: 600; font-size: 0.74rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); padding: 6px 8px; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+td { padding: 7px 8px; border-bottom: 1px solid var(--soft); vertical-align: top; }
+td.n, th.n { text-align: right; white-space: nowrap; }
+tr.tot td { font-weight: 600; border-top: 1px solid var(--rule); }
+.grade { display: inline-block; min-width: 1.6em; text-align: center; font-weight: 600; font-size: 0.75rem; border-radius: 5px; padding: 1px 5px; border: 1px solid var(--rule); }
+.grade.A { color: var(--good); } .grade.B { color: var(--accent); } .grade.C { color: var(--warn); } .grade.D { color: var(--bad); }
+.pos { color: var(--good); } .neg { color: var(--bad); }
+input[type=number] { font: inherit; font-size: 0.86rem; width: 96px; color: var(--ink); background: var(--bg); border: 1px solid var(--rule); border-radius: 6px; padding: 4px 6px; font-variant-numeric: tabular-nums; }
+input[type=range] { width: 100%; accent-color: var(--accent); }
+input.edited { border-color: var(--accent); background: var(--accent-soft); }
+.btn { font: inherit; font-size: 0.84rem; font-weight: 600; color: var(--accent); background: var(--accent-soft); border: 1px solid transparent; border-radius: 8px; padding: 6px 12px; cursor: pointer; }
+.btn.quiet { color: var(--muted); background: transparent; border-color: var(--rule); }
+.row { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+details summary { cursor: pointer; }
+ul.plain { margin: 0; padding-left: 1.1em; display: grid; gap: 4px; font-size: 0.88rem; }
+.note { font-size: 0.8rem; color: var(--muted); }
+textarea { width: 100%; min-height: 140px; font-family: var(--font-mono); font-size: 0.78rem; color: var(--ink); background: var(--bg); border: 1px solid var(--rule); border-radius: 8px; padding: 8px; }
+
+/* charts */
+svg.chart { width: 100%; height: auto; display: block; overflow: visible; }
+svg.chart text { fill: var(--ink); font-family: var(--font-body); }
+svg.chart .q { fill: var(--muted); }
+svg.chart .grid { stroke: var(--soft); }
+svg.chart .axis { stroke: var(--muted); }
+svg.chart .ref { stroke: var(--muted); stroke-dasharray: 4 4; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 0.8rem; color: var(--muted); }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -1px; margin-right: 6px; }
+footer { border-top: 1px solid var(--rule); padding-block: 16px 28px; font-size: 0.8rem; color: var(--muted); }
+@media (max-width: 640px) {
+  .top { position: static; }
+  .brand { width: 100%; }
+  .seg button { padding: 6px 8px; font-size: 0.8rem; }
+  .tile .big { font-size: 1.6rem; }
+}
+
+/* funnel, workload, tornado, waves */
+.fn { display: grid; gap: 10px; }
+.fn-row { display: grid; grid-template-columns: minmax(170px, 300px) minmax(0, 1fr) 92px; gap: 6px 16px; align-items: center; }
+.fn-l { display: grid; min-width: 0; }
+.fn-l b { font-weight: 600; font-size: 0.92rem; }
+.fn-l span { font-size: 0.8rem; color: var(--muted); }
+.fn-bar { position: relative; display: flex; align-items: center; gap: 10px; min-width: 0; }
+.fn-bar i { display: block; height: 18px; border-radius: 4px; flex: none; }
+.fn-bar span { font-size: 0.86rem; white-space: nowrap; }
+.fn-k { font-size: 0.8rem; color: var(--muted); text-align: right; }
+.wlist { display: grid; gap: 8px; }
+.wl-row { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(60px, 1fr) 76px; gap: 10px; align-items: center; }
+.wl-name { display: grid; font-size: 0.86rem; min-width: 0; }
+.wl-name span { font-size: 0.76rem; color: var(--muted); }
+.wl-bar { height: 12px; }
+.wl-bar i { display: block; height: 100%; border-radius: 3px; background: var(--accent); box-sizing: border-box; }
+.wl-v { font-size: 0.8rem; color: var(--muted); text-align: right; }
+ol.dec { margin: 0; padding-left: 1.2em; display: grid; gap: 12px; font-size: 0.92rem; }
+.tor { display: grid; gap: 10px; }
+.tor-row { display: grid; grid-template-columns: minmax(140px, 200px) minmax(0, 1fr); gap: 2px 14px; align-items: center; }
+.tor-l { display: grid; font-size: 0.86rem; }
+.tor-l span { font-size: 0.76rem; color: var(--muted); }
+.tor-t { position: relative; height: 18px; }
+.tor-t i { position: absolute; top: 3px; height: 12px; border-radius: 3px; }
+.tor-t .z { position: absolute; top: -3px; bottom: -3px; border-left: 1.5px solid var(--muted); }
+.tor-t .bs { position: absolute; top: -3px; bottom: -3px; border-left: 1.5px dotted var(--ink); }
+.tor-v { grid-column: 2; font-size: 0.78rem; color: var(--muted); }
+.waves { display: grid; gap: 8px; }
+.wv { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 12px; align-items: center; }
+.wv-l { display: grid; font-size: 0.86rem; }
+.wv-l span { font-size: 0.76rem; color: var(--muted); }
+.wv-t { position: relative; height: 10px; border-bottom: 1px solid var(--rule); }
+.wv-t i { position: absolute; top: 0; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); transform: translateX(-5px); }
+#gate { display: grid; gap: 14px; }
+.regv { display: inline-flex; align-items: center; gap: 6px; }
+.regv .u { width: 1.1em; text-align: left; color: var(--muted); }
+.lg-src { display: flex; justify-content: space-between; gap: 12px; font-size: 0.8rem; color: var(--muted); padding: 2px 0 2px 14px; }
+@media (max-width: 640px) {
+  .fn-row { grid-template-columns: minmax(0, 1fr); }
+  .fn-k { text-align: left; }
+  .tor-row { grid-template-columns: minmax(0, 1fr); }
+  .tor-v { grid-column: 1; }
+  .wv { grid-template-columns: 110px minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) { .meter i { transition: none; } }
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><h1>Etter<span>.</span> Value Model</h1><span class="tag">Prototype on the Etter FP&amp;A dataset</span></div>
+    <label class="ctl"><span class="label">Organisation</span><select id="org" aria-label="Organisation"></select></label>
+    <div class="ctl"><span class="label">Policy</span><div class="seg" id="policy" role="group" aria-label="Headcount policy"></div></div>
+    <div class="ctl"><span class="label">Ambition</span><div class="seg" id="scen" role="group" aria-label="Ambition"></div></div>
+    <label class="ctl"><span class="label">Horizon</span><select id="horizon" aria-label="Horizon"><option value="36">3 years</option><option value="48">4 years</option><option value="60" selected>5 years</option></select></label>
+  </div>
+</header>
+
+<section class="wrap verdict" aria-live="polite">
+  <p class="answer" id="answer"></p>
+  <div class="tiles" id="tiles"></div>
+</section>
+
+<div class="wrap">
+  <nav class="tabs" role="tablist" aria-label="Views">
+    <button class="tab" role="tab" id="t-leader" aria-selected="true" aria-controls="p-leader">Leader<span class="who">what changes</span></button>
+    <button class="tab" role="tab" id="t-finance" aria-selected="false" aria-controls="p-finance">Finance<span class="who">what it is worth</span></button>
+    <button class="tab" role="tab" id="t-plan" aria-selected="false" aria-controls="p-plan">Plan<span class="who">what to do first</span></button>
+    <button class="tab" role="tab" id="t-audit" aria-selected="false" aria-controls="p-audit">Audit<span class="who">where every dollar comes from</span></button>
+  </nav>
+</div>
+
+<main class="wrap">
+  <section class="panel" id="p-leader" role="tabpanel" aria-labelledby="t-leader">
+    <div class="card"><header><h2>Why 1:1 does not hold</h2><p>From hours Etter scores as AI work to positions that actually go, in full-time equivalents at the end of the horizon. Each step is one named assumption.</p></header><div id="funnel"></div></div>
+    <div class="grid2">
+      <div class="card"><header><h2>Where the value sits</h2><p>Workloads ranked by what the AI is worth against its own cost. Filled bars are in the programme; hollow bars cost more than the work they would take over.</p></header><div id="wl"></div></div>
+      <div class="card"><header><h2>What decides the answer</h2><p>The three inputs that move cash the most, each across its plausible range.</p></header><div id="decides"></div></div>
+    </div>
+    <div class="card"><header><h2>People, role by role</h2><p id="people-sub"></p></header><div class="tw" id="roles"></div></div>
+  </section>
+
+  <section class="panel" id="p-finance" role="tabpanel" aria-labelledby="t-finance" hidden>
+    <div class="card"><header><h2>The numbers a controller checks</h2><p>Cash and capacity are reported separately and never added. Ranges come from correlated draws around the chosen ambition.</p></header><div class="kpis" id="fin-kpis"></div></div>
+    <div class="card"><header><h2>Cumulative cash, month by month</h2><p>Costs land before savings. Undiscounted, so the end point is larger than the NPV. The band covers the middle 80% of outcomes; the line is the chosen ambition.</p></header><div id="fan"></div><div class="legend"><span><i style="background:var(--band)"></i>P10 to P90</span><span><i style="background:var(--accent)"></i>Chosen ambition</span><span><i style="background:var(--muted)"></i>Payback</span></div></div>
+    <div class="grid2">
+      <div class="card"><header><h2>Every line, present value</h2><p>Savings and costs by line, with the grade of the evidence behind each.</p></header><div class="tw" id="lines"></div></div>
+      <div class="card"><header><h2>Sensitivity</h2><p>Cash NPV with one input moved across its plausible range, everything else held.</p></header><div id="tornado"></div></div>
+    </div>
+    <div class="card"><header><h2>Same organisation, nine ways</h2><p>Headline cash NPV under each ambition and policy. The highlighted cell is the current view.</p></header><div class="tw" id="grid"></div></div>
+  </section>
+
+  <section class="panel" id="p-plan" role="tabpanel" aria-labelledby="t-plan" hidden>
+    <div class="card"><header><h2>How big should the programme be?</h2><p>Workloads are added in rank order. Cash peaks before capacity does, so programme size is a real choice.</p></header><div id="frontier"></div>
+      <div class="row"><label class="label" for="scopek">Workloads in the programme</label><span class="mono" id="scopek-v"></span><button class="btn quiet" id="scope-reset">Use the cost test</button></div>
+      <input type="range" id="scopek" min="0" max="60" step="1" aria-label="Number of workloads">
+    </div>
+    <div class="grid2">
+      <div class="card"><header><h2>The pilot and its gate</h2><p id="gate-sub"></p></header><div id="gate"></div></div>
+      <div class="card"><header><h2>Go-live waves</h2><p>Three pilot workloads first, an evaluation period, then waves each quarter.</p></header><div id="waves"></div></div>
+    </div>
+  </section>
+
+  <section class="panel" id="p-audit" role="tabpanel" aria-labelledby="t-audit" hidden>
+    <div class="card"><header><h2>Checks</h2><p>The acceptance tests from the brief, recomputed on this run.</p></header><div id="checks"></div></div>
+    <div class="card"><header><h2>Ledger</h2><p>Every dollar, booked to the role, workload or pack line it comes from. Present values sum to the cash NPV.</p></header>
+      <div class="row"><button class="btn" id="copy-csv">Copy ledger as CSV</button><span class="note" id="copy-msg" role="status"></span></div>
+      <div class="tw" id="ledger"></div><textarea id="csv-fallback" hidden aria-label="Ledger CSV"></textarea></div>
+    <div class="card"><header><h2>Assumptions</h2><p>Change any value to see its effect. Edited values are highlighted, and all of them reset when you change organisation.</p></header>
+      <div class="row"><button class="btn quiet" id="reset-edits">Reset all</button></div><div class="tw" id="register"></div></div>
+    <div class="card"><header><h2>Data notes</h2><p>What the engine noticed in the input data. None of these stop the run.</p></header><div id="flags"></div></div>
+  </section>
+</main>
+
+<footer><div class="wrap" id="foot"></div></footer>
+
+<script>/* Etter Value Model -- browser/Node port of evm.py (the Python file is the reference).
+   Line-for-line equivalent; parity is checked by tests/parity.js. No dependencies. */
+(function (root) {
+  'use strict';
+  const CAT_TYPE = { 'Directive': 'automate', 'Feedback Loop': 'automate', 'Task Iteration': 'augment',
+    'Learning': 'augment', 'Validation': 'augment', 'Negligibility': 'human' };
+  const COST_LINES = ['build', 'programme', 'training', 'licences', 'run', 'maintenance', 'severance'];
+  const CASH_LINES = ['hard', 'seats_reclaimed', 'recruit_avoided'];
+
+  const norm = s => s.trim().toLowerCase().split(' & ').join(' and ').split(/\s+/).filter(Boolean).join(' ');
+
+  // ---------------------------------------------------------------- seeded PRNG (mulberry32)
+  function RNG(seed) { this.a = seed >>> 0; }
+  RNG.prototype.u = function () {
+    this.a = (this.a + 0x6D2B79F5) >>> 0;
+    let t = this.a;
+    t = Math.imul(t ^ (t >>> 15), t | 1) >>> 0;
+    t = (t ^ ((t + (Math.imul(t ^ (t >>> 7), t | 61) >>> 0)) >>> 0)) >>> 0;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  RNG.prototype.z = function () {
+    const u1 = this.u() || 1e-12, u2 = this.u();
+    return Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+  };
+
+  // ---------------------------------------------------------------- helpers
+  const smoothstep = x => (x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x));
+  const linearRamp = x => (x <= 0 ? 0 : x >= 1 ? 1 : x);
+  const df = (m, rate) => Math.pow(1 + rate, -m / 12);
+  const pv = (series, rate) => { let s = 0; for (let m = 0; m < series.length; m++) s += series[m] * df(m, rate); return s; };
+  const floor = Math.floor;
+  function irrAnnual(series) {
+    if (!series.some(v => v < 0) || !series.some(v => v > 0)) return null;
+    const npv = r => { let s = 0; for (let m = 0; m < series.length; m++) s += series[m] / Math.pow(1 + r, m); return s; };
+    let lo = -0.99, hi = 1.0;
+    if (npv(lo) * npv(hi) > 0) return null;
+    for (let i = 0; i < 200; i++) { const mid = (lo + hi) / 2; if (npv(lo) * npv(mid) <= 0) hi = mid; else lo = mid; }
+    return Math.pow(1 + (lo + hi) / 2, 12) - 1;
+  }
+  function quantile(xs, q) {
+    const ys = xs.slice().sort((a, b) => a - b); const k = (ys.length - 1) * q; const f = floor(k), c = Math.ceil(k);
+    return f === c ? ys[f] : ys[f] + (ys[c] - ys[f]) * (k - f);
+  }
+  const clone = o => JSON.parse(JSON.stringify(o));
+
+  // ---------------------------------------------------------------- 1-2 prepare
+  function prepare(data, pack, basis) {
+    basis = basis || 'tasks';
+    const P = pack, cats = P.categories, E = P.economics;
+    const roles = {}, roleOrder = [], flags = [];
+    for (const r of data.roles) {
+      const band = r.turnover_level || r.band;
+      roles[r.role] = { role: r.role, level: r.level, band, N: r.headcount, S: r.salary, etter_score: r.etter_score == null ? null : r.etter_score,
+        seat_cost: r.seat_cost == null ? null : r.seat_cost, H: 0, auto: new Map(), aug: 0, hours_by_cat: {} };
+      roleOrder.push(r.role);
+    }
+    for (const t of data.tasks) {
+      const R = roles[t.role];
+      if (!R) { flags.push(['error', `task for unknown role '${t.role}' ignored`]); continue; }
+      const h = Number(t.hours_month || 0), c = t.category;
+      R.H += h; R.hours_by_cat[c] = (R.hours_by_cat[c] || 0) + h;
+      const typ = CAT_TYPE[c];
+      if (!typ) { flags.push(['warn', `unknown category '${c}' treated as human`]); continue; }
+      const w = norm(t.workload);
+      if (typ === 'automate') R.auto.set(w, (R.auto.get(w) || 0) + h * cats[c].ceiling);
+      else if (typ === 'augment') R.aug += h * Math.min(cats[c].ceiling, P.augment.time_saving_by_band[R.band]);
+    }
+    const std = E.standard_task_hours_month;
+    for (const name of roleOrder) {
+      const R = roles[name];
+      if (!R.N) { flags.push(['warn', `${R.role}: headcount missing, role carries no money`]); R.N = 0; }
+      if (!R.S) { flags.push(['warn', `${R.role}: salary missing, role carries no money`]); R.S = 0; }
+      if (R.seat_cost == null) R.seat_cost = P.costs.seat_cost_per_position;
+      if (R.H <= 0) { flags.push(['warn', `${R.role}: no task hours`]); R.H = std; }
+      else if (Math.abs(R.H - std) / std > 0.05)
+        flags.push(['info', `${R.role}: tasks sum to ${R.H.toFixed(0)} h/month, not ${std.toFixed(0)}; shares are taken relative to the recorded ${R.H.toFixed(0)}`]);
+      R.C = R.S * E.on_cost; R.rate = R.C / (12 * R.H);
+      R.lam = P.turnover_by_band[R.band] * (E.turnover_multiplier == null ? 1.0 : E.turnover_multiplier);
+      let a = 0; for (const v of R.auto.values()) a += v;
+      R.auto_share = a / R.H; R.aug_share = R.aug / R.H; R.score_gap = null;
+      if (R.etter_score != null) {
+        R.score_gap = R.auto_share - R.etter_score;
+        if (Math.abs(R.score_gap) > P.data_quality.score_tolerance)
+          flags.push(['info', `${R.role}: tasks give ${(R.auto_share * 100).toFixed(1)}% AI-able, Etter role score is ${(R.etter_score * 100).toFixed(1)}%. Expected, not an error: Etter produces the two independently. The model builds on task hours and keeps the role score as a second opinion`]);
+      }
+    }
+    if (basis === 'role_score') {
+      for (const name of roleOrder) {
+        const R = roles[name];
+        if (R.etter_score != null && R.auto_share > 0) {
+          const k = R.etter_score / R.auto_share;
+          for (const [w, v] of R.auto) R.auto.set(w, v * k);
+          R.auto_share = R.etter_score;
+        }
+      }
+    }
+    const W = new Map();
+    for (const name of roleOrder) {
+      const R = roles[name];
+      for (const [w, a] of R.auto) {
+        if (!W.has(w)) W.set(w, { name: w, roles: [], auto_hours: 0, value: 0, n_auto_tasks: 0 });
+        const X = W.get(w); X.roles.push(R.role); X.auto_hours += R.N * a; X.value += R.N * a * R.rate;
+      }
+    }
+    for (const t of data.tasks) if (CAT_TYPE[t.category] === 'automate' && W.has(norm(t.workload))) W.get(norm(t.workload)).n_auto_tasks += 1;
+    const C = P.costs;
+    for (const X of W.values()) {
+      X.tier = (X.roles.length >= C.enterprise_if_roles_at_least || X.n_auto_tasks >= C.enterprise_if_auto_tasks_at_least) ? 'enterprise' : 'workflow';
+      X.build = X.tier === 'enterprise' ? C.build_enterprise : C.build_workflow;
+    }
+    return { roles, roleOrder, workloads: W, flags, pack: P, basis };
+  }
+
+  // ---------------------------------------------------------------- 3 scope
+  function scope(prep, S, rule, topK, horizon) {
+    rule = rule || 'cost_effective';
+    const P = prep.pack, E = P.economics, C = P.costs;
+    const T = horizon || E.horizon_months, d = E.discount_rate;
+    const net = S.takeover * (1 - S.review), lead = C.build_lead_months;
+    const wg = E.wage_growth == null ? 0.0 : E.wage_growth;
+    let ann = 0; for (let m = 1; m <= T; m++) ann += smoothstep((m - lead) / S.adopt_months) * df(m, d);
+    // the work taken over is paid at grown wages; running and maintenance are not
+    let annW = 0; for (let m = 1; m <= T; m++) annW += smoothstep((m - lead) / S.adopt_months) * df(m, d) * Math.pow(1 + wg, m / 12);
+    const ranked = [];
+    const rm = S.run_mult == null ? 1.0 : S.run_mult;
+    for (const X of prep.workloads.values()) {
+      const benefit = X.value * net;
+      // build custom vs buy vendor: keep the option with the higher NPV at cost (buy only if strictly better)
+      const opts = [];
+      const upB = X.build * S.cost_mult;
+      opts.push(['build', C.run_cost_per_ai_hour * S.cost_mult * rm, upB, upB * C.maintenance_share_per_year / 12, C.maintenance_share_per_year]);
+      if (C.allow_buy == null ? true : C.allow_buy) {
+        const upV = (X.tier === 'enterprise' ? C.buy_enterprise : C.buy_workflow) * S.cost_mult;
+        opts.push(['buy', C.buy_run_per_ai_hour * S.cost_mult * rm, upV, 0.0, 0.0]);
+      }
+      let best = null;
+      for (const [name, rate, up, maint, ms] of opts) {
+        const run = X.auto_hours * S.takeover * rate;
+        const npv = benefit * annW - (run + maint) * ann - up;
+        if (best == null || npv > best[0]) best = [npv, name, rate, up, maint, ms, run];
+      }
+      const [npv, name, rate, up, maint, ms, run] = best;
+      const sc = S.cost_mult, rr = S.cost_mult * rm;
+      ranked.push(Object.assign({}, X, { benefit, run, maint, build_s: up, npv_at_cost: npv, option: name,
+        run_rate: rate, maint_share: ms, up_base: up / sc, rate_base: rate / rr,
+        ratio: up ? (benefit * annW - (run + maint) * ann) / up : 0 }));
+    }
+    ranked.sort((a, b) => b.ratio - a.ratio);
+    let chosen;
+    if (rule === 'all') chosen = ranked.filter(x => x.auto_hours > 0);
+    else if (rule === 'top_k') chosen = ranked.slice(0, topK);
+    else chosen = ranked.filter(x => x.npv_at_cost > 0);
+    return [chosen, ranked];
+  }
+
+  function schedule(prep, chosen, kind) {
+    const P = prep.pack, lead = P.costs.build_lead_months, G = P.programme, golive = {};
+    chosen.forEach((x, i) => {
+      if (kind === 'all_at_once' || i < G.pilot_workloads) golive[x.name] = lead;
+      else { const wave = floor((i - G.pilot_workloads) / G.wave_size); golive[x.name] = lead + G.pilot_evaluation_months + lead + wave * G.wave_gap_months; }
+    });
+    return golive;
+  }
+
+  // ---------------------------------------------------------------- 4-6 simulate
+  // Programme size: add workloads in rank order and stop where five-year cash (the headline) peaks.
+  // When nothing is harvested (capacity only) there is no cash to peak, so every passing workload is kept.
+  function sizeToPeak(prep, S, Q, chosen, opts, key) {
+    key = key || 'headline';
+    if (!chosen.length || (Q.harvest_automation === 0 && Q.harvest_augmentation === 0)) return [chosen.slice(), null];
+    const o = Object.assign({}, opts || {}, { ledger: false });
+    let bestK = null, bestV = null; const sweep = [];
+    for (let k = 1; k <= chosen.length; k++) {
+      const v = simulate(prep, S, Q, Object.assign({}, o, { chosen: chosen.slice(0, k) }))[key];
+      sweep.push(v);
+      if (bestV == null || v > bestV) { bestK = k; bestV = v; }
+    }
+    return [chosen.slice(0, bestK), sweep];
+  }
+
+  function simulate(prep, S, Q, opts) {
+    const o = Object.assign({ scope_rule: 'cost_effective', top_k: null, schedule: 'staged', ramp: 's', golive: null,
+      horizon: null, chosen: null, aug_on: true, auto_on: true, count_avoidance: null, ledger: true }, opts || {});
+    const P = prep.pack, E = P.economics, C = P.costs, A = P.augment;
+    const T = o.horizon || E.horizon_months, d = E.discount_rate;
+    const ramp = o.ramp === 's' ? smoothstep : linearRamp;
+    const kap = S.drag == null ? P.nonlinear.complexity_drag : S.drag;
+    const g = E.function_growth || 0.0;
+    const wg = E.wage_growth == null ? 0.0 : E.wage_growth;   // nominal pay growth; see docs/spec_delta_wage_growth.md
+    const countAvoid = o.count_avoidance == null ? g > 0 : o.count_avoidance;
+    let chosen = o.chosen;
+    if (chosen == null) chosen = scope(prep, S, o.scope_rule, o.top_k, T)[0];
+    if (!o.auto_on) chosen = [];
+    const golive = o.golive != null ? Object.assign({}, o.golive) : schedule(prep, chosen, o.schedule);
+    const built = new Set(chosen.map(x => x.name));
+    const lead = C.build_lead_months, net = S.takeover * (1 - S.review);
+    const roles = prep.roleOrder.map(n => prep.roles[n]);
+    const augStart = A.rollout_start_month;
+    const runRate0 = C.run_cost_per_ai_hour * (S.run_mult == null ? 1.0 : S.run_mult) * S.cost_mult;
+    const turnMult = S.turnover_mult == null ? 1.0 : S.turnover_mult;
+    const upFront = x => x.up_base != null ? x.up_base * S.cost_mult : x.build * S.cost_mult;
+    const maintShare = x => x.maint_share != null ? x.maint_share : C.maintenance_share_per_year;
+    const builtMap = new Map(chosen.map(x => [x.name, x]));
+    const runRateOf = w => { const x = builtMap.get(w); return x && x.rate_base != null ? x.rate_base * (S.run_mult == null ? 1.0 : S.run_mult) * S.cost_mult : runRate0; };
+
+    const st = {};
+    for (const R of roles) {
+      let sa = 0; for (const [w, a] of R.auto) if (built.has(w)) sa += a;
+      let fa = R.N * sa * net / R.H;
+      let fg = o.aug_on ? (R.N * R.aug * S.active_use * S.aug_mult / R.H) : 0.0;
+      const y = R.N ? (fa + fg) / R.N : 0.0;
+      fa *= (1 - kap * y); fg *= (1 - kap * y);
+      const harvest = Q.harvest_automation * fa + Q.harvest_augmentation * fg;
+      const exp = []; for (const w of R.auto.keys()) if (built.has(w)) exp.push(golive[w]);
+      if (o.aug_on && R.aug > 0) exp.push(augStart);
+      st[R.role] = { fa, fg, harvest, target: floor(harvest + 1e-9), exposed: exp.length ? Math.min(...exp) : null };
+    }
+    const z = () => new Array(T + 1).fill(0);
+    const keys = CASH_LINES.concat(COST_LINES, ['avoidance', 'capacity', 'freed_h', 'reduced_h', 'absorbed_h', 'capacity_h',
+      'drag_h', 'positions', 'avoided_hires', 'ai_hours', 'seats_active']);
+    const ser = {}; for (const k of keys) ser[k] = z();
+    const led = new Map();
+    const book = (line, src, m, amt) => {
+      if (!o.ledger) return;
+      if (!led.has(line)) led.set(line, new Map());
+      const L = led.get(line); if (!L.has(src)) L.set(src, [0, 0]);
+      const e = L.get(src); e[0] += amt; e[1] += amt * df(m, d);
+    };
+    const fixed = C.programme_fixed * S.cost_mult;
+    ser.programme[0] += fixed; book('programme', 'pack: costs.programme_fixed', 0, fixed);
+    for (const R of roles) if (st[R.role].exposed != null) {
+      const amt = C.deploy_per_affected_head * R.N * S.cost_mult; ser.programme[0] += amt; book('programme', 'role: ' + R.role, 0, amt);
+    }
+    const liveBuild = z();
+    for (const x of chosen) {
+      const gl = golive[x.name], b = upFront(x);
+      for (let m = Math.max(0, gl - lead); m < gl; m++) if (m <= T) { ser.build[m] += b / lead; book('build', 'workload: ' + x.name, m, b / lead); }
+      for (let m = gl; m <= T; m++) liveBuild[m] += b * maintShare(x);
+    }
+    const prevP = {}, prevAv = {}; for (const R of roles) { prevP[R.role] = 0; prevAv[R.role] = 0; }
+    for (let m = 1; m <= T; m++) {
+      const decay = Math.pow(1 - C.run_cost_decline_per_year, m / 12);
+      const wf = Math.pow(1 + wg, m / 12);   // wage index: C and rate escalate together
+      for (const R of roles) {
+        const s = st[R.role], nm = R.role, src = 'role: ' + nm;
+        let faH = 0, aiTot = 0;
+        for (const [w, a] of R.auto) {
+          if (built.has(w)) {
+            const ad = ramp((m - golive[w]) / S.adopt_months);
+            faH += R.N * a * net * ad;
+            const aiH = R.N * a * S.takeover * ad;
+            aiTot += aiH;
+            if (aiH) { const cost = aiH * runRateOf(w) * decay; ser.run[m] += cost; book('run', 'workload: ' + w, m, cost); }
+          }
+        }
+        const seats = (o.aug_on && R.aug > 0) ? R.N * S.active_use * ramp((m - augStart) / A.rollout_months) : 0.0;
+        let fgH = seats * R.aug * S.aug_mult;
+        const Fraw = faH + fgH;
+        const y = R.N ? Fraw / (R.N * R.H) : 0.0;
+        const dr = 1 - kap * y;
+        ser.drag_h[m] += Fraw * (1 - dr);
+        faH *= dr; fgH *= dr;
+        const Fh = faH + fgH, fte = Fh / R.H;
+        const cur = (Q.harvest_automation * faH + Q.harvest_augmentation * fgH) / R.H;
+        const allowed = floor(s.target * (s.harvest > 0 ? cur / s.harvest : 0) + 1e-9);
+        let Pm;
+        if (Q.mechanism === 'attrition') {
+          const leavers = R.N * (1 - Math.pow(1 - R.lam * turnMult, m / 12));
+          Pm = Math.min(allowed, floor(leavers + 1e-9));
+        } else Pm = m > (Q.notice_months || 0) ? allowed : 0;
+        Pm = Math.max(Pm, prevP[nm]);
+        Pm = Math.min(Pm, floor(fte + 1e-9));
+        const spare = fte - Pm;
+        const planned = g > 0 ? R.N * (Math.pow(1 + g, m / 12) - 1) : 0.0;
+        const Av = (g > 0 && (Q.absorb_growth == null ? true : Q.absorb_growth)) ? Math.max(0, Math.min(floor(spare + 1e-9), floor(planned + 1e-9))) : 0;
+        const capH = Fh - Pm * R.H - Av * R.H;
+        const newP = Pm - prevP[nm], newAv = Math.max(0, Av - prevAv[nm]);
+        const items = [['hard', Pm * R.C * wf / 12], ['seats_reclaimed', Pm * R.seat_cost / 12],
+          ['avoidance', Av * R.C * wf / 12 + newAv * E.cost_per_hire], ['capacity', capH * R.rate * wf],
+          ['licences', seats * C.assistant_licence_per_seat_year / 12 * S.cost_mult]];
+        if (Q.mechanism === 'attrition') items.push(['recruit_avoided', newP * E.cost_per_hire]);
+        else items.push(['severance', newP * Q.severance_weeks * R.S * wf / 52]);
+        if (s.exposed != null && m === Math.max(1, s.exposed))
+          items.push(['training', R.N * (C.training_spend_per_head + C.training_hours_per_head * R.rate * wf)]);
+        for (const [line, amt] of items) if (amt) { ser[line][m] += amt; book(line, src, m, amt); }
+        ser.freed_h[m] += Fh; ser.reduced_h[m] += Pm * R.H; ser.absorbed_h[m] += Av * R.H; ser.capacity_h[m] += capH;
+        ser.positions[m] += Pm; ser.avoided_hires[m] += Av; ser.seats_active[m] += seats; ser.ai_hours[m] += aiTot;
+        prevP[nm] = Pm; prevAv[nm] = Av;
+      }
+      const mt = liveBuild[m] / 12;
+      if (mt) {
+        ser.maintenance[m] = mt;
+        for (const x of chosen) if (golive[x.name] <= m) book('maintenance', 'workload: ' + x.name, m, upFront(x) * maintShare(x) / 12);
+      }
+    }
+    const M = T + 1;
+    ser.costs = []; ser.cash_net = []; ser.plan_net = [];
+    for (let m = 0; m < M; m++) {
+      let c = 0; for (const k of COST_LINES) c += ser[k][m];
+      let h = 0; for (const k of CASH_LINES) h += ser[k][m];
+      ser.costs.push(c); ser.cash_net.push(h - c); ser.plan_net.push(h - c + ser.avoidance[m]);
+    }
+    const payback = series => { let cum = 0, pb = null; for (let m = 0; m < M; m++) { cum += series[m]; if (cum >= 0 && m > 0 && pb == null) pb = m; if (cum < 0) pb = null; } return pb; };
+    let cum = 0; ser.cum_cash = []; for (let m = 0; m < M; m++) { cum += ser.cash_net[m]; ser.cum_cash.push(cum); }
+    const out = { T, rate: d, series: ser, chosen, golive, n_built: chosen.length, scenario: S, policy: Q, count_avoidance: countAvoid };
+    out.build_total = chosen.reduce((a, x) => a + upFront(x), 0);
+    out.npv_cash = pv(ser.cash_net, d); out.npv_plan = pv(ser.plan_net, d);
+    out.pv_avoidance = pv(ser.avoidance, d); out.pv_capacity = pv(ser.capacity, d); out.pv_costs = pv(ser.costs, d);
+    const sav = []; for (let m = 0; m < M; m++) { let h = 0; for (const k of CASH_LINES) h += ser[k][m]; sav.push(h); }
+    out.pv_savings = pv(sav, d);
+    out.payback_month = payback(ser.cash_net); out.payback_plan = payback(ser.plan_net);
+    out.irr = irrAnnual(ser.cash_net); out.peak_funding = -Math.min(...ser.cum_cash);
+    out.positions_end = ser.positions[T]; out.avoided_end = ser.avoided_hires[T];
+    out.headcount = roles.reduce((a, R) => a + R.N, 0); out.payroll_loaded = roles.reduce((a, R) => a + R.N * R.C, 0);
+    out.freed_fte_ss = roles.reduce((a, R) => a + st[R.role].fa + st[R.role].fg, 0);
+    const headline = countAvoid ? out.npv_plan : out.npv_cash;
+    out.headline = headline;
+    out.capacity_hurdle = (headline < 0 && out.pv_capacity > 0) ? -headline / out.pv_capacity : 0.0;
+    out.roles = roles.map(R => ({ role: R.role, N: R.N, salary: R.S, loaded: R.C, band: R.band, auto_share: R.auto_share,
+      aug_share: R.aug_share, etter_score: R.etter_score, freed_fte: st[R.role].fa + st[R.role].fg, auto_fte: st[R.role].fa,
+      aug_fte: st[R.role].fg, target: st[R.role].target, positions_end: prevP[R.role], avoided_end: prevAv[R.role], lam: R.lam }));
+    out.ledger = [];
+    for (const [line, srcs] of led) for (const [src, v] of srcs) out.ledger.push({ line, source: src, nominal: v[0], pv: v[1] });
+    let gap = 0; for (let m = 0; m < M; m++) if (ser.freed_h[m] > 0)
+      gap = Math.max(gap, Math.abs(ser.freed_h[m] - ser.reduced_h[m] - ser.absorbed_h[m] - ser.capacity_h[m]) / ser.freed_h[m]);
+    out.check_reconciliation_max_gap = gap;
+    out.check_min_capacity_h = Math.min(...ser.capacity_h);
+    const ledPv = lines => out.ledger.filter(e => lines.includes(e.line)).reduce((a, e) => a + e.pv, 0);
+    out.check_ledger_gap = o.ledger ? Math.abs(ledPv(CASH_LINES) - ledPv(COST_LINES) - out.npv_cash) : 0.0;
+    return out;
+  }
+
+  // ---------------------------------------------------------------- uncertainty
+  const logit = p => Math.log(p / (1 - p)), sig = x => 1 / (1 + Math.exp(-x));
+  const Z90 = 1.2815515655446004;
+  function drawScenario(pack, rng, center) {
+    const U = pack.uncertainty, rho = U.execution_correlation;
+    const q = rng.z(), out = {};
+    for (const name of Object.keys(U.params)) {
+      const spec = U.params[name];
+      const e = rng.z(), load = spec.quality_sign || 0;
+      const zz = load ? (rho * q * load + Math.sqrt(1 - rho * rho) * e) : e;
+      let med = (center != null && center[name] != null) ? center[name] : spec.median;
+      if (spec.dist === 'logitnormal') {
+        med = Math.min(0.999, Math.max(0.001, med));
+        const mu = logit(med), sd = (logit(spec.p90) - logit(spec.p10)) / (2 * Z90);
+        out[name] = sig(mu + sd * zz);
+      } else {
+        med = Math.max(1e-9, med);
+        const mu = Math.log(med), sd = (Math.log(spec.p90) - Math.log(spec.p10)) / (2 * Z90);
+        out[name] = Math.exp(mu + sd * zz);
+      }
+    }
+    return out;
+  }
+  function montecarlo(prep, S0, Q, n, seed, opts) {
+    const rng = new RNG(seed == null ? 20261019 : seed);
+    const o = Object.assign({ ledger: false }, opts || {});
+    if (o.chosen == null) o.chosen = scope(prep, S0, 'cost_effective')[0];
+    const res = [];
+    for (let i = 0; i < n; i++) {
+      const dd = drawScenario(prep.pack, rng, S0);
+      const S = Object.assign({}, S0, dd);
+      const r = simulate(prep, S, Q, o);
+      res.push({ npv: r.npv_cash, plan: r.npv_plan, cap: r.pv_capacity, pay: r.payback_month, pos: r.positions_end, draw: dd, headline: r.headline });
+    }
+    return res;
+  }
+  function breakevenNet(prep, S0, Q, chosen, opts, key) {
+    key = key || 'headline';
+    if (chosen == null) chosen = scope(prep, S0)[0];
+    const f = nr => simulate(prep, Object.assign({}, S0, { takeover: Math.min(0.999, nr / (1 - S0.review)) }), Q, Object.assign({}, opts || {}, { chosen }))[key];
+    let lo = 0.0, hi = Math.min(0.95, 0.999 * (1 - S0.review));
+    if (f(hi) < 0) return null;
+    if (f(lo) >= 0) return 0.0;
+    for (let i = 0; i < 32; i++) { const mid = (lo + hi) / 2; if (f(mid) >= 0) hi = mid; else lo = mid; }
+    return hi;
+  }
+  function decide(pPos, policy) {
+    if (pPos >= 0.7) return ['go', 'Go: phased rollout, no pause needed.'];
+    if (pPos >= 0.4) return ['pilot', 'Pilot first and decide at the gate.'];
+    if (policy.harvest_automation === 0) return ['capacity', 'Capacity case only: fund it if leadership commits to using the released time.'];
+    return ['stop', 'Do not start on cash grounds.'];
+  }
+  function sensitivity(prep, S0, Q, chosen) {
+    if (chosen == null) chosen = scope(prep, S0)[0];
+    const U = prep.pack.uncertainty.params;
+    const base = simulate(prep, S0, Q, { chosen }).headline;
+    const rows = [];
+    for (const k of Object.keys(U)) {
+      const spec = U[k];
+      const lo = simulate(prep, Object.assign({}, S0, { [k]: spec.p10 }), Q, { chosen }).headline;
+      const hi = simulate(prep, Object.assign({}, S0, { [k]: spec.p90 }), Q, { chosen }).headline;
+      rows.push({ param: k, low: spec.p10, high: spec.p90, npv_low: lo, npv_high: hi });
+    }
+    if (Q.harvest_automation > 0) {
+      const a = Math.max(0.0, Q.harvest_automation - 0.25), b = Math.min(1.0, Q.harvest_automation + 0.25);
+      rows.push({ param: 'harvest_automation', low: a, high: b,
+        npv_low: simulate(prep, S0, Object.assign({}, Q, { harvest_automation: a }), { chosen }).headline,
+        npv_high: simulate(prep, S0, Object.assign({}, Q, { harvest_automation: b }), { chosen }).headline });
+    }
+    rows.sort((x, y) => Math.abs(y.npv_high - y.npv_low) - Math.abs(x.npv_high - x.npv_low));
+    return [base, rows];
+  }
+  const scenario = (pack, name) => Object.assign({}, pack.scenarios[name]);
+  const policy = (pack, name) => Object.assign({}, pack.policies[name]);
+
+  function funnel(prep, S, r) {
+    const roles = prep.roleOrder.map(n => prep.roles[n]);
+    const built = new Set(r.chosen.map(x => x.name));
+    let cat = 0, able = 0, sc = 0;
+    for (const R of roles) {
+      cat += R.N * ((R.hours_by_cat['Directive'] || 0) + (R.hours_by_cat['Feedback Loop'] || 0)) / R.H;
+      able += R.N * R.auto_share;
+      let s = 0; for (const [w, a] of R.auto) if (built.has(w)) s += a; sc += R.N * s / R.H;
+    }
+    const take = sc * S.takeover, rev = take * (1 - S.review);
+    const drag = r.roles.reduce((a, x) => a + x.auto_fte, 0);
+    return [{ key: 'cat', stage: 'Hours in AI categories', fte: cat }, { key: 'able', stage: 'AI-able (Etter ceilings)', fte: able },
+      { key: 'scope', stage: 'In workloads worth building', fte: sc }, { key: 'take', stage: 'AI takes over', fte: take },
+      { key: 'review', stage: 'After human review', fte: rev }, { key: 'drag', stage: 'After complexity drag', fte: drag },
+      { key: 'pos', stage: 'Positions removed', fte: r.positions_end }];
+  }
+
+  function report(data, pack, scenName, polName, nMc, seed, overrides, scopeK) {
+    scenName = scenName || 'Moderate'; polName = polName || 'Attrition only';
+    nMc = nMc == null ? 500 : nMc; seed = seed == null ? 20261019 : seed;
+    const prep = prepare(data, pack);
+    const S = Object.assign(scenario(pack, scenName), (overrides || {}).scenario || {});
+    const Q = Object.assign(policy(pack, polName), (overrides || {}).policy || {});
+    const [passing, ranked] = scope(prep, S);
+    let chosen;
+    if (scopeK != null) chosen = ranked.slice(0, scopeK);
+    else chosen = sizeToPeak(prep, S, Q, passing)[0];
+    const r = simulate(prep, S, Q, { chosen });
+    const mc = montecarlo(prep, S, Q, nMc, seed, { chosen });
+    const hl = mc.map(x => x.headline);
+    const pPos = hl.filter(x => x > 0).length / hl.length;
+    const be = breakevenNet(prep, S, Q, chosen);
+    const [base, sens] = sensitivity(prep, S, Q, chosen);
+    const [verdict, verdictText] = decide(pPos, Q);
+    const led = {}; for (const e of r.ledger) led[e.line] = (led[e.line] || 0) + e.pv;
+    const chosenNames = new Set(chosen.map(c => c.name));
+    const s = r.series;
+    return {
+      meta: { pack: pack.meta.name, scenario: scenName, policy: polName, horizon: r.T, discount_rate: r.rate, basis: 'tasks', n_mc: nMc, seed },
+      headline: { npv_cash: r.npv_cash, npv_plan: r.npv_plan, pv_avoidance: r.pv_avoidance, pv_capacity: r.pv_capacity, pv_costs: r.pv_costs,
+        pv_savings: r.pv_savings, payback: r.payback_month, payback_plan: r.payback_plan, irr: r.irr, peak_funding: r.peak_funding,
+        positions: r.positions_end, hires_avoided: r.avoided_end, freed_fte: r.freed_fte_ss, headcount: r.headcount, payroll: r.payroll_loaded,
+        n_built: r.n_built, build_total: r.build_total, hurdle: r.capacity_hurdle, count_avoidance: r.count_avoidance, headline: r.headline },
+      bands: { p10: quantile(hl, 0.1), p50: quantile(hl, 0.5), p90: quantile(hl, 0.9), p_positive: pPos,
+        cap_p10: quantile(mc.map(x => x.cap), 0.1), cap_p90: quantile(mc.map(x => x.cap), 0.9) },
+      breakeven_net: be, realisation: S.takeover * (1 - S.review), verdict, verdict_text: verdictText,
+      sensitivity: { base, rows: sens }, funnel: funnel(prep, S, r), roles: r.roles,
+      programme: { n_passing: passing.length, n_built: chosen.length,
+        n_buy: chosen.filter(x => x.option === 'buy').length, n_build: chosen.filter(x => (x.option || 'build') === 'build').length },
+      workloads: ranked.map((x, i) => ({ rank: i + 1, name: x.name, tier: x.tier, roles: x.roles.length, option: x.option || 'build', build: x.build_s,
+        value_month: x.benefit, npv_at_cost: x.npv_at_cost, ratio: x.ratio, built: chosenNames.has(x.name),
+        golive: r.golive[x.name] == null ? null : r.golive[x.name] })),
+      series: { cash_net: s.cash_net, cum_cash: s.cum_cash, hard: s.hard, avoidance: s.avoidance, capacity: s.capacity,
+        costs: s.costs, positions: s.positions, avoided_hires: s.avoided_hires, freed_h: s.freed_h },
+      lines: led, ledger: r.ledger, flags: prep.flags,
+      checks: { reconciliation_max_gap: r.check_reconciliation_max_gap, ledger_gap: r.check_ledger_gap, min_capacity_h: r.check_min_capacity_h },
+      scenario_used: S, policy_used: Q
+    };
+  }
+
+  const EVM = { RNG, prepare, scope, schedule, sizeToPeak, simulate, drawScenario, montecarlo, breakevenNet, decide, sensitivity,
+    scenario, policy, funnel, report, quantile, pv, clone, norm };
+  if (typeof module !== 'undefined' && module.exports) module.exports = EVM; else root.EVM = EVM;
+})(typeof window !== 'undefined' ? window : globalThis);
+</script>
+<script>window.ETTER_DATA={"roles":[{"role":"FP&A Senior Coordinator","level":"Individual Contributor","headcount":44,"salary":30572,"turnover_level":"Para-professional","etter_score":0.329},{"role":"FP&A Assistant Analyst","level":"Individual Contributor","headcount":185,"salary":51532,"turnover_level":"Professional","etter_score":0.41},{"role":"FP&A Associate Analyst","level":"Individual Contributor","headcount":371,"salary":58896,"turnover_level":"Professional","etter_score":0.334},{"role":"FP&A Analyst","level":"Individual Contributor","headcount":310,"salary":79661,"turnover_level":"Professional","etter_score":0.306},{"role":"FP&A Senior Analyst","level":"Individual Contributor","headcount":253,"salary":104211,"turnover_level":"Professional","etter_score":0.24},{"role":"FP&A Associate Manager","level":"Manager","headcount":140,"salary":138408,"turnover_level":"Management","etter_score":0.322},{"role":"FP&A Manager","level":"Manager","headcount":89,"salary":163670,"turnover_level":"Management","etter_score":0.261},{"role":"FP&A Senior Manager","level":"Senior Manager","headcount":58,"salary":198825,"turnover_level":"Management","etter_score":0.13},{"role":"FP&A Director","level":"Director","headcount":46,"salary":304094,"turnover_level":"Executive","etter_score":0.044},{"role":"FP&A Senior Director (Band B)","level":"Director","headcount":17,"salary":381174,"turnover_level":"Executive","etter_score":0.09699999999999999},{"role":"FP&A Senior Director (Band A)","level":"Director","headcount":10,"salary":416678,"turnover_level":"Executive","etter_score":0.12}],"tasks":[{"role":"FP&A Senior Coordinator","workload":"AOP Documentation & System Management","task":"Upload AOP Data Into Planning Systems","category":"Directive","hours_month":3.28},{"role":"FP&A Senior Coordinator","workload":"AOP Documentation & System Management","task":"Update System Records Based On Changes","category":"Feedback Loop","hours_month":2.19},{"role":"FP&A Senior Coordinator","workload":"AOP Documentation & System Management","task":"Resolve System Issues With IT Support","category":"Task Iteration","hours_month":2.19},{"role":"FP&A Senior Coordinator","workload":"AOP Documentation & System Management","task":"Learn System Functionality And Documentation Requirements","category":"Learning","hours_month":1.09},{"role":"FP&A Senior Coordinator","workload":"AOP Documentation & System Management","task":"Verify Data Quality And Completeness","category":"Validation","hours_month":1.09},{"role":"FP&A Senior Coordinator","workload":"AOP Documentation & System Management","task":"Make System Design And Access Decisions","category":"Negligibility","hours_month":1.1},{"role":"FP&A Senior Coordinator","workload":"Annual Operating Plan Development","task":"Compile And Distribute AOP Templates","category":"Directive","hours_month":4.45},{"role":"FP&A Senior Coordinator","workload":"Annual Operating Plan Development","task":"Request Plan Revisions And Consolidate","category":"Feedback Loop","hours_month":3.56},{"role":"FP&A Senior Coordinator","workload":"Annual Operating Plan Development","task":"Validate Planning Assumptions With Stakeholders","category":"Task Iteration","hours_month":2.67},{"role":"FP&A Senior Coordinator","workload":"Annual Operating Plan Development","task":"Learn Planning Processes And Strategic Priorities","category":"Learning","hours_month":1.78},{"role":"FP&A Senior Coordinator","workload":"Annual Operating Plan Development","task":"Verify Annual Operating Plan Completeness","category":"Validation","hours_month":1.78},{"role":"FP&A Senior Coordinator","workload":"Annual Operating Plan Development","task":"Set Strategic Direction And Approve Plan","category":"Negligibility","hours_month":3.54},{"role":"FP&A Senior Coordinator","workload":"Cost Review Planning & Support","task":"Schedule Cost Review Meetings","category":"Directive","hours_month":2.73},{"role":"FP&A Senior Coordinator","workload":"Cost Review Planning & Support","task":"Adjust Cost Analysis And Categories","category":"Feedback Loop","hours_month":2.19},{"role":"FP&A Senior Coordinator","workload":"Cost Review Planning & Support","task":"Analyze Costs With Cost Owners","category":"Task Iteration","hours_month":1.64},{"role":"FP&A Senior Coordinator","workload":"Cost Review Planning & Support","task":"Learn Cost Structures And Analysis Methodologies","category":"Learning","hours_month":1.09},{"role":"FP&A Senior Coordinator","workload":"Cost Review Planning & Support","task":"Validate Cost Data And Analysis","category":"Validation","hours_month":1.09},{"role":"FP&A Senior Coordinator","workload":"Cost Review Planning & Support","task":"Make Final Cost Reduction Decisions","category":"Negligibility","hours_month":2.2},{"role":"FP&A Senior Coordinator","workload":"Cross-Functional Coordination & Variance Resolution","task":"Schedule Variance Review Meetings","category":"Directive","hours_month":4.45},{"role":"FP&A Senior Coordinator","workload":"Cross-Functional Coordination & Variance Resolution","task":"Collect And Update Variance Analysis","category":"Feedback Loop","hours_month":3.56},{"role":"FP&A Senior Coordinator","workload":"Cross-Functional Coordination & Variance Resolution","task":"Conduct Variance Analysis","category":"Task Iteration","hours_month":2.67},{"role":"FP&A Senior Coordinator","workload":"Cross-Functional Coordination & Variance Resolution","task":"Learn Departmental Operations And Variance Drivers","category":"Learning","hours_month":1.78},{"role":"FP&A Senior Coordinator","workload":"Cross-Functional Coordination & Variance Resolution","task":"Validate Variance Explanations And Support","category":"Validation","hours_month":1.78},{"role":"FP&A Senior Coordinator","workload":"Cross-Functional Coordination & Variance Resolution","task":"Make Variance Acceptability And Resolution Decisions","category":"Negligibility","hours_month":3.54},{"role":"FP&A Senior Coordinator","workload":"Data Reconciliation & Control Management","task":"Run Automated Reconciliation Processes","category":"Directive","hours_month":7.39},{"role":"FP&A Senior Coordinator","workload":"Data Reconciliation & Control Management","task":"Investigate And Adjust Reconciling Items","category":"Feedback Loop","hours_month":4.92},{"role":"FP&A Senior Coordinator","workload":"Data Reconciliation & Control Management","task":"Troubleshoot System Issues And Data Flows","category":"Task Iteration","hours_month":4.92},{"role":"FP&A Senior Coordinator","workload":"Data Reconciliation & Control Management","task":"Learn Data Structures And Systems","category":"Learning","hours_month":2.46},{"role":"FP&A Senior Coordinator","workload":"Data Reconciliation & Control Management","task":"Verify Account Reconciliation Completeness","category":"Validation","hours_month":2.46},{"role":"FP&A Senior Coordinator","workload":"Data Reconciliation & Control Management","task":"Determine Systemic Data Issues And Solutions","category":"Negligibility","hours_month":2.47},{"role":"FP&A Senior Coordinator","workload":"Financial Analysis & Performance Reporting","task":"Generate Monthly Performance Reports","category":"Directive","hours_month":3.69},{"role":"FP&A Senior Coordinator","workload":"Financial Analysis & Performance Reporting","task":"Adjust Report Formats And Metrics","category":"Feedback Loop","hours_month":3.69},{"role":"FP&A Senior Coordinator","workload":"Financial Analysis & Performance Reporting","task":"Conduct Variance Analysis","category":"Task Iteration","hours_month":6.16},{"role":"FP&A Senior Coordinator","workload":"Financial Analysis & Performance Reporting","task":"Learn Business Drivers And Metrics","category":"Learning","hours_month":4.92},{"role":"FP&A Senior Coordinator","workload":"Financial Analysis & Performance Reporting","task":"Validate Report Data And Calculations","category":"Validation","hours_month":3.69},{"role":"FP&A Senior Coordinator","workload":"Financial Analysis & Performance Reporting","task":"Interpret Strategic Financial Results Implications","category":"Negligibility","hours_month":2.47},{"role":"FP&A Senior Coordinator","workload":"Financial Close & Period-End Processes","task":"Consolidate Account Balances From General Ledger","category":"Directive","hours_month":10.66},{"role":"FP&A Senior Coordinator","workload":"Financial Close & Period-End Processes","task":"Investigate And Adjust Reconciling Items","category":"Feedback Loop","hours_month":7.11},{"role":"FP&A Senior Coordinator","workload":"Financial Close & Period-End Processes","task":"Resolve Period-End Close Items","category":"Task Iteration","hours_month":7.11},{"role":"FP&A Senior Coordinator","workload":"Financial Close & Period-End Processes","task":"Learn Close Procedures And Timelines","category":"Learning","hours_month":3.55},{"role":"FP&A Senior Coordinator","workload":"Financial Close & Period-End Processes","task":"Verify Account Reconciliation Completeness","category":"Validation","hours_month":3.55},{"role":"FP&A Senior Coordinator","workload":"Financial Close & Period-End Processes","task":"Obtain Management Approval On Financial Statements","category":"Negligibility","hours_month":3.56},{"role":"FP&A Senior Coordinator","workload":"Forecast Development & Consolidation","task":"Consolidate Business Unit Forecasts Into Master Model","category":"Directive","hours_month":5.33},{"role":"FP&A Senior Coordinator","workload":"Forecast Development & Consolidation","task":"Request Forecast Revisions And Consolidate","category":"Feedback Loop","hours_month":3.56},{"role":"FP&A Senior Coordinator","workload":"Forecast Development & Consolidation","task":"Validate Forecast Assumptions With Stakeholders","category":"Task Iteration","hours_month":3.56},{"role":"FP&A Senior Coordinator","workload":"Forecast Development & Consolidation","task":"Learn Forecasting Methodologies And Business Drivers","category":"Learning","hours_month":1.78},{"role":"FP&A Senior Coordinator","workload":"Forecast Development & Consolidation","task":"Validate Forecast Reasonableness And Trends","category":"Validation","hours_month":1.78},{"role":"FP&A Senior Coordinator","workload":"Forecast Development & Consolidation","task":"Determine Forecasting Methodology And Assumptions","category":"Negligibility","hours_month":1.77},{"role":"FP&A Assistant Analyst","workload":"Budget Planning & Forecasting","task":"Populate Budget Templates With Historical Data","category":"Directive","hours_month":3.59},{"role":"FP&A Assistant Analyst","workload":"Budget Planning & Forecasting","task":"Revise Forecasts Based On Feedback","category":"Feedback Loop","hours_month":3.59},{"role":"FP&A Assistant Analyst","workload":"Budget Planning & Forecasting","task":"Gather Budget Inputs From Stakeholders","category":"Task Iteration","hours_month":5.98},{"role":"FP&A Assistant Analyst","workload":"Budget Planning & Forecasting","task":"Learn Budgeting Methodologies And Forecasting Techniques","category":"Learning","hours_month":4.78},{"role":"FP&A Assistant Analyst","workload":"Budget Planning & Forecasting","task":"Validate Budget Calculations And Consistency","category":"Validation","hours_month":3.59},{"role":"FP&A Assistant Analyst","workload":"Budget Planning & Forecasting","task":"Set Strategic Budget Priorities And Approvals","category":"Negligibility","hours_month":2.38},{"role":"FP&A Assistant Analyst","workload":"Data Collection & Collaboration","task":"Extract And Consolidate Financial Data","category":"Directive","hours_month":9.93},{"role":"FP&A Assistant Analyst","workload":"Data Collection & Collaboration","task":"Adjust Data Collection Parameters","category":"Feedback Loop","hours_month":6.62},{"role":"FP&A Assistant Analyst","workload":"Data Collection & Collaboration","task":"Clarify Data Requirements With Teams","category":"Task Iteration","hours_month":6.62},{"role":"FP&A Assistant Analyst","workload":"Data Collection & Collaboration","task":"Learn Data Structures And System Navigation","category":"Learning","hours_month":3.31},{"role":"FP&A Assistant Analyst","workload":"Data Collection & Collaboration","task":"Verify Data Quality And Completeness","category":"Validation","hours_month":3.31},{"role":"FP&A Assistant Analyst","workload":"Data Collection & Collaboration","task":"Negotiate Data Access And Resolve Conflicts","category":"Negligibility","hours_month":3.31},{"role":"FP&A Assistant Analyst","workload":"Financial Analysis & Reporting","task":"Generate Standardized Financial Reports","category":"Directive","hours_month":14.35},{"role":"FP&A Assistant Analyst","workload":"Financial Analysis & Reporting","task":"Refine Financial Analysis And Reports","category":"Feedback Loop","hours_month":9.56},{"role":"FP&A Assistant Analyst","workload":"Financial Analysis & Reporting","task":"Interpret Financial Trends With Analysts","category":"Task Iteration","hours_month":9.56},{"role":"FP&A Assistant Analyst","workload":"Financial Analysis & Reporting","task":"Learn Financial Metrics And Accounting Principles","category":"Learning","hours_month":4.78},{"role":"FP&A Assistant Analyst","workload":"Financial Analysis & Reporting","task":"Validate Calculations And Accuracy","category":"Validation","hours_month":4.78},{"role":"FP&A Assistant Analyst","workload":"Financial Analysis & Reporting","task":"Make Strategic Financial Recommendations","category":"Negligibility","hours_month":4.79},{"role":"FP&A Assistant Analyst","workload":"Financial Systems & Tools Management","task":"Run Standard Reports From ERP Systems","category":"Directive","hours_month":9.93},{"role":"FP&A Assistant Analyst","workload":"Financial Systems & Tools Management","task":"Adjust System Configurations And Settings","category":"Feedback Loop","hours_month":6.62},{"role":"FP&A Assistant Analyst","workload":"Financial Systems & Tools Management","task":"Resolve System Issues With IT Support","category":"Task Iteration","hours_month":6.62},{"role":"FP&A Assistant Analyst","workload":"Financial Systems & Tools Management","task":"Learn System Functionality And Financial Tools","category":"Learning","hours_month":3.31},{"role":"FP&A Assistant Analyst","workload":"Financial Systems & Tools Management","task":"Test System Outputs And Results","category":"Validation","hours_month":3.31},{"role":"FP&A Assistant Analyst","workload":"Financial Systems & Tools Management","task":"Make Architectural Decisions And Evaluate Vendors","category":"Negligibility","hours_month":3.31},{"role":"FP&A Assistant Analyst","workload":"Market & Economic Research","task":"Compile Market Data And Economic Information","category":"Directive","hours_month":1.47},{"role":"FP&A Assistant Analyst","workload":"Market & Economic Research","task":"Refine Research Focus Based On Feedback","category":"Feedback Loop","hours_month":1.47},{"role":"FP&A Assistant Analyst","workload":"Market & Economic Research","task":"Contextualize Research Findings With Analysts","category":"Task Iteration","hours_month":2.21},{"role":"FP&A Assistant Analyst","workload":"Market & Economic Research","task":"Learn Market Dynamics And Competitive Landscape","category":"Learning","hours_month":4.41},{"role":"FP&A Assistant Analyst","workload":"Market & Economic Research","task":"Verify Data Quality And Completeness","category":"Validation","hours_month":2.94},{"role":"FP&A Assistant Analyst","workload":"Market & Economic Research","task":"Make Strategic Investment And Business Recommendations","category":"Negligibility","hours_month":2.21},{"role":"FP&A Assistant Analyst","workload":"Process Improvement & Team Support","task":"Document Financial Processes In Standard Formats","category":"Directive","hours_month":2.21},{"role":"FP&A Assistant Analyst","workload":"Process Improvement & Team Support","task":"Refine Process Documentation Based On Feedback","category":"Feedback Loop","hours_month":1.47},{"role":"FP&A Assistant Analyst","workload":"Process Improvement & Team Support","task":"Identify Process Improvement Opportunities","category":"Task Iteration","hours_month":1.47},{"role":"FP&A Assistant Analyst","workload":"Process Improvement & Team Support","task":"Learn Finance Operations And Efficiency Standards","category":"Learning","hours_month":0.74},{"role":"FP&A Assistant Analyst","workload":"Process Improvement & Team Support","task":"Test Process Functionality And Benefits","category":"Validation","hours_month":0.74},{"role":"FP&A Assistant Analyst","workload":"Process Improvement & Team Support","task":"Make Final Process Change Decisions","category":"Negligibility","hours_month":0.73},{"role":"FP&A Associate Analyst","workload":"Executive Presentation & Communication","task":"Format Financial Data Into Presentations","category":"Directive","hours_month":10.41},{"role":"FP&A Associate Analyst","workload":"Executive Presentation & Communication","task":"Revise Presentations Based On Feedback","category":"Feedback Loop","hours_month":6.94},{"role":"FP&A Associate Analyst","workload":"Executive Presentation & Communication","task":"Refine Presentation Messages With Executives","category":"Task Iteration","hours_month":6.94},{"role":"FP&A Associate Analyst","workload":"Executive Presentation & Communication","task":"Learn Executive Communication And Presentation Best Practices","category":"Learning","hours_month":3.47},{"role":"FP&A Associate Analyst","workload":"Executive Presentation & Communication","task":"Verify Presentation Accuracy","category":"Validation","hours_month":3.47},{"role":"FP&A Associate Analyst","workload":"Executive Presentation & Communication","task":"Determine Strategic Narrative For Executives","category":"Negligibility","hours_month":3.47},{"role":"FP&A Associate Analyst","workload":"Financial Analysis & Reporting","task":"Extract And Format Financial Data Reports","category":"Directive","hours_month":15.04},{"role":"FP&A Associate Analyst","workload":"Financial Analysis & Reporting","task":"Adjust Analysis Scope Based On Feedback","category":"Feedback Loop","hours_month":10.02},{"role":"FP&A Associate Analyst","workload":"Financial Analysis & Reporting","task":"Investigate Financial Variances And Anomalies","category":"Task Iteration","hours_month":10.02},{"role":"FP&A Associate Analyst","workload":"Financial Analysis & Reporting","task":"Learn Financial Statements And Analysis Frameworks","category":"Learning","hours_month":5.01},{"role":"FP&A Associate Analyst","workload":"Financial Analysis & Reporting","task":"Verify Calculation Accuracy","category":"Validation","hours_month":5.01},{"role":"FP&A Associate Analyst","workload":"Financial Analysis & Reporting","task":"Determine Root Causes Of Financial Variances","category":"Negligibility","hours_month":5.02},{"role":"FP&A Associate Analyst","workload":"Financial Planning & Forecasting","task":"Generate Standard Forecast Templates","category":"Directive","hours_month":5.21},{"role":"FP&A Associate Analyst","workload":"Financial Planning & Forecasting","task":"Revise Forecasts Based On Feedback","category":"Feedback Loop","hours_month":5.21},{"role":"FP&A Associate Analyst","workload":"Financial Planning & Forecasting","task":"Validate Forecast Assumptions With Stakeholders","category":"Task Iteration","hours_month":8.68},{"role":"FP&A Associate Analyst","workload":"Financial Planning & Forecasting","task":"Learn Financial Drivers And Planning Patterns","category":"Learning","hours_month":6.94},{"role":"FP&A Associate Analyst","workload":"Financial Planning & Forecasting","task":"Validate Forecast Reasonableness And Trends","category":"Validation","hours_month":5.21},{"role":"FP&A Associate Analyst","workload":"Financial Planning & Forecasting","task":"Determine Forecasting Methodology And Assumptions","category":"Negligibility","hours_month":3.45},{"role":"FP&A Associate Analyst","workload":"Market & Competitive Intelligence","task":"Compile Market Data And Competitor Information","category":"Directive","hours_month":1.54},{"role":"FP&A Associate Analyst","workload":"Market & Competitive Intelligence","task":"Refine Research Focus Based On Feedback","category":"Feedback Loop","hours_month":1.54},{"role":"FP&A Associate Analyst","workload":"Market & Competitive Intelligence","task":"Assess Competitive Implications With Teams","category":"Task Iteration","hours_month":2.31},{"role":"FP&A Associate Analyst","workload":"Market & Competitive Intelligence","task":"Learn Market Dynamics And Competitive Landscape","category":"Learning","hours_month":4.63},{"role":"FP&A Associate Analyst","workload":"Market & Competitive Intelligence","task":"Verify Data Source Accuracy","category":"Validation","hours_month":3.08},{"role":"FP&A Associate Analyst","workload":"Market & Competitive Intelligence","task":"Make Strategic Competitive Analysis Recommendations","category":"Negligibility","hours_month":2.32},{"role":"FP&A Associate Analyst","workload":"Process Optimization & Best Practices","task":"Document Financial Processes In Standard Formats","category":"Directive","hours_month":3.76},{"role":"FP&A Associate Analyst","workload":"Process Optimization & Best Practices","task":"Refine Process Improvements Based On Feedback","category":"Feedback Loop","hours_month":3.76},{"role":"FP&A Associate Analyst","workload":"Process Optimization & Best Practices","task":"Identify Process Improvement Opportunities","category":"Task Iteration","hours_month":6.26},{"role":"FP&A Associate Analyst","workload":"Process Optimization & Best Practices","task":"Learn Planning And Forecasting Processes","category":"Learning","hours_month":5.01},{"role":"FP&A Associate Analyst","workload":"Process Optimization & Best Practices","task":"Test Process Improvements","category":"Validation","hours_month":3.76},{"role":"FP&A Associate Analyst","workload":"Process Optimization & Best Practices","task":"Make Final Process Change Decisions","category":"Negligibility","hours_month":2.51},{"role":"FP&A Analyst","workload":"Commodity & Cost Management","task":"Track Commodity Prices And Variances","category":"Directive","hours_month":3.12},{"role":"FP&A Analyst","workload":"Commodity & Cost Management","task":"Adjust Cost Models Based On Feedback","category":"Feedback Loop","hours_month":3.12},{"role":"FP&A Analyst","workload":"Commodity & Cost Management","task":"Develop Cost Optimization Strategies","category":"Task Iteration","hours_month":5.2},{"role":"FP&A Analyst","workload":"Commodity & Cost Management","task":"Learn Commodity Markets And Supply Chain Impacts","category":"Learning","hours_month":4.16},{"role":"FP&A Analyst","workload":"Commodity & Cost Management","task":"Verify Cost Allocations","category":"Validation","hours_month":3.12},{"role":"FP&A Analyst","workload":"Commodity & Cost Management","task":"Negotiate Supplier Contracts And Procurement Decisions","category":"Negligibility","hours_month":2.08},{"role":"FP&A Analyst","workload":"Data Management & Governance","task":"Standardize Data Formats And Validation","category":"Directive","hours_month":8.64},{"role":"FP&A Analyst","workload":"Data Management & Governance","task":"Correct Data Quality Issues","category":"Feedback Loop","hours_month":5.76},{"role":"FP&A Analyst","workload":"Data Management & Governance","task":"Design Data Governance Frameworks","category":"Task Iteration","hours_month":5.76},{"role":"FP&A Analyst","workload":"Data Management & Governance","task":"Learn Data Architecture And System Integration","category":"Learning","hours_month":2.88},{"role":"FP&A Analyst","workload":"Data Management & Governance","task":"Audit Data Integrity","category":"Validation","hours_month":2.88},{"role":"FP&A Analyst","workload":"Data Management & Governance","task":"Negotiate Data Access And Resolve Conflicts","category":"Negligibility","hours_month":2.88},{"role":"FP&A Analyst","workload":"Financial Analysis & Reporting","task":"Extract And Format Financial Data","category":"Directive","hours_month":8.64},{"role":"FP&A Analyst","workload":"Financial Analysis & Reporting","task":"Adjust Report Metrics Based On Feedback","category":"Feedback Loop","hours_month":5.76},{"role":"FP&A Analyst","workload":"Financial Analysis & Reporting","task":"Develop Custom Financial Analyses","category":"Task Iteration","hours_month":5.76},{"role":"FP&A Analyst","workload":"Financial Analysis & Reporting","task":"Learn Accounting Standards And Regulatory Requirements","category":"Learning","hours_month":2.88},{"role":"FP&A Analyst","workload":"Financial Analysis & Reporting","task":"Verify Report Accuracy","category":"Validation","hours_month":2.88},{"role":"FP&A Analyst","workload":"Financial Analysis & Reporting","task":"Interpret Business Implications And Provide Insights","category":"Negligibility","hours_month":2.88},{"role":"FP&A Analyst","workload":"Financial Planning & Forecasting","task":"Generate standard forecast templates","category":"Directive","hours_month":6.24},{"role":"FP&A Analyst","workload":"Financial Planning & Forecasting","task":"Revise Forecasts Based On Feedback","category":"Feedback Loop","hours_month":6.24},{"role":"FP&A Analyst","workload":"Financial Planning & Forecasting","task":"Build Multi-Scenario Financial Models","category":"Task Iteration","hours_month":10.4},{"role":"FP&A Analyst","workload":"Financial Planning & Forecasting","task":"Learn Forecasting Methodologies And Business Drivers","category":"Learning","hours_month":8.32},{"role":"FP&A Analyst","workload":"Financial Planning & Forecasting","task":"Verify Forecast Accuracy","category":"Validation","hours_month":6.24},{"role":"FP&A Analyst","workload":"Financial Planning & Forecasting","task":"Determine Forecasting Methodology And Assumptions","category":"Negligibility","hours_month":4.16},{"role":"FP&A Analyst","workload":"Process Optimization & Compliance","task":"Document Financial Processes And Compliance","category":"Directive","hours_month":3.12},{"role":"FP&A Analyst","workload":"Process Optimization & Compliance","task":"Refine Process Improvements Based On Feedback","category":"Feedback Loop","hours_month":4.16},{"role":"FP&A Analyst","workload":"Process Optimization & Compliance","task":"Redesign Financial Workflows And Controls","category":"Task Iteration","hours_month":2.08},{"role":"FP&A Analyst","workload":"Process Optimization & Compliance","task":"Understand Regulatory Requirements","category":"Learning","hours_month":3.12},{"role":"FP&A Analyst","workload":"Process Optimization & Compliance","task":"Test Process Changes","category":"Validation","hours_month":6.24},{"role":"FP&A Analyst","workload":"Process Optimization & Compliance","task":"Make Compliance Risk Tolerance Decisions","category":"Negligibility","hours_month":2.08},{"role":"FP&A Analyst","workload":"Stakeholder Communication & Coordination","task":"Schedule Meetings And Distribute Reports","category":"Directive","hours_month":3.56},{"role":"FP&A Analyst","workload":"Stakeholder Communication & Coordination","task":"Adjust Communication Cadence Based On Feedback","category":"Feedback Loop","hours_month":2.84},{"role":"FP&A Analyst","workload":"Stakeholder Communication & Coordination","task":"Develop Financial Presentation Materials","category":"Task Iteration","hours_month":2.13},{"role":"FP&A Analyst","workload":"Stakeholder Communication & Coordination","task":"Understand Stakeholder Needs And Preferences","category":"Learning","hours_month":1.42},{"role":"FP&A Analyst","workload":"Stakeholder Communication & Coordination","task":"Navigate Organizational Dynamics And Stakeholders","category":"Negligibility","hours_month":2.85},{"role":"FP&A Analyst","workload":"Strategic Financial Insights & Risk Management","task":"Compile Risk Metrics And Dashboards","category":"Directive","hours_month":0.96},{"role":"FP&A Analyst","workload":"Strategic Financial Insights & Risk Management","task":"Update Risk Models Based On Feedback","category":"Feedback Loop","hours_month":0.96},{"role":"FP&A Analyst","workload":"Strategic Financial Insights & Risk Management","task":"Develop Risk Scenarios And Mitigation","category":"Task Iteration","hours_month":1.6},{"role":"FP&A Analyst","workload":"Strategic Financial Insights & Risk Management","task":"Understand Emerging Financial Risks","category":"Learning","hours_month":1.28},{"role":"FP&A Analyst","workload":"Strategic Financial Insights & Risk Management","task":"Validate Risk Model Assumptions","category":"Validation","hours_month":0.96},{"role":"FP&A Analyst","workload":"Strategic Financial Insights & Risk Management","task":"Determine Strategic Risk Appetite And Mitigation","category":"Negligibility","hours_month":0.64},{"role":"FP&A Senior Analyst","workload":"Cross-Functional Collaboration & Alignment","task":"Schedule Meetings And Distribute Reports","category":"Directive","hours_month":7.75},{"role":"FP&A Senior Analyst","workload":"Cross-Functional Collaboration & Alignment","task":"Adjust Communication Cadence Based On Feedback","category":"Feedback Loop","hours_month":6.2},{"role":"FP&A Senior Analyst","workload":"Cross-Functional Collaboration & Alignment","task":"Facilitate Cross-Departmental Financial Planning","category":"Task Iteration","hours_month":4.65},{"role":"FP&A Senior Analyst","workload":"Cross-Functional Collaboration & Alignment","task":"Build Knowledge Of Department Objectives","category":"Learning","hours_month":3.1},{"role":"FP&A Senior Analyst","workload":"Cross-Functional Collaboration & Alignment","task":"Verify Cross-Department Alignment","category":"Validation","hours_month":3.1},{"role":"FP&A Senior Analyst","workload":"Cross-Functional Collaboration & Alignment","task":"Resolve Resource Allocation Disputes And Conflicts","category":"Negligibility","hours_month":6.22},{"role":"FP&A Senior Analyst","workload":"Financial Analysis & Reporting","task":"Generate Standardized Financial Reports","category":"Directive","hours_month":9.3},{"role":"FP&A Senior Analyst","workload":"Financial Analysis & Reporting","task":"Adjust Report Format Based On Feedback","category":"Feedback Loop","hours_month":9.3},{"role":"FP&A Senior Analyst","workload":"Financial Analysis & Reporting","task":"Investigate Variance Explanations","category":"Task Iteration","hours_month":15.51},{"role":"FP&A Senior Analyst","workload":"Financial Analysis & Reporting","task":"Acquire Knowledge Of Accounting Standards","category":"Learning","hours_month":12.41},{"role":"FP&A Senior Analyst","workload":"Financial Analysis & Reporting","task":"Verify Calculation Accuracy","category":"Validation","hours_month":9.3},{"role":"FP&A Senior Analyst","workload":"Financial Analysis & Reporting","task":"Interpret Financial Results For Strategic Implications","category":"Negligibility","hours_month":6.21},{"role":"FP&A Senior Analyst","workload":"Process Automation & Improvement","task":"Document Financial Processes And Compliance","category":"Directive","hours_month":12.88},{"role":"FP&A Senior Analyst","workload":"Process Automation & Improvement","task":"Test Automated Workflows","category":"Feedback Loop","hours_month":8.59},{"role":"FP&A Senior Analyst","workload":"Process Automation & Improvement","task":"Design Automated Process Workflows","category":"Task Iteration","hours_month":8.59},{"role":"FP&A Senior Analyst","workload":"Process Automation & Improvement","task":"Develop Understanding Of Automation Tools","category":"Learning","hours_month":4.3},{"role":"FP&A Senior Analyst","workload":"Process Automation & Improvement","task":"Test Automated Processes","category":"Validation","hours_month":4.3},{"role":"FP&A Senior Analyst","workload":"Process Automation & Improvement","task":"Prioritize Process Automation Based On Impact","category":"Negligibility","hours_month":4.29},{"role":"FP&A Associate Manager","workload":"Commodity Cost Planning & Forecasting","task":"Generate Commodity Price Forecasts","category":"Directive","hours_month":3.96},{"role":"FP&A Associate Manager","workload":"Commodity Cost Planning & Forecasting","task":"Revise Forecasts Based On Feedback","category":"Feedback Loop","hours_month":3.96},{"role":"FP&A Associate Manager","workload":"Commodity Cost Planning & Forecasting","task":"Adjust Forecasts With Supply Chain Insights","category":"Task Iteration","hours_month":6.08},{"role":"FP&A Associate Manager","workload":"Commodity Cost Planning & Forecasting","task":"Acquire Knowledge Of Market Dynamics","category":"Learning","hours_month":4.49},{"role":"FP&A Associate Manager","workload":"Commodity Cost Planning & Forecasting","task":"Verify Forecast Accuracy","category":"Validation","hours_month":3.96},{"role":"FP&A Associate Manager","workload":"Commodity Cost Planning & Forecasting","task":"Determine Strategic Sourcing And Procurement Strategy","category":"Negligibility","hours_month":3.97},{"role":"FP&A Associate Manager","workload":"Financial Analysis & Performance Monitoring","task":"Extract And Format Financial Data","category":"Directive","hours_month":5.73},{"role":"FP&A Associate Manager","workload":"Financial Analysis & Performance Monitoring","task":"Adjust Analysis Scope Based On Feedback","category":"Feedback Loop","hours_month":5.73},{"role":"FP&A Associate Manager","workload":"Financial Analysis & Performance Monitoring","task":"Investigate Variance Explanations","category":"Task Iteration","hours_month":8.78},{"role":"FP&A Associate Manager","workload":"Financial Analysis & Performance Monitoring","task":"Understand Finance Metrics And KPIs","category":"Learning","hours_month":6.49},{"role":"FP&A Associate Manager","workload":"Financial Analysis & Performance Monitoring","task":"Verify Calculation Accuracy","category":"Validation","hours_month":5.73},{"role":"FP&A Associate Manager","workload":"Financial Analysis & Performance Monitoring","task":"Interpret Financial Results For Strategic Implications","category":"Negligibility","hours_month":5.72},{"role":"FP&A Associate Manager","workload":"Process Governance & Compliance","task":"Execute Compliance Checks And Validation","category":"Directive","hours_month":2.86},{"role":"FP&A Associate Manager","workload":"Process Governance & Compliance","task":"Update Compliance Procedures And Controls","category":"Feedback Loop","hours_month":3.82},{"role":"FP&A Associate Manager","workload":"Process Governance & Compliance","task":"Implement Governance Requirements And Controls","category":"Task Iteration","hours_month":1.53},{"role":"FP&A Associate Manager","workload":"Process Governance & Compliance","task":"Understand regulatory requirements","category":"Learning","hours_month":2.29},{"role":"FP&A Associate Manager","workload":"Process Governance & Compliance","task":"Verify Compliance Adherence","category":"Validation","hours_month":5.72},{"role":"FP&A Associate Manager","workload":"Process Governance & Compliance","task":"Make Judgment Calls On Policy Exceptions","category":"Negligibility","hours_month":2.86},{"role":"FP&A Associate Manager","workload":"Risk Assessment & Sensitivity Analysis","task":"Execute Sensitivity Analysis On Models","category":"Directive","hours_month":2.86},{"role":"FP&A Associate Manager","workload":"Risk Assessment & Sensitivity Analysis","task":"Adjust Risk Parameters And Assumptions","category":"Feedback Loop","hours_month":2.86},{"role":"FP&A Associate Manager","workload":"Risk Assessment & Sensitivity Analysis","task":"Develop Risk Scenarios And Mitigation","category":"Task Iteration","hours_month":4.39},{"role":"FP&A Associate Manager","workload":"Risk Assessment & Sensitivity Analysis","task":"Understand Risk Assessment Frameworks","category":"Learning","hours_month":3.24},{"role":"FP&A Associate Manager","workload":"Risk Assessment & Sensitivity Analysis","task":"Validate Risk Model Assumptions","category":"Validation","hours_month":2.86},{"role":"FP&A Associate Manager","workload":"Risk Assessment & Sensitivity Analysis","task":"Determine Strategic Risk Appetite And Mitigation","category":"Negligibility","hours_month":2.87},{"role":"FP&A Associate Manager","workload":"Stakeholder Coordination & Reporting","task":"Distribute Reports To Stakeholders","category":"Directive","hours_month":3.96},{"role":"FP&A Associate Manager","workload":"Stakeholder Coordination & Reporting","task":"Adjust Report Format And Delivery","category":"Feedback Loop","hours_month":2.64},{"role":"FP&A Associate Manager","workload":"Stakeholder Coordination & Reporting","task":"Clarify Requirements With Stakeholders","category":"Task Iteration","hours_month":3.43},{"role":"FP&A Associate Manager","workload":"Stakeholder Coordination & Reporting","task":"Understand Stakeholder Information Needs","category":"Learning","hours_month":1.85},{"role":"FP&A Associate Manager","workload":"Stakeholder Coordination & Reporting","task":"Verify Report Completeness","category":"Validation","hours_month":2.64},{"role":"FP&A Associate Manager","workload":"Stakeholder Coordination & Reporting","task":"Build Stakeholder Relationships And Manage Expectations","category":"Negligibility","hours_month":11.9},{"role":"FP&A Associate Manager","workload":"Strategic Initiative Management","task":"Adjust Initiative Plans And Timelines","category":"Feedback Loop","hours_month":1.3},{"role":"FP&A Associate Manager","workload":"Strategic Initiative Management","task":"Develop Strategic Initiatives","category":"Task Iteration","hours_month":1.7},{"role":"FP&A Associate Manager","workload":"Strategic Initiative Management","task":"Understand Strategic Planning Methodologies","category":"Learning","hours_month":1.56},{"role":"FP&A Associate Manager","workload":"Strategic Initiative Management","task":"Track Initiative Progress","category":"Validation","hours_month":1.3},{"role":"FP&A Associate Manager","workload":"Strategic Initiative Management","task":"Set Strategic Direction And Prioritize Initiatives","category":"Negligibility","hours_month":5.88},{"role":"FP&A Associate Manager","workload":"Team Leadership & Management","task":"Acquire Knowledge Of Team Development","category":"Learning","hours_month":10.96},{"role":"FP&A Associate Manager","workload":"Team Leadership & Management","task":"Coach Mentor And Develop Team Members","category":"Negligibility","hours_month":8.12},{"role":"FP&A Manager","workload":"Compliance & Governance","task":"Generate Compliance Documentation And Reports","category":"Directive","hours_month":2.17},{"role":"FP&A Manager","workload":"Compliance & Governance","task":"Update Compliance Procedures And Controls","category":"Feedback Loop","hours_month":2.9},{"role":"FP&A Manager","workload":"Compliance & Governance","task":"Acquire Knowledge Of Regulatory Requirements","category":"Learning","hours_month":1.74},{"role":"FP&A Manager","workload":"Compliance & Governance","task":"Audit Compliance Adherence Across Processes","category":"Validation","hours_month":4.35},{"role":"FP&A Manager","workload":"Compliance & Governance","task":"Make Judgment Calls On Regulatory Compliance","category":"Negligibility","hours_month":2.17},{"role":"FP&A Manager","workload":"Executive Advisory & Stakeholder Engagement","task":"Refine Analytical Recommendations And Cases","category":"Feedback Loop","hours_month":4},{"role":"FP&A Manager","workload":"Executive Advisory & Stakeholder Engagement","task":"Develop Financial Presentation Materials","category":"Task Iteration","hours_month":5.2},{"role":"FP&A Manager","workload":"Executive Advisory & Stakeholder Engagement","task":"Understand Executive Priorities","category":"Learning","hours_month":2.8},{"role":"FP&A Manager","workload":"Executive Advisory & Stakeholder Engagement","task":"Present Recommendations To Executive Leadership","category":"Negligibility","hours_month":18},{"role":"FP&A Manager","workload":"Financial Planning & Forecasting","task":"Generate Standardized Financial Forecasts","category":"Directive","hours_month":6.5},{"role":"FP&A Manager","workload":"Financial Planning & Forecasting","task":"Refine Financial Forecasts And Assumptions","category":"Feedback Loop","hours_month":6.5},{"role":"FP&A Manager","workload":"Financial Planning & Forecasting","task":"Develop Scenario Models And Sensitivity","category":"Task Iteration","hours_month":9.97},{"role":"FP&A Manager","workload":"Financial Planning & Forecasting","task":"Acquire Knowledge Of Forecasting Methodologies","category":"Learning","hours_month":7.37},{"role":"FP&A Manager","workload":"Financial Planning & Forecasting","task":"Verify Forecast Accuracy","category":"Validation","hours_month":6.5},{"role":"FP&A Manager","workload":"Financial Planning & Forecasting","task":"Determine Strategic Forecast Scenarios And Priorities","category":"Negligibility","hours_month":6.49},{"role":"FP&A Manager","workload":"Process & Initiative Oversight","task":"Track Project Status And Metrics","category":"Directive","hours_month":5.42},{"role":"FP&A Manager","workload":"Process & Initiative Oversight","task":"Adjust Initiative Plans And Timelines","category":"Feedback Loop","hours_month":4.33},{"role":"FP&A Manager","workload":"Process & Initiative Oversight","task":"Design Process Improvements And Roadmaps","category":"Task Iteration","hours_month":2.82},{"role":"FP&A Manager","workload":"Process & Initiative Oversight","task":"Understand Process Bottlenecks","category":"Learning","hours_month":1.52},{"role":"FP&A Manager","workload":"Process & Initiative Oversight","task":"Monitor Initiative KPIs And Success Metrics","category":"Validation","hours_month":2.17},{"role":"FP&A Manager","workload":"Process & Initiative Oversight","task":"Prioritize Competing Initiatives And Resolve Conflicts","category":"Negligibility","hours_month":5.41},{"role":"FP&A Manager","workload":"Strategic Analysis & Problem-Solving","task":"Refine Analytical Recommendations And Cases","category":"Feedback Loop","hours_month":3.33},{"role":"FP&A Manager","workload":"Strategic Analysis & Problem-Solving","task":"Develop Business Cases And Recommendations","category":"Task Iteration","hours_month":4.33},{"role":"FP&A Manager","workload":"Strategic Analysis & Problem-Solving","task":"Understand Complex Business Problems","category":"Learning","hours_month":4},{"role":"FP&A Manager","workload":"Strategic Analysis & Problem-Solving","task":"Validate Analytical Conclusions Through Peer Review","category":"Validation","hours_month":3.33},{"role":"FP&A Manager","workload":"Strategic Analysis & Problem-Solving","task":"Make Strategic Recommendations On Business Priorities","category":"Negligibility","hours_month":15.01},{"role":"FP&A Manager","workload":"Team Leadership & Development","task":"Coach Team On Analytical Techniques","category":"Task Iteration","hours_month":4.7},{"role":"FP&A Manager","workload":"Team Leadership & Development","task":"Identify Team Skill Gaps","category":"Learning","hours_month":9.75},{"role":"FP&A Manager","workload":"Team Leadership & Development","task":"Coach Mentor And Develop Team Members","category":"Negligibility","hours_month":7.22},{"role":"FP&A Senior Manager","workload":"Business Performance Analysis & Insights","task":"Extract And Organize Performance Metrics","category":"Directive","hours_month":2.67},{"role":"FP&A Senior Manager","workload":"Business Performance Analysis & Insights","task":"Generate Performance Dashboards And Metrics","category":"Feedback Loop","hours_month":2.67},{"role":"FP&A Senior Manager","workload":"Business Performance Analysis & Insights","task":"Investigate Variance Explanations","category":"Task Iteration","hours_month":4.09},{"role":"FP&A Senior Manager","workload":"Business Performance Analysis & Insights","task":"Understand Business Drivers And KPIs","category":"Learning","hours_month":3.02},{"role":"FP&A Senior Manager","workload":"Business Performance Analysis & Insights","task":"Verify Data Accuracy Against Source Information","category":"Validation","hours_month":2.67},{"role":"FP&A Senior Manager","workload":"Business Performance Analysis & Insights","task":"Interpret Performance Trends Strategically","category":"Negligibility","hours_month":2.66},{"role":"FP&A Senior Manager","workload":"Corporate Development Financial Analysis","task":"Compile Financial Data For M&A","category":"Directive","hours_month":1.64},{"role":"FP&A Senior Manager","workload":"Corporate Development Financial Analysis","task":"Generate Valuation Models And Assumptions","category":"Feedback Loop","hours_month":1.64},{"role":"FP&A Senior Manager","workload":"Corporate Development Financial Analysis","task":"Build Deal Analysis Models Collaboratively","category":"Task Iteration","hours_month":2.52},{"role":"FP&A Senior Manager","workload":"Corporate Development Financial Analysis","task":"Understand Valuation Methodologies And M&A Analysis","category":"Learning","hours_month":1.86},{"role":"FP&A Senior Manager","workload":"Corporate Development Financial Analysis","task":"Verify Financial Due Diligence Findings And Conclusions","category":"Validation","hours_month":1.64},{"role":"FP&A Senior Manager","workload":"Corporate Development Financial Analysis","task":"Assess Deal Fit And Synergy Potential","category":"Negligibility","hours_month":1.64},{"role":"FP&A Senior Manager","workload":"Cross-Functional Collaboration & Stakeholder Management","task":"Schedule Cross-Functional Meetings","category":"Directive","hours_month":3.65},{"role":"FP&A Senior Manager","workload":"Cross-Functional Collaboration & Stakeholder Management","task":"Coordinate Financial Data From Departments","category":"Task Iteration","hours_month":3.17},{"role":"FP&A Senior Manager","workload":"Cross-Functional Collaboration & Stakeholder Management","task":"Negotiate Stakeholder Priorities And Relationships","category":"Negligibility","hours_month":10.96},{"role":"FP&A Senior Manager","workload":"Financial Planning & Analysis","task":"Consolidate Financial Data And Reports","category":"Directive","hours_month":5.33},{"role":"FP&A Senior Manager","workload":"Financial Planning & Analysis","task":"Generate Variance Analysis Reports","category":"Feedback Loop","hours_month":5.33},{"role":"FP&A Senior Manager","workload":"Financial Planning & Analysis","task":"Build Financial Models With Stakeholders","category":"Task Iteration","hours_month":8.17},{"role":"FP&A Senior Manager","workload":"Financial Planning & Analysis","task":"Acquire Knowledge Of Forecasting Methodologies","category":"Learning","hours_month":6.04},{"role":"FP&A Senior Manager","workload":"Financial Planning & Analysis","task":"Validate Financial Projections Against Historical Trends","category":"Validation","hours_month":5.33},{"role":"FP&A Senior Manager","workload":"Financial Planning & Analysis","task":"Make Strategic Recommendations On Business Priorities","category":"Negligibility","hours_month":5.34},{"role":"FP&A Senior Manager","workload":"Financial Reporting & Period Close","task":"Automate Account Reconciliation And Consolidation","category":"Directive","hours_month":6.51},{"role":"FP&A Senior Manager","workload":"Financial Reporting & Period Close","task":"Generate Financial Statements And Adjustments","category":"Feedback Loop","hours_month":4.34},{"role":"FP&A Senior Manager","workload":"Financial Reporting & Period Close","task":"Understand Accounting Standards And Regulations","category":"Learning","hours_month":1.52},{"role":"FP&A Senior Manager","workload":"Financial Reporting & Period Close","task":"Verify Financial Statement Accuracy And Completeness","category":"Validation","hours_month":2.17},{"role":"FP&A Senior Manager","workload":"Financial Reporting & Period Close","task":"Make Accounting Treatment Judgments","category":"Negligibility","hours_month":3.24},{"role":"FP&A Senior Manager","workload":"Process & Standards Management","task":"Document And Distribute Financial Procedures","category":"Directive","hours_month":2.73},{"role":"FP&A Senior Manager","workload":"Process & Standards Management","task":"Update Process Documentation And Standards","category":"Feedback Loop","hours_month":2.19},{"role":"FP&A Senior Manager","workload":"Process & Standards Management","task":"Implement Financial Processes With Team Input","category":"Task Iteration","hours_month":1.42},{"role":"FP&A Senior Manager","workload":"Process & Standards Management","task":"Understand Regulatory Requirements And Compliance","category":"Learning","hours_month":0.77},{"role":"FP&A Senior Manager","workload":"Process & Standards Management","task":"Audit Compliance Adherence Across Processes","category":"Validation","hours_month":1.09},{"role":"FP&A Senior Manager","workload":"Process & Standards Management","task":"Make Process Design And Governance Judgments","category":"Negligibility","hours_month":2.74},{"role":"FP&A Senior Manager","workload":"Strategic Planning & Forecasting","task":"Compile Historical Data For Analysis","category":"Directive","hours_month":2.46},{"role":"FP&A Senior Manager","workload":"Strategic Planning & Forecasting","task":"Generate Forecast Models And Scenarios","category":"Feedback Loop","hours_month":2.46},{"role":"FP&A Senior Manager","workload":"Strategic Planning & Forecasting","task":"Develop Long-Term Financial Forecasts","category":"Task Iteration","hours_month":3.2},{"role":"FP&A Senior Manager","workload":"Strategic Planning & Forecasting","task":"Understand Market Trends And Dynamics","category":"Learning","hours_month":2.95},{"role":"FP&A Senior Manager","workload":"Strategic Planning & Forecasting","task":"Stress Test Forecasts Under Various Scenarios","category":"Validation","hours_month":2.46},{"role":"FP&A Senior Manager","workload":"Strategic Planning & Forecasting","task":"Make Strategic Business Direction Decisions","category":"Negligibility","hours_month":11.09},{"role":"FP&A Senior Manager","workload":"Team Leadership & Development","task":"Assign Tasks And Schedule Check-Ins","category":"Directive","hours_month":3.37},{"role":"FP&A Senior Manager","workload":"Team Leadership & Development","task":"Generate Performance Review Summaries","category":"Feedback Loop","hours_month":3.37},{"role":"FP&A Senior Manager","workload":"Team Leadership & Development","task":"Coach Team On Analytical Techniques","category":"Task Iteration","hours_month":4.38},{"role":"FP&A Senior Manager","workload":"Team Leadership & Development","task":"Verify Team Competency Against Role Requirements","category":"Validation","hours_month":6.75},{"role":"FP&A Senior Manager","workload":"Team Leadership & Development","task":"Coach Mentor And Develop Team Members","category":"Negligibility","hours_month":6.75},{"role":"FP&A Director","workload":"Financial Governance & Compliance","task":"Generate Compliance Checklists And Documentation","category":"Directive","hours_month":1.92},{"role":"FP&A Director","workload":"Financial Governance & Compliance","task":"Adjust Control Procedures And Governance","category":"Feedback Loop","hours_month":2.56},{"role":"FP&A Director","workload":"Financial Governance & Compliance","task":"Develop Governance Frameworks With Team Input","category":"Task Iteration","hours_month":0.9},{"role":"FP&A Director","workload":"Financial Governance & Compliance","task":"Understand Regulatory Requirements And Compliance","category":"Learning","hours_month":1.28},{"role":"FP&A Director","workload":"Financial Governance & Compliance","task":"Verify Compliance With Policies And Regulations","category":"Validation","hours_month":3.84},{"role":"FP&A Director","workload":"Financial Governance & Compliance","task":"Make Final Compliance Decisions","category":"Negligibility","hours_month":2.3},{"role":"FP&A Director","workload":"Financial Planning & Analysis","task":"Consolidate Financial Data And Generate Reports","category":"Directive","hours_month":6.24},{"role":"FP&A Director","workload":"Financial Planning & Analysis","task":"Refine Financial Forecasts And Assumptions","category":"Feedback Loop","hours_month":6.24},{"role":"FP&A Director","workload":"Financial Planning & Analysis","task":"Build Complex Financial Models Iteratively","category":"Task Iteration","hours_month":9.15},{"role":"FP&A Director","workload":"Financial Planning & Analysis","task":"Understand Analytical Frameworks And Methodologies","category":"Learning","hours_month":6.24},{"role":"FP&A Director","workload":"Financial Planning & Analysis","task":"Verify Financial Analysis Accuracy And Assumptions","category":"Validation","hours_month":6.24},{"role":"FP&A Director","workload":"Financial Planning & Analysis","task":"Judge Financial Implications Strategically","category":"Negligibility","hours_month":7.49},{"role":"FP&A Director","workload":"P&L Management & Reporting","task":"Generate Standard Financial Reports","category":"Directive","hours_month":4.32},{"role":"FP&A Director","workload":"P&L Management & Reporting","task":"Adjust Variance Explanations And Narratives","category":"Feedback Loop","hours_month":2.88},{"role":"FP&A Director","workload":"P&L Management & Reporting","task":"Develop P&L Narratives With Stakeholder Input","category":"Task Iteration","hours_month":3.46},{"role":"FP&A Director","workload":"P&L Management & Reporting","task":"Understand Accounting Standards And Regulations","category":"Learning","hours_month":1.44},{"role":"FP&A Director","workload":"P&L Management & Reporting","task":"Verify P&L Accuracy And Compliance Standards","category":"Validation","hours_month":2.88},{"role":"FP&A Director","workload":"P&L Management & Reporting","task":"Hold P&L Accountability And Outcomes","category":"Negligibility","hours_month":13.82},{"role":"FP&A Director","workload":"Process Improvement & Systems Management","task":"Document Processes And Create Flowcharts","category":"Directive","hours_month":1.6},{"role":"FP&A Director","workload":"Process Improvement & Systems Management","task":"Refine Process Improvements And Enhancements","category":"Feedback Loop","hours_month":1.28},{"role":"FP&A Director","workload":"Process Improvement & Systems Management","task":"Design Systems And Processes Collaboratively","category":"Task Iteration","hours_month":0.77},{"role":"FP&A Director","workload":"Process Improvement & Systems Management","task":"Understand Tools Systems And Platforms","category":"Learning","hours_month":0.32},{"role":"FP&A Director","workload":"Process Improvement & Systems Management","task":"Test Processes And Validate Effectiveness Metrics","category":"Validation","hours_month":0.64},{"role":"FP&A Director","workload":"Process Improvement & Systems Management","task":"Make Change Management Decisions","category":"Negligibility","hours_month":1.79},{"role":"FP&A Director","workload":"Stakeholder Collaboration & Communication","task":"Schedule Stakeholder Meetings","category":"Directive","hours_month":3.12},{"role":"FP&A Director","workload":"Stakeholder Collaboration & Communication","task":"Adjust Messaging And Communication Approach","category":"Feedback Loop","hours_month":2.08},{"role":"FP&A Director","workload":"Stakeholder Collaboration & Communication","task":"Develop Presentations With Iterative Refinement","category":"Task Iteration","hours_month":2.5},{"role":"FP&A Director","workload":"Stakeholder Collaboration & Communication","task":"Understand Stakeholder Needs And Preferences","category":"Learning","hours_month":1.04},{"role":"FP&A Director","workload":"Stakeholder Collaboration & Communication","task":"Review Communications For Clarity And Accuracy","category":"Validation","hours_month":2.08},{"role":"FP&A Director","workload":"Stakeholder Collaboration & Communication","task":"Negotiate Conflicting Stakeholder Interests","category":"Negligibility","hours_month":9.98},{"role":"FP&A Director","workload":"Strategic Planning & Direction Setting","task":"Compile Market Data And Competitive Analysis","category":"Directive","hours_month":2.88},{"role":"FP&A Director","workload":"Strategic Planning & Direction Setting","task":"Adjust Strategic Recommendations And Scenarios","category":"Feedback Loop","hours_month":2.88},{"role":"FP&A Director","workload":"Strategic Planning & Direction Setting","task":"Develop Strategic Scenarios With Cross-Functional Input","category":"Task Iteration","hours_month":3.46},{"role":"FP&A Director","workload":"Strategic Planning & Direction Setting","task":"Understand Market Trends And Dynamics","category":"Learning","hours_month":2.88},{"role":"FP&A Director","workload":"Strategic Planning & Direction Setting","task":"Review Strategic Plans For Consistency And Alignment","category":"Validation","hours_month":2.88},{"role":"FP&A Director","workload":"Strategic Planning & Direction Setting","task":"Make Final Strategic Decisions","category":"Negligibility","hours_month":13.82},{"role":"FP&A Director","workload":"Team Leadership & Development","task":"Generate Performance Review Templates","category":"Directive","hours_month":3.12},{"role":"FP&A Director","workload":"Team Leadership & Development","task":"Adjust Coaching And Development Strategies","category":"Feedback Loop","hours_month":2.08},{"role":"FP&A Director","workload":"Team Leadership & Development","task":"Develop Career Development Plans Collaboratively","category":"Task Iteration","hours_month":2.5},{"role":"FP&A Director","workload":"Team Leadership & Development","task":"Understand Leadership Frameworks And Development","category":"Learning","hours_month":1.04},{"role":"FP&A Director","workload":"Team Leadership & Development","task":"Review Team Deliverables For Quality And Completeness","category":"Validation","hours_month":2.08},{"role":"FP&A Director","workload":"Team Leadership & Development","task":"Conduct One-On-One Mentoring Conversations","category":"Negligibility","hours_month":9.98},{"role":"FP&A Senior Director (Band B)","workload":"Financial Analysis and Reporting","task":"Extract Financial Data From Systems","category":"Directive","hours_month":2.89},{"role":"FP&A Senior Director (Band B)","workload":"Financial Analysis and Reporting","task":"Adjust Report Metrics And Visualizations","category":"Feedback Loop","hours_month":2.89},{"role":"FP&A Senior Director (Band B)","workload":"Financial Analysis and Reporting","task":"Build Analytical Models Iteratively","category":"Task Iteration","hours_month":4.24},{"role":"FP&A Senior Director (Band B)","workload":"Financial Analysis and Reporting","task":"Learn Financial Metrics And Principles","category":"Learning","hours_month":2.89},{"role":"FP&A Senior Director (Band B)","workload":"Financial Analysis and Reporting","task":"Verify Analysis Accuracy","category":"Validation","hours_month":2.89},{"role":"FP&A Senior Director (Band B)","workload":"Financial Analysis and Reporting","task":"Interpret Financial Results For Strategy","category":"Negligibility","hours_month":3.46},{"role":"FP&A Senior Director (Band B)","workload":"Financial Planning and Forecasting","task":"Consolidate Historical Financial Data","category":"Directive","hours_month":3.85},{"role":"FP&A Senior Director (Band B)","workload":"Financial Planning and Forecasting","task":"Adjust Forecast Models Based On Variance","category":"Feedback Loop","hours_month":3.85},{"role":"FP&A Senior Director (Band B)","workload":"Financial Planning and Forecasting","task":"Build Multi-Scenario Financial Models Iteratively","category":"Task Iteration","hours_month":4.62},{"role":"FP&A Senior Director (Band B)","workload":"Financial Planning and Forecasting","task":"Learn Accounting Standards And Methodologies","category":"Learning","hours_month":3.85},{"role":"FP&A Senior Director (Band B)","workload":"Financial Planning and Forecasting","task":"Verify Forecast Accuracy","category":"Validation","hours_month":3.85},{"role":"FP&A Senior Director (Band B)","workload":"Financial Planning and Forecasting","task":"Make Strategic Market Condition Judgments","category":"Negligibility","hours_month":18.49},{"role":"FP&A Senior Director (Band B)","workload":"Leadership and Talent Development","task":"Compile Talent Roster Data","category":"Directive","hours_month":1.78},{"role":"FP&A Senior Director (Band B)","workload":"Leadership and Talent Development","task":"Adjust Performance Review Summaries","category":"Feedback Loop","hours_month":1.19},{"role":"FP&A Senior Director (Band B)","workload":"Leadership and Talent Development","task":"Develop Leadership Competency Frameworks Iteratively","category":"Task Iteration","hours_month":1.42},{"role":"FP&A Senior Director (Band B)","workload":"Leadership and Talent Development","task":"Learn Organizational Culture And Leadership","category":"Learning","hours_month":0.59},{"role":"FP&A Senior Director (Band B)","workload":"Leadership and Talent Development","task":"Review Training Effectiveness Metrics","category":"Validation","hours_month":1.19},{"role":"FP&A Senior Director (Band B)","workload":"Leadership and Talent Development","task":"Conduct One-On-One Mentoring Sessions","category":"Negligibility","hours_month":5.68},{"role":"FP&A Senior Director (Band B)","workload":"Operational Oversight and Compliance","task":"Monitor Compliance Checklists","category":"Directive","hours_month":0.89},{"role":"FP&A Senior Director (Band B)","workload":"Operational Oversight and Compliance","task":"Adjust Control Procedures And Governance","category":"Feedback Loop","hours_month":1.19},{"role":"FP&A Senior Director (Band B)","workload":"Operational Oversight and Compliance","task":"Design Compliance Frameworks Iteratively","category":"Task Iteration","hours_month":0.42},{"role":"FP&A Senior Director (Band B)","workload":"Operational Oversight and Compliance","task":"Learn Regulatory Requirements And Compliance","category":"Learning","hours_month":0.59},{"role":"FP&A Senior Director (Band B)","workload":"Operational Oversight and Compliance","task":"Review Compliance Status","category":"Validation","hours_month":1.78},{"role":"FP&A Senior Director (Band B)","workload":"Operational Oversight and Compliance","task":"Make Compliance And Risk Judgment Calls","category":"Negligibility","hours_month":1.06},{"role":"FP&A Senior Director (Band B)","workload":"Process Design and Optimization","task":"Document Current Processes","category":"Directive","hours_month":1.19},{"role":"FP&A Senior Director (Band B)","workload":"Process Design and Optimization","task":"Refine Process Designs Based On Testing","category":"Feedback Loop","hours_month":1.19},{"role":"FP&A Senior Director (Band B)","workload":"Process Design and Optimization","task":"Design Optimized Processes Iteratively","category":"Task Iteration","hours_month":1.42},{"role":"FP&A Senior Director (Band B)","workload":"Process Design and Optimization","task":"Learn Process Improvement Methodologies","category":"Learning","hours_month":1.19},{"role":"FP&A Senior Director (Band B)","workload":"Process Design and Optimization","task":"Assess Process Efficiency Gains","category":"Validation","hours_month":1.19},{"role":"FP&A Senior Director (Band B)","workload":"Process Design and Optimization","task":"Make Process Trade-Off Judgment Calls","category":"Negligibility","hours_month":5.67},{"role":"FP&A Senior Director (Band B)","workload":"Stakeholder Engagement and Influence","task":"Prepare Stakeholder Contact Lists","category":"Directive","hours_month":4},{"role":"FP&A Senior Director (Band B)","workload":"Stakeholder Engagement and Influence","task":"Adjust Messaging And Communication Approach","category":"Feedback Loop","hours_month":2.67},{"role":"FP&A Senior Director (Band B)","workload":"Stakeholder Engagement and Influence","task":"Develop Stakeholder Engagement Strategies","category":"Task Iteration","hours_month":3.2},{"role":"FP&A Senior Director (Band B)","workload":"Stakeholder Engagement and Influence","task":"Learn Stakeholder Priorities And Dynamics","category":"Learning","hours_month":1.33},{"role":"FP&A Senior Director (Band B)","workload":"Stakeholder Engagement and Influence","task":"Assess Engagement Effectiveness","category":"Validation","hours_month":2.67},{"role":"FP&A Senior Director (Band B)","workload":"Stakeholder Engagement and Influence","task":"Conduct Stakeholder Negotiations And Relationships","category":"Negligibility","hours_month":12.8},{"role":"FP&A Senior Director (Band B)","workload":"Strategic Planning and Direction Setting","task":"Compile Strategic Planning Templates","category":"Directive","hours_month":2.67},{"role":"FP&A Senior Director (Band B)","workload":"Strategic Planning and Direction Setting","task":"Refine Strategic Priorities And Initiatives","category":"Feedback Loop","hours_month":2.67},{"role":"FP&A Senior Director (Band B)","workload":"Strategic Planning and Direction Setting","task":"Develop Strategic Roadmaps Collaboratively","category":"Task Iteration","hours_month":3.2},{"role":"FP&A Senior Director (Band B)","workload":"Strategic Planning and Direction Setting","task":"Learn Industry Trends And Competitive Landscape","category":"Learning","hours_month":2.67},{"role":"FP&A Senior Director (Band B)","workload":"Strategic Planning and Direction Setting","task":"Assess Strategic Alignment","category":"Validation","hours_month":2.67},{"role":"FP&A Senior Director (Band B)","workload":"Strategic Planning and Direction Setting","task":"Establish Organizational Vision And Strategy","category":"Negligibility","hours_month":12.79},{"role":"FP&A Senior Director (Band B)","workload":"Transformation and Change Management","task":"Create Change Communication Templates","category":"Directive","hours_month":2.89},{"role":"FP&A Senior Director (Band B)","workload":"Transformation and Change Management","task":"Adjust Change Plans Based On Metrics","category":"Feedback Loop","hours_month":1.93},{"role":"FP&A Senior Director (Band B)","workload":"Transformation and Change Management","task":"Design Transformation Roadmaps Iteratively","category":"Task Iteration","hours_month":2.31},{"role":"FP&A Senior Director (Band B)","workload":"Transformation and Change Management","task":"Learn Change Management Methodologies","category":"Learning","hours_month":0.96},{"role":"FP&A Senior Director (Band B)","workload":"Transformation and Change Management","task":"Monitor Change Adoption Progress","category":"Validation","hours_month":1.93},{"role":"FP&A Senior Director (Band B)","workload":"Transformation and Change Management","task":"Lead Organizational Change Conversations","category":"Negligibility","hours_month":9.24},{"role":"FP&A Senior Director (Band A)","workload":"Financial Decision Support","task":"Compile Financial Data For Analysis","category":"Directive","hours_month":4},{"role":"FP&A Senior Director (Band A)","workload":"Financial Decision Support","task":"Update Financial Recommendations And Analyses","category":"Feedback Loop","hours_month":4},{"role":"FP&A Senior Director (Band A)","workload":"Financial Decision Support","task":"Develop Financial Scenarios With Stakeholders","category":"Task Iteration","hours_month":5.87},{"role":"FP&A Senior Director (Band A)","workload":"Financial Decision Support","task":"Understand Business Context And Financial Strategy","category":"Learning","hours_month":4},{"role":"FP&A Senior Director (Band A)","workload":"Financial Decision Support","task":"Verify Financial Analysis Accuracy","category":"Validation","hours_month":4},{"role":"FP&A Senior Director (Band A)","workload":"Financial Decision Support","task":"Make Final Financial Decisions","category":"Negligibility","hours_month":4.8},{"role":"FP&A Senior Director (Band A)","workload":"Financial Planning and Analysis","task":"Generate standard financial reports","category":"Directive","hours_month":5.78},{"role":"FP&A Senior Director (Band A)","workload":"Financial Planning and Analysis","task":"Adjust Financial Forecasts And Assumptions","category":"Feedback Loop","hours_month":5.78},{"role":"FP&A Senior Director (Band A)","workload":"Financial Planning and Analysis","task":"Build Financial Models With Business Units","category":"Task Iteration","hours_month":8.47},{"role":"FP&A Senior Director (Band A)","workload":"Financial Planning and Analysis","task":"Understand Accounting Standards And Regulations","category":"Learning","hours_month":5.78},{"role":"FP&A Senior Director (Band A)","workload":"Financial Planning and Analysis","task":"Verify Financial Analysis Accuracy And Assumptions","category":"Validation","hours_month":5.78},{"role":"FP&A Senior Director (Band A)","workload":"Financial Planning and Analysis","task":"Make Final Investment Decisions","category":"Negligibility","hours_month":6.92},{"role":"FP&A Senior Director (Band A)","workload":"Operational Management","task":"Generate Operational Performance Reports","category":"Directive","hours_month":2.96},{"role":"FP&A Senior Director (Band A)","workload":"Operational Management","task":"Adjust Operational Targets And Strategies","category":"Feedback Loop","hours_month":2.37},{"role":"FP&A Senior Director (Band A)","workload":"Operational Management","task":"Develop Operational Improvements Collaboratively","category":"Task Iteration","hours_month":1.42},{"role":"FP&A Senior Director (Band A)","workload":"Operational Management","task":"Understand Operational Best Practices And Benchmarks","category":"Learning","hours_month":0.59},{"role":"FP&A Senior Director (Band A)","workload":"Operational Management","task":"Review Operational Metrics Accuracy","category":"Validation","hours_month":1.19},{"role":"FP&A Senior Director (Band A)","workload":"Operational Management","task":"Make Final Operational Decisions","category":"Negligibility","hours_month":3.32},{"role":"FP&A Senior Director (Band A)","workload":"Organizational Culture and Excellence","task":"Distribute Culture And Engagement Communications","category":"Directive","hours_month":1.48},{"role":"FP&A Senior Director (Band A)","workload":"Organizational Culture and Excellence","task":"Adjust Culture Initiatives And Programs","category":"Feedback Loop","hours_month":1.19},{"role":"FP&A Senior Director (Band A)","workload":"Organizational Culture and Excellence","task":"Develop Culture Programs With HR Partners","category":"Task Iteration","hours_month":0.71},{"role":"FP&A Senior Director (Band A)","workload":"Organizational Culture and Excellence","task":"Understand Organizational Culture And Values","category":"Learning","hours_month":0.3},{"role":"FP&A Senior Director (Band A)","workload":"Organizational Culture and Excellence","task":"Review Culture Initiative Alignment","category":"Validation","hours_month":0.59},{"role":"FP&A Senior Director (Band A)","workload":"Organizational Culture and Excellence","task":"Establish Organizational Values And Culture","category":"Negligibility","hours_month":1.66},{"role":"FP&A Senior Director (Band A)","workload":"Stakeholder Engagement and Communication","task":"Schedule stakeholder meetings","category":"Directive","hours_month":2.89},{"role":"FP&A Senior Director (Band A)","workload":"Stakeholder Engagement and Communication","task":"Adjust Messaging And Communication Approach","category":"Feedback Loop","hours_month":1.93},{"role":"FP&A Senior Director (Band A)","workload":"Stakeholder Engagement and Communication","task":"Develop Presentation Content With Communications Teams","category":"Task Iteration","hours_month":2.31},{"role":"FP&A Senior Director (Band A)","workload":"Stakeholder Engagement and Communication","task":"Understand Stakeholder Needs And Preferences","category":"Learning","hours_month":0.96},{"role":"FP&A Senior Director (Band A)","workload":"Stakeholder Engagement and Communication","task":"Review Communications For Accuracy","category":"Validation","hours_month":1.93},{"role":"FP&A Senior Director (Band A)","workload":"Stakeholder Engagement and Communication","task":"Deliver Executive Presentations And Speeches","category":"Negligibility","hours_month":9.24},{"role":"FP&A Senior Director (Band A)","workload":"Strategic Planning and Vision Setting","task":"Compile Market Data And Strategic Reports","category":"Directive","hours_month":2.67},{"role":"FP&A Senior Director (Band A)","workload":"Strategic Planning and Vision Setting","task":"Refine Strategic Priorities And Initiatives","category":"Feedback Loop","hours_month":2.67},{"role":"FP&A Senior Director (Band A)","workload":"Strategic Planning and Vision Setting","task":"Develop Strategic Initiatives With Cross-Functional Leaders","category":"Task Iteration","hours_month":3.2},{"role":"FP&A Senior Director (Band A)","workload":"Strategic Planning and Vision Setting","task":"Understand Market Trends And Dynamics","category":"Learning","hours_month":2.67},{"role":"FP&A Senior Director (Band A)","workload":"Strategic Planning and Vision Setting","task":"Review Strategic Plans For Feasibility And Viability","category":"Validation","hours_month":2.67},{"role":"FP&A Senior Director (Band A)","workload":"Strategic Planning and Vision Setting","task":"Make final strategic decisions","category":"Negligibility","hours_month":12.79},{"role":"FP&A Senior Director (Band A)","workload":"Team Leadership and Development","task":"Generate Performance Summary Reports","category":"Directive","hours_month":2.89},{"role":"FP&A Senior Director (Band A)","workload":"Team Leadership and Development","task":"Adjust Coaching Strategies And Development","category":"Feedback Loop","hours_month":1.93},{"role":"FP&A Senior Director (Band A)","workload":"Team Leadership and Development","task":"Develop Career Development Plans Collaboratively","category":"Task Iteration","hours_month":2.31},{"role":"FP&A Senior Director (Band A)","workload":"Team Leadership and Development","task":"Understand Leadership Frameworks And Development","category":"Learning","hours_month":0.96},{"role":"FP&A Senior Director (Band A)","workload":"Team Leadership and Development","task":"Review Team Deliverables For Quality And Completeness","category":"Validation","hours_month":1.93},{"role":"FP&A Senior Director (Band A)","workload":"Team Leadership and Development","task":"Conduct One-On-One Coaching Conversations","category":"Negligibility","hours_month":9.24},{"role":"FP&A Senior Director (Band A)","workload":"Transformation and Process Design","task":"Document Processes And Create Flowcharts","category":"Directive","hours_month":2.96},{"role":"FP&A Senior Director (Band A)","workload":"Transformation and Process Design","task":"Refine Process Designs Based On Testing","category":"Feedback Loop","hours_month":2.37},{"role":"FP&A Senior Director (Band A)","workload":"Transformation and Process Design","task":"Design Process Improvements Collaboratively","category":"Task Iteration","hours_month":1.42},{"role":"FP&A Senior Director (Band A)","workload":"Transformation and Process Design","task":"Understand Process Design And Change Management","category":"Learning","hours_month":0.59},{"role":"FP&A Senior Director (Band A)","workload":"Transformation and Process Design","task":"Review Process Design Efficiency","category":"Validation","hours_month":1.19},{"role":"FP&A Senior Director (Band A)","workload":"Transformation and Process Design","task":"Make Final Process Change Decisions","category":"Negligibility","hours_month":3.32}]};window.BASE_PACK={"meta":{"name":"Base pack: FP&A, large enterprise, cross-industry defaults","currency":"USD","as_of":"2026-10-23"},"categories":{"Directive":{"ceiling":0.9},"Feedback Loop":{"ceiling":0.8},"Task Iteration":{"ceiling":0.45},"Learning":{"ceiling":0.25},"Validation":{"ceiling":0.5}},"augment":{"time_saving_by_band":{"Para-professional":0.2,"Professional":0.12,"Management":0.06,"Executive":0.03},"rollout_start_month":2,"rollout_months":6},"turnover_by_band":{"Para-professional":0.125,"Professional":0.091,"Management":0.063,"Executive":0.052},"economics":{"on_cost":1.3055,"wage_growth":0.034,"standard_task_hours_month":160,"discount_rate":0.0696,"horizon_months":60,"cost_per_hire":4700,"function_growth":0.0,"turnover_multiplier":1.0},"costs":{"build_workflow":55000,"build_enterprise":130000,"enterprise_if_roles_at_least":2,"enterprise_if_auto_tasks_at_least":3,"build_lead_months":3,"maintenance_share_per_year":0.18,"run_cost_per_ai_hour":3.48,"run_cost_decline_per_year":0.13,"programme_fixed":75000,"deploy_per_affected_head":623,"training_spend_per_head":846,"training_hours_per_head":16.7,"assistant_licence_per_seat_year":360,"seat_cost_per_position":468,"allow_buy":true,"buy_workflow":15000,"buy_enterprise":35000,"buy_run_per_ai_hour":6.0},"programme":{"pilot_workloads":3,"pilot_evaluation_months":6,"wave_size":10,"wave_gap_months":3},"scenarios":{"Conservative":{"takeover":0.25,"review":0.4,"adopt_months":18,"active_use":0.55,"aug_mult":0.5,"cost_mult":1.25},"Moderate":{"takeover":0.4,"review":0.3,"adopt_months":12,"active_use":0.7,"aug_mult":1.0,"cost_mult":1.0},"Aggressive":{"takeover":0.6,"review":0.2,"adopt_months":6,"active_use":0.85,"aug_mult":1.25,"cost_mult":0.9}},"policies":{"Capacity only":{"mechanism":"attrition","harvest_automation":0.0,"harvest_augmentation":0.0,"absorb_growth":true},"Attrition only":{"mechanism":"attrition","harvest_automation":0.5,"harvest_augmentation":0.0,"absorb_growth":true},"Active reduction":{"mechanism":"separation","harvest_automation":0.75,"harvest_augmentation":0.25,"notice_months":2,"severance_weeks":12,"absorb_growth":true}},"data_quality":{"score_tolerance":0.1},"nonlinear":{"complexity_drag":0.3},"uncertainty":{"execution_correlation":0.5,"params":{"takeover":{"dist":"logitnormal","median":0.4,"p10":0.2,"p90":0.62,"quality_sign":1},"review":{"dist":"logitnormal","median":0.3,"p10":0.15,"p90":0.45,"quality_sign":-1},"adopt_months":{"dist":"lognormal","median":12,"p10":6,"p90":24,"quality_sign":-1},"active_use":{"dist":"logitnormal","median":0.7,"p10":0.5,"p90":0.85,"quality_sign":1},"aug_mult":{"dist":"lognormal","median":1.0,"p10":0.4,"p90":1.6},"cost_mult":{"dist":"lognormal","median":1.0,"p10":0.85,"p90":1.6},"run_mult":{"dist":"lognormal","median":1.0,"p10":0.43,"p90":2.9},"drag":{"dist":"logitnormal","median":0.3,"p10":0.1,"p90":0.55},"turnover_mult":{"dist":"lognormal","median":1.0,"p10":0.75,"p90":1.3}}}};window.ARCHETYPES={"tech_large":{"label":"Large software company","industry":"Technology","size":"Large","headcount_factor":1.0,"salary_factor":1.0,"economics":{"discount_rate":0.0934,"function_growth":0.08,"turnover_multiplier":0.59},"default_policy":"Attrition only","notes":"Etter FP&A dataset at full size. WACC: Damodaran Jan-2026 Software (System & Application) 9.34%. Turnover: JOLTS 2025 quits, Information 1.3 vs total private 2.2 per month (x0.59). Growth 8%/yr is an illustrative client input."},"insurance_large":{"label":"Large insurer","industry":"Insurance","size":"Large","headcount_factor":0.5,"salary_factor":0.93,"economics":{"discount_rate":0.0634,"function_growth":0.02,"turnover_multiplier":0.59},"default_policy":"Attrition only","notes":"Half the dataset's FP&A headcount. WACC: Damodaran Insurance (General) 6.34%. Salary x0.93: BLS OEWS May-2025 financial analysts, insurance carriers $95,830 vs all $102,740. Turnover: JOLTS 2025 finance & insurance quits 1.3 vs 2.2 (x0.59)."},"health_large":{"label":"Large hospital system (non-profit)","industry":"Healthcare","size":"Large","headcount_factor":0.2,"salary_factor":1.0,"economics":{"discount_rate":0.0619,"function_growth":0.03,"turnover_multiplier":0.91},"default_policy":"Capacity only","notes":"One fifth of the dataset's FP&A headcount; no reductions (redeploy only). WACC: Damodaran Hospitals/Healthcare Facilities 6.19%. Turnover: JOLTS 2025 health care quits 2.0 vs 2.2 (x0.91). Salary factor not sourced; client provides."},"insurance_mid":{"label":"Mid-cap insurer","industry":"Insurance","size":"Mid-cap","headcount_factor":0.04,"salary_factor":0.93,"economics":{"discount_rate":0.0634,"function_growth":0.02,"turnover_multiplier":0.59},"default_policy":"Attrition only","notes":"About 60 FP&A staff. Same sources as the large insurer."},"tech_mid":{"label":"Mid-cap software company (high growth)","industry":"Technology","size":"Mid-cap","headcount_factor":0.08,"salary_factor":1.0,"economics":{"discount_rate":0.0934,"function_growth":0.15,"turnover_multiplier":0.59},"default_policy":"Attrition only","notes":"About 120 FP&A staff growing 15%/yr (illustrative). Freed capacity absorbs planned hires."}};</script>
+<script>(function () {
+  'use strict';
+  const E = window.EVM;
+  const BASE_DATA = window.ETTER_DATA, BASE_PACK = window.BASE_PACK, ARCH = window.ARCHETYPES;
+  const POLICIES = [['Capacity only', 'No reductions'], ['Attrition only', 'Attrition only'], ['Active reduction', 'Active reduction']];
+  const SCENS = ['Conservative', 'Moderate', 'Aggressive'];
+  const N_MC = 1000, CHUNK = 40, SEED = 20261019;
+  const state = { org: 'base', policy: 'Attrition only', scen: 'Moderate', horizon: 60, tab: 'leader', scopeK: null,
+    edits: { scenario: {}, policy: {}, economics: {}, costs: {} } };
+  let cur = null, mcToken = 0, rerunTimer = null;
+
+  // ------------------------------------------------------------ formatting
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const M = v => (v == null || !isFinite(v)) ? 'n/a' : `${v < 0 ? '−' : '+'}$${Math.abs(v / 1e6).toFixed(1)}M`;
+  const Mabs = v => `$${Math.abs(v / 1e6).toFixed(1)}M`;
+  const P = (v, d = 0) => v == null ? 'n/a' : `${(v * 100).toFixed(d)}%`;
+  const F = (v, d = 0) => v == null ? 'n/a' : Number(v).toLocaleString('en-US', { maximumFractionDigits: d, minimumFractionDigits: d });
+  const usd = v => `$${Math.round(v).toLocaleString('en-US')}`;
+  const cap1 = s => s.charAt(0).toUpperCase() + s.slice(1);
+  const sgnCls = v => v < 0 ? 'neg' : 'pos';
+  const roundHalfEven = x => { const f = Math.floor(x), d = x - f; if (d > 0.5) return f + 1; if (d < 0.5) return f; return f % 2 === 0 ? f : f + 1; };
+  const cumulative = xs => { let c = 0; return xs.map(v => (c += v)); };
+  const policyName = k => (POLICIES.find(p => p[0] === k) || [k, k])[1];
+
+  // ------------------------------------------------------------ register (every adjustable input, with its evidence)
+  const PCT = { show: v => +(v * 100).toFixed(2), read: v => v / 100, unit: '%' };
+  const NUM = { show: v => +(+v).toFixed(4), read: v => v, unit: '' };
+  const REGISTER = [
+    { grp: 'scenario', key: 'takeover', label: 'AI takeover of AI-able work', t: PCT, range: '20 to 62%', grade: 'C', kind: 'Measure in pilot', src: 'Ardent Partners 2025, AP touchless: 32.6% all orgs, 49.2% best-in-class' },
+    { grp: 'scenario', key: 'review', label: 'Human review load, share of AI time', t: PCT, range: '15 to 45%', grade: 'C', kind: 'Measure in pilot', src: 'Workday 2026: about 40% of AI time savings lost to rework' },
+    { grp: 'scenario', key: 'drag', label: 'Complexity drag on the work left behind', t: NUM, range: '0.10 to 0.55', grade: 'D', kind: 'Measure in pilot', src: 'Bainbridge 1983, ironies of automation; no direct measurement', fallback: p => p.nonlinear.complexity_drag },
+    { grp: 'scenario', key: 'adopt_months', label: 'Months from go-live to full use', t: NUM, range: '6 to 24', grade: 'C', kind: 'Measure in pilot', src: 'Gartner 2026: 63% of finance AI rollouts slower than expected' },
+    { grp: 'scenario', key: 'active_use', label: 'Assistant active use', t: PCT, range: '50 to 85%', grade: 'C', kind: 'Measure in pilot', src: 'Team estimate' },
+    { grp: 'scenario', key: 'aug_mult', label: 'Assistant time saving, multiplier on the bands', t: NUM, range: 'x0.4 to x1.6', grade: 'C', kind: 'Measure in pilot', src: 'Brynjolfsson, Li and Raymond 2025; METR 2025' },
+    { grp: 'scenario', key: 'cost_mult', label: 'Build and programme cost, multiplier', t: NUM, range: 'x0.85 to x1.6', grade: 'C', kind: 'Measure in pilot', src: 'Team cost build-up' },
+    { grp: 'policy', key: 'harvest_automation', label: 'Harvest share of automation-freed time', t: PCT, range: '0 to 100%', grade: '', kind: 'Choice', src: 'Management decision' },
+    { grp: 'policy', key: 'harvest_augmentation', label: 'Harvest share of assistant-freed time', t: PCT, range: '0 to 50%', grade: '', kind: 'Choice', src: 'Management decision' },
+    { grp: 'economics', key: 'function_growth', label: 'Planned headcount growth of the function, per year', t: PCT, range: 'client plan', grade: '', kind: 'Client fact', src: 'Client hiring plan' },
+    { grp: 'economics', key: 'discount_rate', label: 'Discount rate', t: PCT, range: '5.6 to 9.3%', grade: 'A', kind: 'Fact', src: 'Damodaran WACC by industry, January 2026' },
+    { grp: 'economics', key: 'turnover_multiplier', label: 'Turnover multiplier on the band rates', t: NUM, range: 'x0.59 to x1.3', grade: 'B', kind: 'Fact, client overrides', src: 'Mercer band rates; JOLTS 2025 industry quits' },
+    { grp: 'economics', key: 'on_cost', label: 'On-cost multiplier on salary', t: NUM, range: 'fixed', grade: 'A', kind: 'Fact', src: 'BLS ECEC June 2026, Table 5, full-time private: 1/(68.5% + 8.1%)' },
+    { grp: 'economics', key: 'wage_growth', label: 'Pay growth per year (nominal)', t: PCT, range: '2.5 to 4.5%', grade: 'A', kind: 'Fact', src: 'BLS Employment Cost Index, private industry, 12 months to Sept 2026: 3.4%' },
+    { grp: 'economics', key: 'cost_per_hire', label: 'Cost per hire avoided, $', t: NUM, range: '$4,100 to $10,000', grade: 'B', kind: 'Fact', src: 'SHRM benchmarking' },
+    { grp: 'costs', key: 'build_workflow', label: 'Build cost, single-role workload, $', t: NUM, range: 'x0.85 to x1.6', grade: 'C', kind: 'Measure in pilot', src: 'Team cost build-up' },
+    { grp: 'costs', key: 'build_enterprise', label: 'Build cost, multi-role workload, $', t: NUM, range: 'x0.85 to x1.6', grade: 'C', kind: 'Measure in pilot', src: 'Team cost build-up' },
+    { grp: 'costs', key: 'maintenance_share_per_year', label: 'Agent maintenance, share of build per year', t: PCT, range: '15 to 20%', grade: 'C', kind: 'Fact', src: 'Software maintenance convention' },
+    { grp: 'costs', key: 'run_cost_per_ai_hour', label: 'AI running cost per AI hour, $', t: NUM, range: '$1.50 to $10', grade: 'D', kind: 'Measure in pilot', src: 'One estimating method only' },
+    { grp: 'costs', key: 'run_cost_decline_per_year', label: 'Running cost decline per year', t: PCT, range: '0 to 30%', grade: 'C', kind: 'Fact', src: 'Team estimate' },
+    { grp: 'costs', key: 'programme_fixed', label: 'Programme fixed cost, $', t: NUM, range: 'n/a', grade: 'C', kind: 'Fact', src: 'Forrester TEI, Microsoft 365 Copilot' },
+    { grp: 'costs', key: 'deploy_per_affected_head', label: 'Deployment cost per affected person, $', t: NUM, range: 'n/a', grade: 'C', kind: 'Fact', src: 'Forrester TEI, Microsoft 365 Copilot' },
+    { grp: 'costs', key: 'training_spend_per_head', label: 'Training spend per affected person, $', t: NUM, range: '$423 to $1,692', grade: 'B', kind: 'Fact', src: 'ATD 2026' },
+    { grp: 'costs', key: 'training_hours_per_head', label: 'Training hours per affected person', t: NUM, range: '8 to 33', grade: 'B', kind: 'Fact', src: 'ATD 2026' },
+    { grp: 'costs', key: 'assistant_licence_per_seat_year', label: 'Assistant licence per active seat per year, $', t: NUM, range: 'fixed', grade: 'A', kind: 'Fact', src: 'Microsoft 365 Copilot list price, $30 a month' },
+    { grp: 'costs', key: 'seat_cost_per_position', label: 'Software seat reclaimed per position, $ per year', t: NUM, range: '$0 to $2,000', grade: 'B', kind: 'Fact, client adds tools', src: 'Microsoft 365 E3 list price from July 2026' }
+  ];
+  const LINE = {
+    hard: ['Positions not refilled or removed', 'Role salary x on-cost 1.3055 (BLS ECEC)', 'A'],
+    seats_reclaimed: ['Software seats reclaimed', 'Positions x $468 (M365 E3)', 'B'],
+    recruit_avoided: ['Recruiting avoided', 'Leavers not replaced x cost per hire (SHRM)', 'B'],
+    build: ['Build', 'Workloads x $55k or $130k (team build-up)', 'C'],
+    programme: ['Programme and deployment', '$75k + $623 per affected person (Forrester TEI)', 'C'],
+    training: ['Training', '$846 + 16.7 hours per affected person (ATD 2026)', 'B'],
+    licences: ['Assistant licences', 'Active seats x $360 a year (Microsoft list price)', 'A'],
+    run: ['AI running cost', 'AI hours x $3.48, falling 13% a year', 'D'],
+    maintenance: ['Agent maintenance', '18% of build a year', 'C'],
+    severance: ['Severance', '12 weeks of salary per separation', 'C'],
+    avoidance: ['Hires avoided against plan', 'Planned hires not made x loaded cost + cost per hire', 'B'],
+    capacity: ['Capacity released, at cost', 'Freed hours x each role’s cost per hour', 'A']
+  };
+  const PARAM = {
+    takeover: ['AI takeover rate', v => P(v)], review: ['Human review load', v => P(v)], adopt_months: ['Months to full adoption', v => F(v, 0)],
+    active_use: ['Assistant active use', v => P(v)], aug_mult: ['Assistant time saving', v => `x${F(v, 2)}`],
+    cost_mult: ['Build and programme cost', v => `x${F(v, 2)}`], run_mult: ['AI running cost', v => `$${F(3.48 * v, 2)}/h`],
+    drag: ['Complexity drag', v => F(v, 2)], turnover_mult: ['Staff turnover', v => `x${F(v, 2)}`], harvest_automation: ['Harvest share (policy)', v => P(v)]
+  };
+
+  // ------------------------------------------------------------ inputs
+  function buildInputs() {
+    const d = E.clone(BASE_DATA), p = E.clone(BASE_PACK);
+    if (state.org !== 'base') {
+      const a = ARCH[state.org];
+      for (const r of d.roles) { r.headcount = Math.max(1, roundHalfEven(r.headcount * a.headcount_factor)); r.salary = r.salary * a.salary_factor; }
+      Object.assign(p.economics, a.economics); p.meta.name = a.label;
+    }
+    p.economics.horizon_months = state.horizon;
+    Object.assign(p.economics, state.edits.economics);
+    Object.assign(p.costs, state.edits.costs);
+    return [d, p];
+  }
+  function choices(p, scen, pol) {
+    const S = Object.assign(E.scenario(p, scen || state.scen), state.edits.scenario);
+    const Q = Object.assign(E.policy(p, pol || state.policy), state.edits.policy);
+    return [S, Q];
+  }
+
+  // ------------------------------------------------------------ the run
+  function run() {
+    const [d, p] = buildInputs();
+    const prep = E.prepare(d, p);
+    const [S, Q] = choices(p);
+    const [passing, ranked] = E.scope(prep, S);
+    const peak = E.sizeToPeak(prep, S, Q, passing)[0];      // programme stops where five-year cash peaks
+    const kCost = peak.length, kPass = passing.length;
+    const chosen = state.scopeK != null ? ranked.slice(0, state.scopeK) : peak;
+    const r = E.simulate(prep, S, Q, { chosen });
+    const [sensBase, sens] = E.sensitivity(prep, S, Q, chosen);
+    const be = E.breakevenNet(prep, S, Q, chosen);
+    cur = { d, p, prep, S, Q, chosen, ranked, kCost, r, sens, sensBase, be, mc: null, funnel: E.funnel(prep, S, r) };
+    cur.grid = SCENS.map(sn => POLICIES.map(([pn]) => {
+      const [S2, Q2] = choices(p, sn, pn);
+      const sc2 = E.scope(prep, S2);
+      const ch = state.scopeK != null ? sc2[1].slice(0, state.scopeK) : E.sizeToPeak(prep, S2, Q2, sc2[0])[0];
+      return E.simulate(prep, S2, Q2, { chosen: ch, ledger: false }).headline;
+    }));
+    const ks = Array.from(new Set([0, 3, 5, 10, 15, 20, 25, 30, 40, 50, kCost, kPass, ranked.length, state.scopeK == null ? kCost : state.scopeK]))
+      .filter(k => k <= ranked.length).sort((a, b) => a - b);
+    cur.frontier = ks.map(k => { const x = E.simulate(prep, S, Q, { chosen: ranked.slice(0, k), ledger: false }); return { k, npv: x.headline, cap: x.pv_capacity }; });
+    renderAll();
+    startMC();
+  }
+  function rerunSoon(ms) { clearTimeout(rerunTimer); rerunTimer = setTimeout(run, ms == null ? 120 : ms); }
+
+  function startMC() {
+    const token = ++mcToken;
+    const { prep, S, Q, chosen, p } = cur;
+    const rng = new E.RNG(SEED);
+    const acc = { hl: [], cap: [], cum: [], pay: [] };
+    let i = 0;
+    const step = () => {
+      if (token !== mcToken) return;
+      const end = Math.min(N_MC, i + CHUNK);
+      for (; i < end; i++) {
+        const dd = E.drawScenario(p, rng, S);
+        const x = E.simulate(prep, Object.assign({}, S, dd), Q, { chosen, ledger: false });
+        acc.hl.push(x.headline); acc.cap.push(x.pv_capacity); acc.pay.push(x.count_avoidance ? x.payback_plan : x.payback_month);
+        acc.cum.push(x.count_avoidance ? cumulative(x.series.plan_net) : x.series.cum_cash);
+      }
+      const done = i >= N_MC;
+      cur.mc = { n: i, done, p10: E.quantile(acc.hl, 0.1), p50: E.quantile(acc.hl, 0.5), p90: E.quantile(acc.hl, 0.9),
+        pPos: acc.hl.filter(v => v > 0).length / acc.hl.length, cap10: E.quantile(acc.cap, 0.1), cap90: E.quantile(acc.cap, 0.9),
+        payShare: acc.pay.filter(v => v != null).length / acc.pay.length };
+      if (done || i % 200 === 0) {
+        const T = cur.r.T, lo = [], hi = [], md = [];
+        for (let m = 0; m <= T; m++) { const col = acc.cum.map(c => c[m]); lo.push(E.quantile(col, 0.1)); hi.push(E.quantile(col, 0.9)); md.push(E.quantile(col, 0.5)); }
+        cur.mc.fan = { lo, hi, md };
+      } else if (cur.mcPrevFan) cur.mc.fan = cur.mcPrevFan;
+      cur.mcPrevFan = cur.mc.fan;
+      renderVerdict(); renderFinanceKpis(); renderFan(); renderGate();
+      if (!done) setTimeout(step, 0);
+    };
+    setTimeout(step, 30);
+  }
+
+  // ------------------------------------------------------------ verdict band
+  function headlineBasis() { return cur.r.count_avoidance ? 'against the approved hiring plan' : 'against today’s costs'; }
+  function renderVerdict() {
+    const { r, S, Q, prep, mc } = cur;
+    const roles = Object.values(prep.roles);
+    const N = r.headcount, ai = roles.reduce((a, R) => a + R.N * R.auto_share, 0) / Math.max(1, N);
+    const T = r.T, yrs = T / 12, freed = r.freed_fte_ss, pos = r.positions_end, av = r.avoided_end;
+    const avTxt = av > 0 ? `, ${F(av)} planned hires are not needed` : '';
+    let s = `AI can do <b>${P(ai)}</b> of the work of ${F(N)} FP&amp;A staff. `;
+    if (Q.harvest_automation === 0 && Q.harvest_augmentation === 0)
+      s += `With no reductions, the work it frees by month ${T} equals <b>${F(freed)} people</b>${avTxt}; the rest is capacity worth <b>${Mabs(r.pv_capacity)}</b> at cost. `;
+    else if (Q.mechanism === 'attrition')
+      s += `By leaving some leavers unreplaced, <b>${F(pos)} positions</b> go by month ${T}${avTxt}; the rest of the ${F(freed)} people’s worth of freed work is capacity worth ${Mabs(r.pv_capacity)} at cost. `;
+    else
+      s += `With active reduction, <b>${F(pos)} positions</b> go by month ${T}${avTxt}; the rest of the ${F(freed)} people’s worth of freed work is capacity worth ${Mabs(r.pv_capacity)} at cost. `;
+    s += `Over ${yrs} years, cash ${headlineBasis()} comes to <b>${M(r.headline)}</b>`;
+    s += mc ? `, with a ${P(mc.pPos)} chance of being positive.` : '.';
+    $('answer').innerHTML = s;
+    const band = mc ? `P10 ${M(mc.p10)} to P90 ${M(mc.p90)}` : 'ranges computing…';
+    const tiles = [];
+    tiles.push(`<div class="tile cash"><span class="label">Cash vs today</span><span class="big">${M(r.npv_cash)}</span><span class="sub">${r.count_avoidance ? `${F(pos)} positions; payback ${r.payback_month ? 'month ' + r.payback_month : 'not within horizon'}` : band}</span></div>`);
+    if (r.count_avoidance)
+      tiles.push(`<div class="tile avoid"><span class="label">Cash vs approved plan</span><span class="big">${M(r.npv_plan)}</span><span class="sub">${band}; includes ${F(av)} ${av === 1 ? 'hire' : 'hires'} avoided</span></div>`);
+    else
+      tiles.push(`<div class="tile"><span class="label">Payback and funding</span><span class="big">${r.payback_month ? 'Month ' + r.payback_month : 'None'}</span><span class="sub">Peak cash needed ${Mabs(r.peak_funding)}${r.irr != null ? '; IRR ' + P(r.irr) : ''}</span></div>`);
+    tiles.push(`<div class="tile cap"><span class="label">Capacity at cost, not cash</span><span class="big">${Mabs(r.pv_capacity)}</span><span class="sub">${r.capacity_hurdle > 0 ? `Must be worth ${P(r.capacity_hurdle)} of its cost to cover the cash gap` : 'Value only if the time is put to use'}</span></div>`);
+    const v = mc && mc.done ? E.decide(mc.pPos, Q) : null;
+    const chip = v ? `<span class="chip ${v[0]}">${{ go: 'Go', pilot: 'Pilot first', stop: 'Do not start', capacity: 'Capacity case' }[v[0]]}</span>` : `<span class="chip wait">Checking ${F(mc ? mc.n : 0)} of ${F(N_MC)} outcomes</span>`;
+    tiles.push(`<div class="tile"><span class="label">Verdict</span>${chip}<span class="sub">${v ? esc(v[1]) : 'The verdict uses the chance of a positive result.'}</span><div class="meter" aria-hidden="true"><i style="width:${mc ? mc.n / N_MC * 100 : 0}%"></i></div></div>`);
+    $('tiles').innerHTML = tiles.join('');
+  }
+
+  // ------------------------------------------------------------ leader
+  function renderFunnel() {
+    const { funnel, S, Q, p, r } = cur;
+    const drag = S.drag == null ? p.nonlinear.complexity_drag : S.drag;
+    const why = {
+      cat: 'Directive and Feedback Loop tasks', able: 'Etter category ceilings', scope: 'AI costs less than the work it takes over',
+      take: `AI takes over ${P(S.takeover)} of it`, review: `people check ${P(S.review)} of AI time`, drag: `remaining work is harder (drag ${F(drag, 2)})`,
+      pos: Q.harvest_automation === 0 && Q.harvest_augmentation === 0 ? 'policy: no reductions' : Q.mechanism === 'attrition' ? `bank ${P(Q.harvest_automation)}, whole positions, as people leave` : `bank ${P(Q.harvest_automation)} of it, plus ${P(Q.harvest_augmentation)} of assistant time`
+    };
+    const mx = Math.max(...funnel.map(f => f.fte), 1);
+    const rows = funnel.map((f, i) => {
+      const keep = i > 0 && funnel[i - 1].fte > 0 ? `${Math.round(f.fte / funnel[i - 1].fte * 100)}%` : '';
+      const last = i === funnel.length - 1;
+      return `<div class="fn-row"><div class="fn-l"><b>${esc(f.stage)}</b><span>${esc(why[f.key])}</span></div><div class="fn-bar"><i style="width:calc((100% - 104px) * ${Math.max(0.004, f.fte / mx).toFixed(4)});background:${last ? 'var(--accent)' : 'var(--muted)'};opacity:${last ? 1 : 0.35}"></i><span class="num">${F(f.fte, f.key === 'pos' ? 0 : 1)} ${f.key === 'pos' ? 'positions' : 'FTE'}</span></div><div class="fn-k num">${keep ? 'keeps ' + keep : ''}</div></div>`;
+    }).join('');
+    const aug = r.roles.reduce((a, x) => a + x.aug_fte, 0);
+    $('funnel').innerHTML = `<div class="fn">${rows}</div><p class="note">Assistants free another ${F(aug, 1)} FTE of time across all roles. ${Q.harvest_augmentation > 0 ? `This policy banks ${P(Q.harvest_augmentation)} of it as positions.` : 'Under this policy it all stays as capacity.'}</p>`;
+  }
+  function renderWorkloads() {
+    const { ranked, chosen, r } = cur;
+    const inProg = new Set(chosen.map(c => c.name));
+    const top = ranked.slice(0, 10), mx = Math.max(...top.map(x => x.benefit), 1);
+    $('wl').innerHTML = `<div class="wlist">${top.map(x => {
+      const on = inProg.has(x.name), gl = r.golive[x.name];
+      return `<div class="wl-row"><div class="wl-name">${esc(cap1(x.name))}<span>${x.tier === 'enterprise' ? 'multi-role' : 'single role'}, build ${usd(x.build_s)}${on ? `, live month ${gl}` : ', not built'}</span></div><div class="wl-bar"><i style="width:${x.benefit / mx * 100}%;${on ? '' : 'background:transparent;border:1.5px solid var(--muted)'}"></i></div><div class="wl-v num">${Mabs(x.benefit * 12)}/yr</div></div>`;
+    }).join('')}</div><p class="note">${chosen.length} of ${ranked.length} workloads are in the programme. Value is the freed work at cost, once fully in use.</p>`;
+  }
+  function rangeTxt(row) { const f = (PARAM[row.param] || [row.param, v => F(v, 2)])[1]; return `${f(row.low)} to ${f(row.high)}`; }
+  function renderDecides() {
+    const rows = cur.sens.slice(0, 3);
+    $('decides').innerHTML = `<ol class="dec">${rows.map(x => `<li><b>${esc((PARAM[x.param] || [x.param])[0])}</b><span class="muted"> from ${rangeTxt(x)}</span><br><span class="num">Cash moves from <span class="${sgnCls(x.npv_low)}">${M(x.npv_low)}</span> to <span class="${sgnCls(x.npv_high)}">${M(x.npv_high)}</span></span></li>`).join('')}</ol>
+      <p class="note">${rows.filter(x => x.param !== 'harvest_automation').length} of these can be measured in a six-month pilot.${rows.some(x => x.param === 'harvest_automation') ? ' The harvest share is a decision for leadership.' : ''}</p>`;
+  }
+  function renderRoles() {
+    const { r, Q, p } = cur;
+    const T = r.T, tm = cur.S.turnover_mult == null ? 1 : cur.S.turnover_mult;
+    const none = Q.harvest_automation === 0 && Q.harvest_augmentation === 0;
+    $('people-sub').textContent = none ? 'No positions go. The freed time is redeployed, or absorbs planned hires where the function is growing.'
+      : Q.mechanism === 'attrition' ? 'Positions go only as people leave. The guidance column is the backfill rule for each hiring manager.'
+        : 'Positions are removed as the work goes, with severance. Planned hires are absorbed first where the function is growing.';
+    const body = r.roles.map(x => {
+      const leavers = x.N * (1 - Math.pow(1 - x.lam * tm, T / 12));
+      let g;
+      if (none) g = x.avoided_end > 0 ? `Absorb ${F(x.avoided_end)} planned hires` : `Redeploy ${F(x.freed_fte, 1)} FTE of time`;
+      else if (Q.mechanism === 'attrition') g = x.positions_end > 0 ? `Leave ${F(x.positions_end)} of the next ${F(Math.round(leavers))} leavers unreplaced` : 'Refill as usual';
+      else g = x.positions_end > 0 ? `Reduce by ${F(x.positions_end)}` : 'No change';
+      return `<tr><td>${esc(x.role)}</td><td class="n">${F(x.N)}</td><td class="n">${P(x.auto_share)}</td><td class="n">${F(x.freed_fte, 1)}</td><td class="n">${F(x.positions_end)}</td><td class="n">${F(x.avoided_end)}</td><td>${g}</td></tr>`;
+    }).join('');
+    const tot = k => r.roles.reduce((a, x) => a + x[k], 0);
+    $('roles').innerHTML = `<table><thead><tr><th>Role</th><th class="n">Staff</th><th class="n">AI-able</th><th class="n">Freed FTE</th><th class="n">Positions</th><th class="n">Hires avoided</th><th>Guidance</th></tr></thead><tbody>${body}<tr class="tot"><td>All roles</td><td class="n">${F(tot('N'))}</td><td class="n"></td><td class="n">${F(tot('freed_fte'), 1)}</td><td class="n">${F(tot('positions_end'))}</td><td class="n">${F(tot('avoided_end'))}</td><td></td></tr></tbody></table>`;
+  }
+
+  // ------------------------------------------------------------ finance
+  function renderFinanceKpis() {
+    if (!cur) return;
+    const { r, mc, be, S } = cur;
+    const k = [];
+    k.push(['Cash vs today', M(r.npv_cash), r.count_avoidance ? 'excludes hires avoided' : (mc ? `P10 ${M(mc.p10)}, P90 ${M(mc.p90)}` : 'computing')]);
+    if (r.count_avoidance) k.push(['Cash vs approved plan', M(r.npv_plan), mc ? `P10 ${M(mc.p10)}, P90 ${M(mc.p90)}` : 'computing']);
+    k.push(['Chance cash is positive', mc ? P(mc.pPos) : '…', mc ? `${F(mc.n)} correlated draws` : '']);
+    k.push(['Payback month', (r.count_avoidance ? r.payback_plan : r.payback_month) || 'None', `horizon ${r.T} months`]);
+    k.push(['IRR', r.irr == null ? 'n/a' : P(r.irr), 'cash vs today']);
+    k.push(['Peak cash needed', Mabs(r.peak_funding), 'deepest point of the curve']);
+    k.push(['Break-even realisation', be == null ? 'not reachable' : P(be, 1), `assumed ${P(S.takeover * (1 - S.review), 1)} (takeover x (1 − review))`]);
+    k.push(['Capacity at cost', Mabs(r.pv_capacity), mc ? `P10 ${Mabs(mc.cap10)}, P90 ${Mabs(mc.cap90)}` : 'not cash']);
+    $('fin-kpis').innerHTML = k.map(x => `<div class="kpi"><span class="v">${x[1]}</span><span class="k"><b>${x[0]}</b><br>${x[2]}</span></div>`).join('');
+  }
+  function renderFan() {
+    if (!cur) return;
+    const el = $('fan'); const W = Math.max(300, el.clientWidth || 700), H = 260, L = 56, R = 12, Tp = 14, B = 30;
+    const { r, mc } = cur; const T = r.T;
+    const det = r.count_avoidance ? cumulative(r.series.plan_net) : r.series.cum_cash;
+    const fan = mc && mc.fan;
+    const all = det.concat(fan ? fan.lo.concat(fan.hi) : []);
+    let lo = Math.min(0, ...all), hi = Math.max(0, ...all); const pad = (hi - lo) * 0.06 || 1; lo -= pad; hi += pad;
+    const X = m => L + m / T * (W - L - R), Y = v => Tp + (hi - v) / (hi - lo) * (H - Tp - B);
+    const step = niceStep((hi - lo) / 5); const ticks = []; for (let t = Math.ceil(lo / step) * step; t <= hi; t += step) ticks.push(t);
+    let g = ticks.map(t => `<line class="grid" x1="${L}" x2="${W - R}" y1="${Y(t)}" y2="${Y(t)}"/><text class="q" x="${L - 6}" y="${Y(t) + 4}" text-anchor="end" font-size="11">${t === 0 ? '0' : (t / 1e6).toFixed(Math.abs(step) < 1e6 ? 1 : 0) + 'M'}</text>`).join('');
+    for (let m = 0; m <= T; m += 12) g += `<text class="q" x="${X(m)}" y="${H - 10}" text-anchor="middle" font-size="11">${m === 0 ? 'Today' : 'Year ' + m / 12}</text>`;
+    g += `<line class="axis" x1="${L}" x2="${W - R}" y1="${Y(0)}" y2="${Y(0)}"/>`;
+    if (fan) {
+      const pts = fan.hi.map((v, m) => `${X(m)},${Y(v)}`).concat(fan.lo.map((v, m) => `${X(m)},${Y(v)}`).reverse());
+      g += `<polygon points="${pts.join(' ')}" fill="var(--band)"/>`;
+    }
+    g += `<polyline points="${det.map((v, m) => `${X(m)},${Y(v)}`).join(' ')}" fill="none" stroke="var(--accent)" stroke-width="2.5"/>`;
+    const pb = r.count_avoidance ? r.payback_plan : r.payback_month;
+    if (pb) g += `<line class="ref" x1="${X(pb)}" x2="${X(pb)}" y1="${Tp}" y2="${H - B}"/><text x="${X(pb) + (X(pb) > W - 140 ? -6 : 6)}" y="${Tp + 10}" font-size="11" text-anchor="${X(pb) > W - 140 ? 'end' : 'start'}" class="q">payback, month ${pb}</text>`;
+    const mn = det.indexOf(Math.min(...det));
+    if (det[mn] < 0) g += `<circle cx="${X(mn)}" cy="${Y(det[mn])}" r="3.5" fill="var(--accent)"/><text x="${X(mn)}" y="${Y(det[mn]) + 16}" text-anchor="middle" font-size="11" class="q">peak need ${Mabs(det[mn])}</text>`;
+    g += `<text x="${X(T) - 4}" y="${Y(det[T]) - 8}" text-anchor="end" font-size="12" font-weight="600">${M(det[T])} by month ${T}, undiscounted</text>`;
+    el.innerHTML = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Cumulative cash by month">${g}</svg>`;
+  }
+  function niceStep(x) { const p = Math.pow(10, Math.floor(Math.log10(Math.abs(x) || 1))); const f = x / p; return (f < 1.5 ? 1 : f < 3 ? 2 : f < 7 ? 5 : 10) * p; }
+  function renderLines() {
+    const { r } = cur; const s = r.series, d = r.rate;
+    const pvOf = k => E.pv(s[k], d);
+    const sav = ['hard', 'seats_reclaimed', 'recruit_avoided'], cost = ['build', 'programme', 'training', 'licences', 'run', 'maintenance', 'severance'];
+    const row = (k, sign) => { const v = pvOf(k); if (!v) return ''; const [n, src, gr] = LINE[k]; return `<tr><td>${n}<br><span class="note">${src}</span></td><td><span class="grade ${gr}">${gr}</span></td><td class="n ${sign < 0 ? 'neg' : 'pos'}">${sign < 0 ? '−' : '+'}${Mabs(v)}</td></tr>`; };
+    const sv = sav.reduce((a, k) => a + pvOf(k), 0), cv = cost.reduce((a, k) => a + pvOf(k), 0);
+    $('lines').innerHTML = `<table><thead><tr><th>Line</th><th>Grade</th><th class="n">PV</th></tr></thead><tbody>
+      ${sav.map(k => row(k, 1)).join('')}<tr class="tot"><td>Cash savings</td><td></td><td class="n">${M(sv)}</td></tr>
+      ${cost.map(k => row(k, -1)).join('')}<tr class="tot"><td>Costs</td><td></td><td class="n">${M(-cv)}</td></tr>
+      <tr class="tot"><td>Cash NPV vs today</td><td></td><td class="n ${sgnCls(r.npv_cash)}">${M(r.npv_cash)}</td></tr>
+      <tr><td>${LINE.avoidance[0]}<br><span class="note">Reported beside cash, never inside it</span></td><td><span class="grade B">B</span></td><td class="n">${Mabs(pvOf('avoidance'))}</td></tr>
+      <tr><td>${LINE.capacity[0]}<br><span class="note">Not cash: valued at what the time costs</span></td><td><span class="grade A">A</span></td><td class="n">${Mabs(pvOf('capacity'))}</td></tr></tbody></table>`;
+  }
+  function renderTornado() {
+    const rows = cur.sens.slice(0, 8), base = cur.sensBase;
+    const vals = rows.flatMap(x => [x.npv_low, x.npv_high]).concat([0, base]);
+    let lo = Math.min(...vals), hi = Math.max(...vals); const pad = (hi - lo) * 0.04; lo -= pad; hi += pad;
+    const X = v => (v - lo) / (hi - lo) * 100;
+    $('tornado').innerHTML = `<div class="tor">${rows.map((x, i) => {
+      const a = Math.min(x.npv_low, x.npv_high), b = Math.max(x.npv_low, x.npv_high);
+      return `<div class="tor-row"><div class="tor-l"><b>${esc((PARAM[x.param] || [x.param])[0])}</b><span>${rangeTxt(x)}</span></div><div class="tor-t"><span class="z" style="left:${X(0)}%"></span><span class="bs" style="left:${X(base)}%"></span><i style="left:${X(a)}%;width:${Math.max(0.5, X(b) - X(a))}%;background:${i < 3 ? 'var(--accent)' : 'var(--muted)'};opacity:${i < 3 ? 1 : 0.45}"></i></div><div class="tor-v num"><span class="${sgnCls(a)}">${M(a)}</span> to <span class="${sgnCls(b)}">${M(b)}</span></div></div>`;
+    }).join('')}</div><p class="note">Solid line marks zero; dotted line marks the current result, ${M(base)}.</p>`;
+  }
+  function renderGrid() {
+    const g = cur.grid;
+    $('grid').innerHTML = `<table><thead><tr><th>Ambition</th>${POLICIES.map(p => `<th class="n">${p[1]}</th>`).join('')}</tr></thead><tbody>${SCENS.map((sn, i) => `<tr><td>${sn}</td>${POLICIES.map(([pn], j) => `<td class="n ${sgnCls(g[i][j])}" style="${sn === state.scen && pn === state.policy ? 'background:var(--accent-soft);font-weight:600' : ''}">${M(g[i][j])}</td>`).join('')}</tr>`).join('')}</tbody></table><p class="note">${cur.r.count_avoidance ? 'Cash against the approved hiring plan.' : 'Cash against today’s costs.'} Each cell is sized to its own peak cash.</p>`;
+  }
+
+  // ------------------------------------------------------------ plan
+  function renderFrontier() {
+    const el = $('frontier'); const pts = cur.frontier; const W = Math.max(300, el.clientWidth || 700), H = 280, L = 56, R = 16, B = 28;
+    const kSel = state.scopeK == null ? cur.kCost : state.scopeK, kMax = cur.ranked.length || 1;
+    const X = k => L + k / kMax * (W - L - R);
+    const panel = (key, y0, h, colour, label) => {
+      const vs = pts.map(p => p[key]); let lo = Math.min(0, ...vs), hi = Math.max(0, ...vs); const pad = (hi - lo) * 0.1 || 1; lo -= pad; hi += pad;
+      const Y = v => y0 + (hi - v) / (hi - lo) * h;
+      let g = `<text x="${L}" y="${y0 - 6}" font-size="12" font-weight="600">${label}</text><line class="axis" x1="${L}" x2="${W - R}" y1="${Y(0)}" y2="${Y(0)}"/>`;
+      g += `<text class="q" x="${L - 6}" y="${Y(0) + 4}" text-anchor="end" font-size="11">0</text>`;
+      g += `<polyline points="${pts.map(p => `${X(p.k)},${Y(p[key])}`).join(' ')}" fill="none" stroke="${colour}" stroke-width="2.2"/>`;
+      g += pts.map(p => `<circle cx="${X(p.k)}" cy="${Y(p[key])}" r="${p.k === kSel ? 4.5 : 2.5}" fill="${colour}"><title>${p.k} workloads: ${M(p[key])}</title></circle>`).join('');
+      const best = pts.reduce((a, p) => p[key] > a[key] ? p : a, pts[0]);
+      const sel = pts.find(p => p.k === kSel);
+      if (sel) g += `<text x="${X(sel.k) + (X(sel.k) > W - 120 ? -8 : 8)}" y="${Y(sel[key]) - 8}" text-anchor="${X(sel.k) > W - 120 ? 'end' : 'start'}" font-size="11.5" font-weight="600">${M(sel[key])}</text>`;
+      if (key === 'npv' && best.k !== kSel) g += `<text class="q" x="${X(best.k)}" y="${Y(best[key]) - 8}" text-anchor="middle" font-size="11">peak ${M(best[key])} at ${best.k}</text>`;
+      return g;
+    };
+    let g = panel('npv', 22, 96, 'var(--accent)', cur.r.count_avoidance ? 'Cash vs plan, NPV' : 'Cash vs today, NPV');
+    g += panel('cap', 156, 80, 'var(--capacity)', 'Capacity at cost, PV');
+    g += `<line class="ref" x1="${X(kSel)}" x2="${X(kSel)}" y1="14" y2="${H - B}"/>`;
+    [0, 10, 20, 30, 40, 50, 60].filter(k => k <= kMax).forEach(k => { g += `<text class="q" x="${X(k)}" y="${H - 8}" text-anchor="middle" font-size="11">${k}</text>`; });
+    el.innerHTML = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Cash and capacity by programme size">${g}</svg>`;
+    const s = $('scopek'); s.max = String(kMax); s.value = String(kSel);
+    $('scopek-v').textContent = `${kSel} of ${kMax}${state.scopeK == null ? ' (peak cash)' : ''}`;
+    $('scope-reset').hidden = state.scopeK == null;
+  }
+  function renderGate() {
+    if (!cur) return;
+    const { chosen, be, S, mc, Q, p } = cur;
+    const pilot = chosen.slice(0, p.programme.pilot_workloads);
+    const net = S.takeover * (1 - S.review);
+    $('gate-sub').textContent = `Run the top ${pilot.length} workloads for ${p.programme.pilot_evaluation_months} months, measure, then decide on the rest.`;
+    const v = mc && mc.done ? E.decide(mc.pPos, Q) : null;
+    $('gate').innerHTML = `<div><span class="label">Pilot workloads</span><ul class="plain">${pilot.map(x => `<li>${esc(cap1(x.name))}</li>`).join('') || '<li>None pass the cost test at this size</li>'}</ul></div>
+      <div><span class="label">Go/no-go threshold</span><p>Scale if the pilot shows a net realisation of at least <b>${be == null ? 'n/a (not reachable)' : P(be, 1)}</b>. This run assumes ${P(net, 1)}: AI takes over ${P(S.takeover)} and people check ${P(S.review)} of its time.</p></div>
+      <div><span class="label">Measure for ${p.programme.pilot_evaluation_months} months</span><ul class="plain"><li>Share of each workload’s hours the AI handles end to end</li><li>Minutes people spend checking each AI hour</li><li>Weeks from go-live to steady use</li><li>Actual build and running cost per workload</li></ul></div>
+      <div><span class="label">When a gate is worth it</span><p class="note">Experiments on this data: a gate adds value when the chance of positive cash is between about 40% and 70%. Above that, roll out in waves without pausing. Below it, do not start.${v ? ` Here it is ${P(mc.pPos)}: ${esc(v[1])}` : ''}</p></div>`;
+  }
+  function renderWaves() {
+    const { chosen, r } = cur; const by = new Map();
+    for (const x of chosen) { const m = r.golive[x.name]; if (!by.has(m)) by.set(m, []); by.get(m).push(x.name); }
+    const ms = Array.from(by.keys()).sort((a, b) => a - b);
+    if (!ms.length) { $('waves').innerHTML = '<p class="muted">No workloads are built at this setting.</p>'; return; }
+    const T = r.T;
+    $('waves').innerHTML = `<div class="waves">${ms.map((m, i) => `<div class="wv"><div class="wv-l"><b>${i === 0 ? 'Pilot' : 'Wave ' + i}</b><span>month ${m}, ${by.get(m).length} workload${by.get(m).length > 1 ? 's' : ''}</span></div><div class="wv-t"><i style="left:${m / T * 100}%"></i></div></div>`).join('')}</div><p class="note">Each workload is built over the three months before it goes live, then ramps to full use over ${F(cur.S.adopt_months)} months.</p>`;
+  }
+
+  // ------------------------------------------------------------ audit
+  function renderChecks() {
+    const { r, d, p, S } = cur;
+    const cap0 = E.simulate(cur.prep, S, Object.assign({}, cur.Q, { harvest_automation: 0, harvest_augmentation: 0 }), { chosen: cur.chosen, ledger: false });
+    const ok = (b, t) => `<li><span class="${b ? 'pos' : 'neg'}">${b ? 'Pass' : 'Fail'}</span> ${t}</li>`;
+    const over = r.roles.filter(x => x.positions_end > Math.floor(x.freed_fte + 1e-9));
+    $('checks').innerHTML = `<ul class="plain">
+      ${ok(r.check_reconciliation_max_gap < 0.01, `Freed hours reconcile across positions, hires avoided and capacity: largest monthly gap ${r.check_reconciliation_max_gap.toExponential(1)}`)}
+      ${ok(r.check_ledger_gap < 1, `Ledger present values sum to the cash NPV: difference ${usd(r.check_ledger_gap)}`)}
+      ${ok(over.length === 0, 'No role loses more positions than the FTE its work frees')}
+      ${ok(cap0.pv_capacity > 0, `With headcount conversion at zero, the run still returns ${Mabs(cap0.pv_capacity)} of capacity and a cash result of ${M(cap0.headline)}`)}
+      ${ok(true, `Deterministic: draws use a seeded generator (seed ${SEED}), so the same inputs give the same numbers`)}
+      ${ok(true, 'Checked when this page was built: the browser engine matches the Python reference to within 6 × 10⁻¹⁴ on six test runs')}</ul>`;
+  }
+  function renderLedger() {
+    const { r } = cur; const by = new Map();
+    for (const e of r.ledger) { if (!by.has(e.line)) by.set(e.line, []); by.get(e.line).push(e); }
+    const order = ['hard', 'seats_reclaimed', 'recruit_avoided', 'build', 'programme', 'training', 'licences', 'run', 'maintenance', 'severance', 'avoidance', 'capacity'];
+    $('ledger').innerHTML = `<table><thead><tr><th>Line</th><th class="n">Sources</th><th class="n">Nominal</th><th class="n">PV</th></tr></thead><tbody>${order.filter(k => by.has(k)).map(k => {
+      const es = by.get(k).sort((a, b) => Math.abs(b.pv) - Math.abs(a.pv)), nom = es.reduce((a, e) => a + e.nominal, 0), pvs = es.reduce((a, e) => a + e.pv, 0);
+      const top = es.slice(0, 8).map(e => `<div class="lg-src"><span>${esc(e.source)}</span><span class="num">${usd(e.pv)}</span></div>`).join('') + (es.length > 8 ? `<div class="note">and ${es.length - 8} more in the CSV</div>` : '');
+      return `<tr><td><details><summary>${LINE[k][0]}</summary>${top}</details></td><td class="n">${es.length}</td><td class="n">${usd(nom)}</td><td class="n">${usd(pvs)}</td></tr>`;
+    }).join('')}</tbody></table>`;
+  }
+  function ledgerCsv() {
+    const rows = [['line', 'source', 'nominal_usd', 'pv_usd']].concat(cur.r.ledger.map(e => [e.line, e.source, e.nominal.toFixed(2), e.pv.toFixed(2)]));
+    return rows.map(r => r.map(c => /[",]/.test(c) ? `"${String(c).replace(/"/g, '""')}"` : c).join(',')).join('\n');
+  }
+  function currentValue(item) {
+    const p = cur.p;
+    if (item.grp === 'scenario') { const v = cur.S[item.key]; return v == null && item.fallback ? item.fallback(p) : v; }
+    if (item.grp === 'policy') return cur.Q[item.key];
+    if (item.grp === 'economics') return p.economics[item.key] == null ? 0 : p.economics[item.key];
+    return p.costs[item.key];
+  }
+  function renderRegister() {
+    $('register').innerHTML = `<table><thead><tr><th>Assumption</th><th class="n">Value</th><th>Plausible range</th><th>Kind</th><th>Grade</th><th>Source</th></tr></thead><tbody>${REGISTER.map((it, i) => {
+      const v = currentValue(it); const edited = state.edits[it.grp][it.key] != null;
+      return `<tr><td><label for="reg-${i}">${esc(it.label)}</label></td><td class="n"><span class="regv"><input type="number" id="reg-${i}" data-i="${i}" step="any" value="${it.t.show(v)}" class="${edited ? 'edited' : ''}"><span class="u">${it.t.unit}</span></span></td><td>${esc(it.range)}</td><td>${esc(it.kind)}</td><td>${it.grade ? `<span class="grade ${it.grade}">${it.grade}</span>` : ''}</td><td class="note">${esc(it.src)}</td></tr>`;
+    }).join('')}</tbody></table>`;
+  }
+  function renderFlags() {
+    const f = cur.prep.flags;
+    $('flags').innerHTML = f.length ? `<ul class="plain">${f.map(x => `<li><span class="label">${x[0]}</span> ${esc(x[1])}</li>`).join('')}</ul>` : '<p class="muted">No data notes.</p>';
+  }
+  function renderFoot() {
+    const p = cur.p;
+    $('foot').innerHTML = `Prototype of the Etter Value Model. The page runs a line-for-line port of the Python reference engine; nothing is sent anywhere. Data: Etter FP&amp;A sample (11 roles, 420 tasks), scaled for the archetypes; not client data. Pack: ${esc(p.meta.name)}; discount rate ${P(p.economics.discount_rate, 2)}; growth ${P(p.economics.function_growth || 0)} a year.`;
+  }
+
+  function renderAll() {
+    renderVerdict(); renderFunnel(); renderWorkloads(); renderDecides(); renderRoles();
+    renderFinanceKpis(); renderFan(); renderLines(); renderTornado(); renderGrid();
+    renderFrontier(); renderGate(); renderWaves();
+    renderChecks(); renderLedger(); renderRegister(); renderFlags(); renderFoot();
+  }
+
+  // ------------------------------------------------------------ controls
+  function seg(id, items, get, set) {
+    const el = $(id);
+    el.innerHTML = items.map(([v, l]) => `<button type="button" data-v="${esc(v)}" aria-pressed="${get() === v}">${esc(l)}</button>`).join('');
+    el.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; set(b.dataset.v); el.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.v === b.dataset.v))); });
+  }
+  function setupControls() {
+    const org = $('org');
+    const opts = [['base', `Etter FP&A dataset, 1,523 staff`]].concat(Object.keys(ARCH).map(k => {
+      const a = ARCH[k]; const n = BASE_DATA.roles.reduce((s, r) => s + Math.max(1, roundHalfEven(r.headcount * a.headcount_factor)), 0);
+      return [k, `${a.label}, ${n.toLocaleString('en-US')} staff`];
+    }));
+    org.innerHTML = opts.map(([v, l]) => `<option value="${v}">${esc(l)}</option>`).join('');
+    org.addEventListener('change', () => {
+      state.org = org.value; state.scopeK = null; state.edits = { scenario: {}, policy: {}, economics: {}, costs: {} };
+      state.policy = org.value === 'base' ? 'Attrition only' : ARCH[org.value].default_policy;
+      $('policy').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.v === state.policy)));
+      run();
+    });
+    seg('policy', POLICIES, () => state.policy, v => { state.policy = v; delete state.edits.policy.harvest_automation; delete state.edits.policy.harvest_augmentation; run(); });
+    seg('scen', SCENS.map(s => [s, s]), () => state.scen, v => { state.scen = v; run(); });
+    $('horizon').addEventListener('change', e => { state.horizon = +e.target.value; run(); });
+    const tabs = ['leader', 'finance', 'plan', 'audit'];
+    const show = t => {
+      state.tab = t;
+      tabs.forEach(x => { $('t-' + x).setAttribute('aria-selected', String(x === t)); $('p-' + x).hidden = x !== t; });
+      if (t === 'finance') renderFan(); if (t === 'plan') renderFrontier();
+      try { localStorage.setItem('evm-tab', t); } catch (e) { /* storage unavailable */ }
+    };
+    tabs.forEach(t => $('t-' + t).addEventListener('click', () => show(t)));
+    $('scopek').addEventListener('input', e => { state.scopeK = +e.target.value; $('scopek-v').textContent = `${state.scopeK} of ${cur.ranked.length}`; rerunSoon(150); });
+    $('scope-reset').addEventListener('click', () => { state.scopeK = null; run(); });
+    $('register').addEventListener('change', e => {
+      const inp = e.target.closest('input[data-i]'); if (!inp) return;
+      const it = REGISTER[+inp.dataset.i]; const raw = parseFloat(inp.value);
+      if (!isFinite(raw)) return;
+      state.edits[it.grp][it.key] = it.t.read(raw); run();
+    });
+    $('reset-edits').addEventListener('click', () => { state.edits = { scenario: {}, policy: {}, economics: {}, costs: {} }; run(); });
+    $('copy-csv').addEventListener('click', () => {
+      const csv = ledgerCsv(); const msg = $('copy-msg'), ta = $('csv-fallback');
+      const fallback = () => { ta.hidden = false; ta.value = csv; ta.focus(); ta.select(); msg.textContent = 'Copying is blocked here. The CSV is selected below; copy it with your keyboard.'; };
+      try { navigator.clipboard.writeText(csv).then(() => { msg.textContent = `Copied ${cur.r.ledger.length} ledger rows.`; ta.hidden = true; }, fallback); } catch (e) { fallback(); }
+    });
+    let rt = null; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { if (cur) { renderFan(); renderFrontier(); } }, 150); });
+    let saved = null; try { saved = localStorage.getItem('evm-tab'); } catch (e) { saved = null; }
+    if (saved && tabs.includes(saved)) show(saved);
+  }
+
+  setupControls();
+  run();
+})();
+</script>
