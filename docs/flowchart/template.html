@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Etter Value Model flowchart</title>
+<!-- Filled by docs/flowchart/build.py from the engine: every double-brace key is a number from evm.py. Do not type numbers in here. -->
+<style>
+  @page { size: 2600px 1420px; margin: 0; }
+  :root {
+    --page: #f5f1ea; --box: #f8f5ef; --ink: #1c1c1c; --muted: #5c5a55; --frame: #3a3a3a; --label: #4a4842;
+    --rule: #e0d9cc; --rule2: #8a867e; --rust: #a3401f; --green: #2f6b45; --blue: #2f4f7a; --grey: #8a867e;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--page); }
+  body { font-family: "Liberation Serif", "Times New Roman", Times, serif; color: var(--ink);
+         -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .page { position: relative; width: 2600px; height: 1420px; padding: 34px 58px 0; overflow: hidden; break-after: page; }
+  .page:last-child { break-after: auto; }
+  h1 { font-size: 43.5px; line-height: 1.1; margin: 0 0 9px; letter-spacing: -0.2px; }
+  .sub { font-style: italic; color: var(--muted); font-size: 16px; line-height: 1.4; margin: 0 0 16px;
+         padding-bottom: 14px; border-bottom: 2px solid var(--rule); }
+  .cols { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); column-gap: 30px; align-items: start; }
+  .col { display: flex; flex-direction: column; gap: 18px; }
+  .lab { font-size: 13.5px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--label);
+         margin: 0 0 -7px; height: 18px; }
+  .lab b { letter-spacing: 0; margin-right: .55em; }
+  .box { background: var(--box); border: 1.5px solid var(--frame); padding: 11px 14px 8px; }
+  .box.thick { border-width: 3px; padding: 10px 13px 7px; }
+  .box.rust { border-color: var(--rust); } .box.rust h3 { color: var(--rust); } .box.rust .f { border-color: var(--rust); }
+  .box.green { border-color: var(--green); } .box.green h3 { color: var(--green); } .box.green .f { border-color: var(--green); }
+  .box.blue { border-color: var(--blue); } .box.blue h3 { color: var(--blue); } .box.blue .f { border-color: var(--blue); }
+  .box.grey { border-color: var(--grey); } .box.grey h3 { color: var(--label); } .box.grey .f { border-color: var(--grey); }
+  h3 { font-size: 21.3px; line-height: 1.2; margin: 0 0 7px; }
+  h4 { font-size: 16px; margin: 0; color: var(--label); }
+  p { font-size: 15px; line-height: 1.38; margin: 0 0 6px; }
+  p:last-child { margin-bottom: 2px; }
+  .f { border-left: 3px solid var(--frame); padding: 1px 0 1px 11px; font-size: 15.5px; line-height: 1.38; margin: 3px 0 7px; }
+  .m { color: var(--muted); font-size: 13.8px; line-height: 1.4; }
+  .ex { color: var(--muted); font-size: 13.8px; line-height: 1.4; font-style: italic; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.8px; margin: 1px 0 6px; }
+  th { text-align: left; font-weight: 700; border-bottom: 2px solid var(--rule2); padding: 2px 0 3px; vertical-align: bottom; }
+  td { border-bottom: 1px solid var(--rule); padding: 2px 0; vertical-align: middle; line-height: 1.3; }
+  th.n, td.n { text-align: right; padding-left: 8px; white-space: nowrap; }
+  table.wrap th.n, table.wrap td.n { white-space: normal; }
+  tr.cash td { color: var(--rust); font-weight: 700; }
+  tr.blue td { color: var(--blue); } tr.green td { color: var(--green); }
+  tr.tot td { font-weight: 700; border-bottom: none; }
+  .big { font-size: 44px; font-weight: 700; color: var(--rust); line-height: 1; margin-right: 10px; vertical-align: -4px; }
+  .chip { display: inline-block; border: 2px solid var(--rust); color: var(--rust); font-weight: 700; font-size: 15px;
+          padding: 0 9px; margin-right: 8px; letter-spacing: .03em; }
+  .new { display: inline-block; font-size: 10.5px; font-weight: 700; letter-spacing: .12em; color: var(--rust);
+         border: 1px solid var(--rust); padding: 0 4px; margin-left: 6px; vertical-align: 3px; font-style: normal; }
+  .foot { position: absolute; left: 58px; right: 58px; bottom: 20px; font-style: italic; color: var(--muted); font-size: 13.5px; }
+  svg.wires { position: absolute; left: 0; top: 0; width: 2600px; height: 1420px; pointer-events: none; overflow: visible; }
+  /* page 2 */
+  .cols4 { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.05fr); column-gap: 34px; align-items: start; }
+  .p2 p { font-size: 20px; line-height: 1.4; } .p2 .m, .p2 .ex { font-size: 18px; } .p2 table { font-size: 19px; } .p2 td { padding: 4px 0; }
+  .p2 h3 { font-size: 29px; margin-bottom: 10px; } .p2 .lab { font-size: 15px; margin-bottom: -4px; }
+  .p2 .box { padding: 18px 20px 14px; } .p2 .box.thick { padding: 17px 19px 13px; } .p2 .col { gap: 28px; }
+  .item { border-top: 1px solid var(--rule); padding: 9px 0 7px; }
+  .item:first-of-type { border-top: none; padding-top: 2px; }
+  .item b.k { color: var(--rust); }
+  .item .eff { display: block; color: var(--ink); font-weight: 700; margin-top: 2px; }
+  ol.ask { margin: 4px 0 0; padding-left: 28px; font-size: 20px; line-height: 1.4; }
+  ol.ask li { margin-bottom: 12px; }
+  ol.ask li::marker { color: var(--rust); font-weight: 700; }
+</style>
+</head>
+<body>
+
+<!-- ============================================================ PAGE 1: the model ============================================================ -->
+<section class="page" id="p1">
+  <h1>How the Etter Value Model works</h1>
+  <p class="sub">Every step, formula and assumption, left to right. Moderate, Attrition only, cross-industry, Etter FP&amp;A data, agent ceilings 90% / 80% (Chandan, 23 Oct); updated {{date}} (<span class="new">NEW</span> = changed, see page 2). Rust = cash (fewer positions). Green = capacity (time back). Blue = hires avoided. Grey = valued at zero. A line in the box colour marks a formula.</p>
+
+  <div class="cols">
+    <!-- 1 -->
+    <div class="col">
+      <div class="lab"><b>1</b>What goes in</div>
+      <div class="box" id="tasks">
+        <h3>Etter Tasks sheet</h3>
+        <p>{{n_tasks}} tasks across {{n_roles}} roles. For each task: the <b>role</b>, its <b>workload</b> (a group of related tasks), its <b>category</b> (one of six) and the <b>hours one person spends on it a month</b>.</p>
+        <p class="m"><b>Why this sheet:</b> every task has its own hours, category and description, so every number traces back to a named task. Etter's Workloads sheet splits the same hours differently across categories; still an open question for Etter.</p>
+      </div>
+      <div class="box" id="roles">
+        <h3>Etter Roles sheet + client</h3>
+        <p>For each role: <b>headcount</b> ({{headcount}} in total), <b>average base salary</b> and <b>level</b>, which maps to a turnover band.</p>
+        <p class="m">Etter's own automation score for each role is compared with the task hours as a second opinion (flagged if more than 10 points apart), never mixed into the numbers.</p>
+      </div>
+      <div class="box" id="dials">
+        <h3>Four choices, then the dials</h3>
+        <p>The client picks a <b>scenario</b>, a <b>policy</b> for freed time (box 5), an <b>industry</b>, and whether to include <b>assistant seats</b>. Every other number sits on Inputs with a source and a grade: A official figure, B benchmark, C estimate, D thin evidence.</p>
+        <p>Uncertain dials switch together by scenario:</p>
+        <table>
+          <tr><th>Dial</th><th class="n">Cons.</th><th class="n">Mod.</th><th class="n">Aggr.</th></tr>
+          <tr><td>AI takeover</td><td class="n">{{d_takeover_Con}}</td><td class="n">{{d_takeover_Mod}}</td><td class="n">{{d_takeover_Agg}}</td></tr>
+          <tr><td>Human review</td><td class="n">{{d_review_Con}}</td><td class="n">{{d_review_Mod}}</td><td class="n">{{d_review_Agg}}</td></tr>
+          <tr><td>Review rise per band <span class="new">NEW</span></td><td class="n">{{slope}}</td><td class="n">{{slope}}</td><td class="n">{{slope}}</td></tr>
+          <tr><td>Months to full use</td><td class="n">{{d_adopt_Con}}</td><td class="n">{{d_adopt_Mod}}</td><td class="n">{{d_adopt_Agg}}</td></tr>
+          <tr><td>Assistant active use</td><td class="n">{{d_active_use_Con}}</td><td class="n">{{d_active_use_Mod}}</td><td class="n">{{d_active_use_Agg}}</td></tr>
+          <tr><td>Cost multiplier</td><td class="n">{{d_cost_Con}}</td><td class="n">{{d_cost_Mod}}</td><td class="n">{{d_cost_Agg}}</td></tr>
+        </table>
+        <p class="m"><b>Industry packs</b> change only the discount rate, staff turnover and job growth (healthcare 6.19%, ×0.91, 0.9%; insurance 6.34%, ×0.59; tech 9.34%, ×0.59; default 6.96%, ×1.00, 0%). Company size enters as headcount, not as a setting.</p>
+      </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="col">
+      <div class="lab"><b>2</b>Cost of an hour, kind of work</div>
+      <div class="box" id="rate">
+        <h3>Loaded hourly rate</h3>
+        <div class="f">hourly rate = salary × {{oncost}} ÷ (12 × task hours a month)</div>
+        <p><b>1.31:</b> of every $100 an employer spends on a full-time private-industry worker, $68.50 is wages and $8.10 paid leave (BLS ECEC, Table 5). A salary already pays for leave days, so 100 ÷ (68.5 + 8.1) = 1.31.</p>
+        <p><b>160 hours a month</b> (1,920 a year), the Etter file's convention. Senior Analysts' tasks cover 136; shares are taken of the hours recorded.</p>
+        <p><b>Pay grows {{wage}} a year</b> (BLS Employment Cost Index)<span class="new">NEW</span>: salaries saved, capacity, severance and training time follow it. The cost test stays at today's prices.</p>
+        <p class="ex">Example, Analysts: {{a_sal}} × 1.31 = {{a_loaded}} a year ÷ 1,920 = {{a_rate}} an hour.</p>
+      </div>
+      <div class="box" id="cats">
+        <h3>Sort by category</h3>
+        <table>
+          <tr><th>Category</th><th class="n">Most AI could do</th><th class="n">Kind</th></tr>
+          <tr><td>Directive</td><td class="n"><b>{{c_directive}}</b></td><td class="n">Agent</td></tr>
+          <tr><td>Feedback Loop</td><td class="n"><b>{{c_feedback}}</b></td><td class="n">Agent</td></tr>
+          <tr><td>Task Iteration</td><td class="n">{{c_task}}</td><td class="n">Assistant</td></tr>
+          <tr><td>Learning</td><td class="n">{{c_learning}}</td><td class="n">Assistant</td></tr>
+          <tr><td>Validation</td><td class="n">{{c_validation}}</td><td class="n">Assistant</td></tr>
+          <tr><td>Negligibility</td><td class="n">{{c_negligibility}}</td><td class="n">Human</td></tr>
+        </table>
+        <p class="m">An <b>agent</b> does the work instead of the person, so its time can become fewer positions. An <b>assistant</b> makes the person faster, so its time is spread thin and stays as capacity by default.</p>
+      </div>
+      <div class="box" id="band">
+        <h3>By job band</h3>
+        <table class="wrap">
+          <tr><th>Band</th><th class="n">Assistant saving</th><th class="n">Review <span class="new">NEW</span></th><th class="n">Leaving / yr</th></tr>
+          {{band_rows}}
+        </table>
+        <p class="m">Assistants help juniors most (Brynjolfsson, Li and Raymond, QJE 2025). Senior work needs more checking (Brynjolfsson; Dell'Acqua 2026): review is the measured {{review}} at Professional level, ±{{slope}} of it per band (the size is judgment, grade D). Leaving rates: Mercer 2025, × the industry's turnover factor (BLS JOLTS quits).</p>
+      </div>
+    </div>
+
+    <!-- 3 -->
+    <div class="col">
+      <div class="lab"><b>3</b>What AI could do, what to build</div>
+      <div class="box rust" id="agent">
+        <h3>Agent work (Directive, Feedback Loop)</h3>
+        <div class="f">AI-able hours = hours a month × headcount × most AI could do</div>
+        <p class="ex">Example, Analysts' Extract and format financial data: {{ex_h}} × {{a_n}} × {{ex_ceil}} = {{ex_able_m}} hours a month ({{ex_able_y}} a year).</p>
+      </div>
+      <div class="box thick" id="cost">
+        <h3>Is the AI cheaper than the work?</h3>
+        <p>One agent per workload ({{n_wl}} have agent tasks), shared by every role that does it, priced two ways:</p>
+        <p><b>Build:</b> $55,000, or $130,000 if 2+ roles or 3+ agent tasks; $3.48 per AI hour; 18% a year upkeep. <b>Buy:</b> $15,000 / $35,000; $6 per AI hour.</p>
+        <div class="f">value a month = AI-able hours × hourly rate<br>NPV at cost = (value × each role's net realisation − running − upkeep) × {{ann}} − up front</div>
+        <p>The cheaper option is kept; the workload passes if its NPV is above zero. <b>{{ann}}:</b> months of full value in five years after the 3-month build, the {{adopt}}-month ramp-up and {{disc}} discounting, at today's pay and prices.</p>
+        <p class="ex">Financial analysis and reporting: {{far_roles}} roles, {{far_value}} of work a month; build {{far_build}} vs buy {{far_buy}}, so {{far_opt}}. {{last_name}}: {{last_value}} a month; {{last_opt}}, {{last_npv}}, {{last_passes}}.</p>
+      </div>
+      <div class="box thick" id="size">
+        <h3>How big a programme</h3>
+        <p>Passing workloads are ranked by return per dollar up front and added one at a time. The programme stops where <b>five-year cash peaks: {{n_built}} of {{n_pass}}</b> ({{n_buy}} bought, {{n_build}} built, {{upfront}} up front).</p>
+        <p class="m">Cash counts only whole positions, so late, small workloads add cost but free fractions of people that never round up.</p>
+        <p><b>Go-live:</b> pilot of the top 3 in month {{pilot_m}}, a 6-month evaluation, then waves of 10 in months {{waves}}. <b>Gate, month {{gate_m}}</b><span class="new">NEW</span>: scale only if the pilot reaches the {{be}} break-even; otherwise stop.</p>
+      </div>
+      <div class="box green" id="assist">
+        <h3>Assistant work (Task Iteration, Learning, Validation)</h3>
+        <div class="f">hours saved = hours × smaller of (most AI could do, band saving) × {{active}} active use</div>
+        <p class="m">Seats roll out from month 2 over 6 months, {{lic}} a seat a year for people in post, trued down each contract year<span class="new">NEW</span>. Example, Analysts' Develop custom financial analyses: {{as_y}} × {{as_sav}} × {{active}} = {{as_out}} hours.</p>
+      </div>
+      <div class="box grey" id="human"><h4>Stays human (Negligibility): no saving</h4></div>
+    </div>
+
+    <!-- 4 -->
+    <div class="col">
+      <div class="lab"><b>4</b>What AI really frees</div>
+      <div class="box rust" id="takes">
+        <h3>AI takes over, people check it</h3>
+        <div class="f">hours freed = AI-able hours × takeover × (1 − review)</div>
+        <p><b>Takeover {{takeover}}:</b> the share of AI-able work the agent actually ends up doing (range 20–62%, grade C). <b>Review {{review}}:</b> for every 100 hours it does, a Professional spends 30 checking (15–45%, C); by band {{rev_ladder}}<span class="new">NEW</span>.</p>
+        <p>{{takeover}} × {{ex_keep}} = <b>{{net}} net realisation</b>, the one number the answer turns on. Running cost is paid on all hours the AI works, reviewed or not.</p>
+        <p class="ex">Example: {{ex_able_y}} × {{takeover}} = {{ex_ai_y}} AI hours; × {{ex_keep}} = {{ex_freed_y}} hours freed a year.</p>
+      </div>
+      <div class="box rust" id="ramp">
+        <h3>Ramped in, wave by wave</h3>
+        <div class="f">use in month m = S-curve from go-live, full after {{adopt}} months</div>
+        <p class="m">The same curve drives the cost test, the running cost and the savings (MIT NANDA 2025: 6 to 24 months).</p>
+      </div>
+      <div class="box" id="drag">
+        <h3>The work left behind is harder</h3>
+        <div class="f">freed × (1 − {{drag}} × share of the role's time freed)</div>
+        <p class="m">Complexity drag, applied to agent and assistant time together. Grade D: a simple stand-in for the exception tail until Etter gives volumes or handling times.</p>
+        <p class="ex">Analysts free about {{ex_y}} of their time, so they keep {{ex_dr}}: {{ex_freed_y}} becomes {{ex_after}} hours, {{ex_people}} people's worth.</p>
+      </div>
+      <div class="box thick" id="funnel">
+        <h3>Why AI-able hours are not headcount</h3>
+        <table>
+          <tr><th>All roles, month 60</th><th class="n">People's worth</th></tr>
+          <tr><td>Hours in agent categories</td><td class="n">{{fn_cat}}</td></tr>
+          <tr><td>× most AI could do</td><td class="n">{{fn_able}}</td></tr>
+          <tr><td>In the {{n_built}} workloads</td><td class="n">{{fn_scope}}</td></tr>
+          <tr><td>× {{takeover}} takeover</td><td class="n">{{fn_take}}</td></tr>
+          <tr><td>after review (by band)</td><td class="n">{{fn_review}}</td></tr>
+          <tr><td>After complexity drag</td><td class="n">{{fn_drag}}</td></tr>
+          <tr class="cash"><td>Positions not refilled</td><td class="n">{{fn_pos}}</td></tr>
+        </table>
+        <p class="m">Plus {{fn_aug}} people's worth from assistants. {{fn_all}} freed in all.</p>
+      </div>
+    </div>
+
+    <!-- 5 -->
+    <div class="col">
+      <div class="lab"><b>5</b>Where each freed hour goes</div>
+      <div class="box thick" id="policy">
+        <h3>Policy: the company's choice</h3>
+        <table class="wrap">
+          <tr><th></th><th class="n">Capacity only</th><th class="n">Attrition only</th><th class="n">Active reduction</th></tr>
+          <tr><td>Agent time to positions</td><td class="n">{{p_cap_auto}}</td><td class="n"><b>{{p_att_auto}}</b></td><td class="n">{{p_act_auto}}</td></tr>
+          <tr><td>Assistant time</td><td class="n">{{p_cap_aug}}</td><td class="n"><b>{{p_att_aug}}</b></td><td class="n">{{p_act_aug}}</td></tr>
+          <tr><td>How</td><td class="n">nobody goes</td><td class="n">as people leave</td><td class="n">{{notice}} months' notice, {{sev}} weeks' severance</td></tr>
+        </table>
+        <p class="m">The harvest share moves cash more than any other input ({{h_lo}} at {{h_lo_p}} to {{h_hi}} at {{h_hi_p}}). Healthcare defaults to capacity only.</p>
+      </div>
+      <div class="box rust" id="cash">
+        <h3>Cash: positions not refilled</h3>
+        <div class="f">target = (harvest × freed people), rounded down, per role</div>
+        <div class="f">people who have left by month m = headcount × (1 − (1 − yearly rate)<sup>m ÷ 12</sup>)</div>
+        <div class="f">positions in month m = smaller of (target × progress so far) and (people who have left)</div>
+        <p class="m">A removed position stays removed while the AI runs and never exceeds the time freed; if the programme stops, the work comes back and each is refilled at {{cph}}<span class="new">NEW</span>. A role needs roughly 20–30 people before agents free a whole position.</p>
+        <p class="ex">Example, Analysts: {{ar_auto}} freed by agents × {{harvest}} = {{ar_harv}}, so {{ar_target}}. {{ar_leave}} Analysts leave in five years: "leave {{ar_target}} of the next {{ar_leave}} leavers unreplaced". All roles: {{positions}} positions, {{pos_share}} of FP&amp;A, by month {{pos_month}}.</p>
+      </div>
+      <div class="box blue" id="hires">
+        <h3>Hires avoided: against the plan</h3>
+        <div class="f">avoided = smaller of (spare whole people, planned hires so far)</div>
+        <p class="m">Only if the industry is growing: spare freed time fills planned hires before it becomes capacity. FP&amp;A has 0% growth, so 0; the healthcare pack avoids {{health_hires}}.</p>
+      </div>
+      <div class="box green" id="capacity">
+        <h3>Capacity: time back <span class="new">NEW</span></h3>
+        <div class="f">left over = freed − (positions + hires avoided) × hours</div>
+        <div class="f">capacity = left over − {{block_h}} hours a month × people in post</div>
+        <p class="m">At the hourly rate, growing with pay: {{cap_fte}} people's worth at month 60. Every month, positions + hires avoided + capacity + stranded = hours freed, to 0.00000 hours.</p>
+      </div>
+      <div class="box grey" id="stranded">
+        <h3>Stranded: too thin to use <span class="new">NEW</span></h3>
+        <p class="m">Every role frees only {{per_lo}}–{{per_hi}} hours a month per person still in post. The first {{block_h}} (about {{block_min}} minutes a day) is slack nobody can redeploy: {{str_fte}} people's worth, valued at zero.</p>
+      </div>
+    </div>
+
+    <!-- 6 -->
+    <div class="col">
+      <div class="lab"><b>6</b>Money, odds and the decision</div>
+      <div class="box" id="costs">
+        <h3>Costs, five-year present value</h3>
+        <table>
+          <tr><td>Training: {{tr_spend}} + {{tr_hours}} hours each: {{headcount}} at first use, {{joiners}} joiners, {{refresh}} refresher a year<span class="new">NEW</span></td><td class="n">{{l_training}}</td></tr>
+          <tr><td>Running: {{runrate}} / {{buyrate}} per AI hour, {{decline}} cheaper a year</td><td class="n">{{l_run}}</td></tr>
+          <tr><td>Assistant licences: {{lic}} a seat a year, people in post</td><td class="n">{{l_lic}}</td></tr>
+          <tr><td>Build or buy, spread over the 3-month lead</td><td class="n">{{l_build}}</td></tr>
+          <tr><td>Programme: $75,000 + $623 per person (Forrester)</td><td class="n">{{l_prog}}</td></tr>
+          <tr><td>Upkeep of custom agents: 18% a year</td><td class="n">{{l_maint}}</td></tr>
+          <tr class="tot"><td>Total (severance only under active reduction)</td><td class="n">{{l_costs}}</td></tr>
+        </table>
+      </div>
+      <div class="box thick" id="three">
+        <h3>Three kinds of money, never added</h3>
+        <div class="f">each month's money × {{dfac}}<sup>−m ÷ 12</sup>, added up over 60 months</div>
+        <table>
+          <tr><td>Salaries no longer paid (× 1.31, +{{wage}} a year)</td><td class="n">{{l_hard}}</td></tr>
+          <tr><td>Recruiting avoided ({{cph}} per leaver not replaced) + seats</td><td class="n">{{l_recruit}}</td></tr>
+          <tr><td>minus costs</td><td class="n">{{l_costs}}</td></tr>
+          <tr class="cash"><td>Cash vs today, NPV</td><td class="n">{{cash}}</td></tr>
+          <tr class="blue"><td>Hires avoided vs plan</td><td class="n">{{avoid}}</td></tr>
+          <tr class="green"><td>Capacity at cost</td><td class="n">{{capacity}}</td></tr>
+        </table>
+        <p class="m">Payback month {{pay_d}} discounted, {{pay_u}} undiscounted<span class="new">NEW</span>; peak funding {{peak}}. If nobody leaves, cash is {{co_cash}} against {{co_cap}} of capacity: <b>{{co_hurdle}}</b> of that time must become real value to break even.</p>
+      </div>
+      <div class="box" id="sure">
+        <h3>How sure: 1,000 futures</h3>
+        <p class="m">Each run draws all twelve uncertain inputs from their ranges; good programmes are good at everything at once (correlation 0.5). Fixed seed, so the same answer every time.</p>
+        <p><span class="big">{{p_pos}}</span>chance cash is positive · P10 {{p10}} · P90 {{p90}}</p>
+        <p>Break-even: <b>{{be}}</b> net realisation (we assume {{net}}). <b>{{p_stop}}</b> of futures miss it at the month-{{gate_m}} gate and stop<span class="new">NEW</span>: AI off, work back, {{stop_cost}}.</p>
+      </div>
+      <div class="box thick rust" id="decision">
+        <h3>The decision</h3>
+        <p>Go at 70% or better, pilot first at 40–70%, stop below 40%.</p>
+        <p><span class="chip">{{chip}}</span>the top 3 go live in month {{pilot_m}} and are measured for six months. Scale only if net realisation reaches {{be}}; otherwise stop. Watch takeover, checking time by level, adoption speed and real costs.</p>
+        <p class="m">{{alt}}.</p>
+      </div>
+    </div>
+  </div>
+
+  <p class="foot">Checks: twenty-one tie-outs to the Etter file and self-checks, all pass; hours reconcile to 0.00000 every month; the Excel matches the engine to the cent ({{cash_exact}}). Sources: Etter FP&amp;A task file; BLS ECEC, ECI, JOLTS; Brynjolfsson et al. 2025; Dell'Acqua et al. 2026; Mercer 2025; MIT NANDA 2025; Damodaran 2026; Microsoft; Forrester; ATD 2026; BCG 2025; Gartner 2024; SHRM.</p>
+  <svg class="wires" id="w1"></svg>
+</section>
+
+<!-- ============================================================ PAGE 2: what changed ============================================================ -->
+<section class="page p2" id="p2">
+  <h1>What changed since 23 October</h1>
+  <p class="sub">For the review with Chandan. Same data and defaults as page 1. Each change was written down as a spec before it was coded (docs/Etter_Value_Model_spec_delta_review.md), is a live formula in the Excel, and matches the engine to the cent. The 23 October model can still be reproduced exactly (legacy switch).</p>
+
+  <div class="cols4">
+    <div class="col">
+      <div class="lab"><b>A</b>The headline, step by step</div>
+      <div class="box thick rust">
+        <h3>From {{o_cash}} to {{cash}}</h3>
+        <table>
+          <tr><th>Five-year cash NPV, $ thousands</th><th class="n">Change</th><th class="n">Cash</th></tr>
+          <tr><td>23 October model ({{o_verdict}}, {{o_odds}} chance positive)</td><td class="n"></td><td class="n">{{k_o_cash}}</td></tr>
+          <tr><td>Train joiners as they arrive</td><td class="n">{{k_join}}</td><td class="n"></td></tr>
+          <tr><td>Licences follow people in post</td><td class="n">{{k_lic}}</td><td class="n"></td></tr>
+          <tr><td>Yearly training refresher, {{refresh}}</td><td class="n">{{k_ref}}</td><td class="n">{{k_fix_cash}}</td></tr>
+          <tr><td>Capacity floor, stop path, pilot gate</td><td class="n">none</td><td class="n"></td></tr>
+          <tr><td>Wage growth, {{wage}} a year</td><td class="n">{{k_wage}}</td><td class="n">{{k_wage_cash}}</td></tr>
+          <tr><td>Review rises with seniority</td><td class="n">{{k_slope}}</td><td class="n"></td></tr>
+          <tr class="cash"><td>Now ({{chip}}, {{p_pos}} chance positive)</td><td class="n"></td><td class="n">{{k_cash}}</td></tr>
+        </table>
+        <p class="m">The programme stays at {{wl_fix}} workloads until the last step; review by seniority makes management-heavy workloads free less, and the peak moves to {{n_built}}.</p>
+      </div>
+      <div class="box thick">
+        <h3>Before and now</h3>
+        <table>
+          <tr><th></th><th class="n">23 Oct</th><th class="n">Now</th></tr>
+          <tr class="cash"><td>Cash vs today, 5-year NPV</td><td class="n">{{o_cash}}</td><td class="n">{{cash}}</td></tr>
+          <tr><td>Positions not refilled</td><td class="n">{{o_pos}}</td><td class="n">{{positions}}</td></tr>
+          <tr><td>Workloads (bought)</td><td class="n">{{o_k}} ({{o_buy}})</td><td class="n">{{n_built}} ({{n_buy_now}})</td></tr>
+          <tr class="green"><td>Capacity at cost</td><td class="n">{{o_cap}}</td><td class="n">{{capacity}}</td></tr>
+          <tr><td>Payback month, discounted / undiscounted</td><td class="n">{{o_pay_d}} / {{o_pay_u}}</td><td class="n">{{pay_d}} / {{pay_u}}</td></tr>
+          <tr><td>Chance cash is positive</td><td class="n">{{o_odds}}</td><td class="n">{{p_pos}}</td></tr>
+          <tr><td>Break-even net realisation</td><td class="n">{{o_be}}</td><td class="n">{{be}}</td></tr>
+          <tr><td>Verdict</td><td class="n">{{o_verdict}}</td><td class="n">{{chip}}</td></tr>
+        </table>
+        <p class="m">Training the joiners alone takes the chance below the 70% line for Go. That fix is structural, not a judgment call.</p>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="lab"><b>B</b>Five fixes from the finance review</div>
+      <div class="box">
+        <div class="item"><p><b class="k">1 Capacity.</b> Positions were whole people, but every leftover sliver counted as capacity at full cost. Now freed time below {{block_h}} hours a month per person is stranded at zero value. <span class="eff">Capacity {{capacity}} with the floor, {{cap0}} without it; cash unchanged.</span></p></div>
+        <div class="item"><p><b class="k">2 Training.</b> It was paid once, for the day-one headcount. Now {{joiners}} joiners are trained as they arrive, and everyone in post gets a {{refresh}} refresher each year. <span class="eff">{{s_join}} joiners, {{s_ref}} refresher.</span></p></div>
+        <div class="item"><p><b class="k">3 Licences.</b> Seats stayed sized on the day-one headcount of {{headcount}} for all five years. Now they follow people in post and are trued down at each contract anniversary. <span class="eff">{{s_lic}}.</span></p></div>
+        <div class="item"><p><b class="k">4 Payback.</b> It was undiscounted next to a discounted NPV. Now both are shown and labelled. <span class="eff">Month {{pay_d}} discounted, {{pay_u}} undiscounted.</span></p></div>
+        <div class="item"><p><b class="k">5 Stopping.</b> The model could not show a programme that was tried and stopped. Now it can: AI off, the work comes back, positions are refilled at {{cph}} each. A gate at month {{gate_m}} stops every future that misses the break-even. <span class="eff">{{p_stop}} of futures stop, {{stop_cost}} each. Gartner forecast at least 30% of GenAI projects abandoned after proof of concept.</span></p></div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="lab"><b>C</b>Two parameters added</div>
+      <div class="box">
+        <div class="item"><p><b class="k">Wage growth, {{wage}} a year</b> (BLS Employment Cost Index, sourced). Salaries saved, capacity, severance and training time grow with pay; the cost test stays at today's prices. <span class="eff">{{s_wage}}. Range 2.5–4.5%: {{wg_lo}} to {{wg_hi}} ({{wg_rank}} of {{n_sens}} in the tornado).</span></p></div>
+        <div class="item"><p><b class="k">Review rises with seniority, {{slope}} a band</b> (judgment; direction from Brynjolfsson v2 and Dell'Acqua 2026). Review is {{rev_ladder}} from Para-professional to Executive. <span class="eff">{{s_slope}}; programme {{wl_wage}} → {{n_built}} workloads, positions {{o_pos}} → {{positions}}. Range 5–40%: {{sl_lo}} to {{sl_hi}} ({{sl_rank}} of {{n_sens}}).</span></p></div>
+        <p class="m" style="margin-top:6px">Both pass the working agreement's test for a new parameter: a top-ten mover in the tornado. At zero, each gives back the model before it exactly.</p>
+      </div>
+      <div class="box">
+        <h3>Not changed</h3>
+        <p class="m">The six steps; the Etter data; ceilings 90% / 80%; the three policies; Go at 70%, pilot first at 40–70%; the top three movers (harvest share, takeover, review); cash, hires avoided and capacity never added together.</p>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="lab"><b>D</b>For Chandan to decide</div>
+      <div class="box thick rust">
+        <h3>Questions only Chandan can answer</h3>
+        <ol class="ask">
+          <li><b>Ceilings.</b> The source workbook states the Etter ceilings twice, and the tables disagree on five of six categories. What does Feedback Loop at 80% rest on? Cash under each reading: Tasks column {{ceil_tasks}} · in use {{cash}} · Read me table {{ceil_readme}} · bucket {{ceil_bucket}}.</li>
+          <li><b>Tax.</b> Pre-tax or after-tax cash flows? The discount rate is post-tax; the cash flows are pre-tax.</li>
+          <li><b>Month 61.</b> Does the programme carry any residual value after five years? Today it stops at month 60.</li>
+        </ol>
+      </div>
+      <div class="box thick">
+        <h3>Three judgment calls to confirm</h3>
+        <ol class="ask">
+          <li><b>Smallest usable block of freed time: {{block_h}} hours a month per person.</b> Capacity is {{cap0}} at 0 and {{cap10}} at {{block10_h}} hours. Cash does not move.</li>
+          <li><b>Training refresher: {{refresh}} of the initial package a year.</b> Cash {{tr_lo}} at 10%, {{tr_hi}} at 50%.</li>
+          <li><b>Review rise: {{slope}} a band.</b> Cash {{sl_lo}} at 5%, {{sl_hi}} at 40%. The pilot can replace it: measure checking time by level.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <p class="foot">Engine, Excel and website agree on every number here (38 tests, parity 1.3 × 10<sup>−14</sup>, Excel to the cent). The 23 October chance of positive cash and verdict are quoted from that run; its cash, positions, workloads, capacity, paybacks and break-even are recomputed from the legacy switch.</p>
+  <svg class="wires" id="w2"></svg>
+</section>
+
+<script>
+// Connectors: [from, to, colour, kind, exit (share of source height), entry (px below target top), gutter offset]
+const WIRES = {
+  w1: [
+    ['tasks', 'rate', 'frame', 'elbow', 0.18, 22, 0],
+    ['roles', 'rate', 'frame', 'elbow', 0.30, 50, 8],
+    ['dials', 'rate', 'frame', 'elbow', 0.07, 78, 8],
+    ['rate', 'cats', 'frame', 'down'],
+    ['cats', 'agent', 'rust', 'elbow', 0.30, 22, 0],
+    ['cats', 'assist', 'green', 'elbow', 0.55, 22, 7],
+    ['cats', 'human', 'grey', 'elbow', 0.75, 16, 14],
+    ['agent', 'cost', 'rust', 'down'],
+    ['cost', 'size', 'frame', 'down'],
+    ['size', 'takes', 'rust', 'elbow', 0.12, 22, 0],
+    ['assist', 'drag', 'green', 'elbow', 0.12, 40, 9],
+    ['takes', 'ramp', 'rust', 'down'],
+    ['ramp', 'drag', 'rust', 'down'],
+    ['drag', 'cash', 'rust', 'elbow', 0.30, 22, 0],
+    ['drag', 'hires', 'blue', 'elbow', 0.62, 22, 7],
+    ['drag', 'capacity', 'green', 'elbow', 0.74, 22, 14],
+    ['policy', 'cash', 'frame', 'down'],
+    ['capacity', 'stranded', 'grey', 'down'],
+    ['cash', 'three', 'rust', 'elbow', 0.05, 30, 0],
+    ['hires', 'three', 'blue', 'elbow', 0.15, 92, 7],
+    ['capacity', 'three', 'green', 'elbow', 0.12, 118, 14],
+    ['costs', 'three', 'frame', 'down'],
+    ['three', 'sure', 'frame', 'down'],
+    ['sure', 'decision', 'frame', 'down'],
+  ],
+  w2: []
+};
+function draw() {
+  const css = getComputedStyle(document.documentElement);
+  for (const [svgId, list] of Object.entries(WIRES)) {
+    const svg = document.getElementById(svgId); if (!svg) continue;
+    const page = svg.parentElement.getBoundingClientRect();
+    const colours = {};
+    let defs = '<defs>';
+    for (const c of ['frame', 'rust', 'green', 'blue', 'grey']) {
+      colours[c] = css.getPropertyValue('--' + c).trim();
+      defs += `<marker id="${svgId}-${c}" markerWidth="11" markerHeight="10" refX="10" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L11,5 L0,10 z" fill="${colours[c]}"/></marker>`;
+    }
+    let out = defs + '</defs>';
+    for (const [a, b, c, kind, exit, entry, off] of list) {
+      const A = document.getElementById(a).getBoundingClientRect(), B = document.getElementById(b).getBoundingClientRect();
+      const x = v => v - page.left, y = v => v - page.top;
+      let d;
+      if (kind === 'down') {
+        const cx = x((Math.max(A.left, B.left) + Math.min(A.right, B.right)) / 2);
+        d = `M${cx},${y(A.bottom)} V${y(B.top) - 1}`;
+      } else {
+        const sx = x(A.right), sy = y(A.top + exit * A.height), gx = sx + 8 + (off || 0), ty = y(B.top) + entry;
+        d = `M${sx},${sy} H${gx} V${ty} H${x(B.left) - 1}`;
+      }
+      out += `<path d="${d}" fill="none" stroke="${colours[c]}" stroke-width="2" marker-end="url(#${svgId}-${c})"/>`;
+    }
+    svg.innerHTML = out;
+  }
+  // nothing may run past the footer
+  const over = [];
+  for (const page of document.querySelectorAll('.page')) {
+    const foot = page.querySelector('.foot').getBoundingClientRect().top;
+    for (const bx of page.querySelectorAll('.box')) {
+      const r = bx.getBoundingClientRect();
+      if (r.bottom > foot - 8) over.push((bx.id || bx.querySelector('h3,h4').textContent) + ' by ' + Math.round(r.bottom - foot + 8) + 'px');
+    }
+  }
+  window.__overflow = over;
+  window.__drawn = true;
+}
+(document.fonts ? document.fonts.ready : Promise.resolve()).then(draw);
+</script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 Turns Etter task data into a month-by-month financial estimate: cash vs today, cost avoided vs plan, and capacity at cost, never added together.
 
 **Version:** final model, 23 October 2026. Agent ceilings set by Chandan (Draup): **Directive 90%, Feedback Loop 80%**.
-**Default answer** (Etter FP&A data, Moderate, Attrition only, cross-industry): cash **+$9.38M** 5-yr NPV · **59** positions not refilled · capacity **$47.7M** (never added) · payback **month 33** · **75%** chance cash is positive · break-even net realisation **14.3%** vs 28% assumed · **45 of 59** workloads (35 buy, 10 build) · verdict **GO**.
+**Default answer** (Etter FP&A data, Moderate, Attrition only, cross-industry): cash **+$7.02M** 5-yr NPV · **56** positions not refilled · capacity **$14.5M** (never added; 72 more people's worth stranded in slivers at zero value) · payback **month 38** discounted, 36 undiscounted · **60%** chance cash is positive · break-even net realisation **19.2%** vs 28% assumed · **35 of 59** workloads (25 buy, 10 build) · verdict **PILOT FIRST** (28% of futures stop at the pilot gate, at −$4.4M). Salaries grow 3.4% a year and review rises with seniority. Finance-review fixes of 5 Nov 2026: `docs/Etter_Value_Model_spec_delta_review.md`.
 
 ## Run
     python3 run.py                                  # FP&A dataset, Moderate, attrition only
@@ -22,7 +22,7 @@ Turns Etter task data into a month-by-month financial estimate: cash vs today, c
 - `tests/`: acceptance tests (`test_evm.py`), reference numbers (`reference.json`), JS parity (`parity.py`).
 - `site/`: website prototype (`etter_value_model.html` is the built single page).
 - `experiments/`: the experiments behind the strategy doc. They were run on the earlier engine (build only, ceilings 85% / 55%) and are kept for the record; their outputs in `experiments/out/` are not the current numbers.
-- `docs/`: how the model works, the assumption list, the full context file, the flowchart and the Excel workbook.
+- `docs/`: how the model works, the assumption list, the full context file, the flowchart (rebuilt from the engine by `docs/flowchart/build.py`) and the Excel workbook.
 
 ## Model in three sentences
 Etter says which tasks AI can do; the model keeps only the workloads where an agent (built or bought, whichever is cheaper) costs less than the work, and only the share AI really takes over once people have checked it.

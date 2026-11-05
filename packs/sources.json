@@ -50,12 +50,13 @@
       },
       "which_is_authoritative": "The Tasks sheet column is the per-row data actually shipped on all 420 rows, and the How to use it sheet reproduces it. The Read me table disagrees with it on five of six categories; only Negligibility agrees (both 0.10).",
       "priced_impact_5y_cash_npv": {
-        "pack": "$9.38M",
-        "read_me_table": "$9.75M",
-        "tasks_column": "$5.80M",
-        "coarse_bucket_ceiling": "$11.48M"
+        "pack": "$7.02M",
+        "read_me_table": "$7.23M",
+        "tasks_column": "$3.44M",
+        "coarse_bucket_ceiling": "$10.65M",
+        "before_finance_review_fixes": "pack $9.38M, read me $9.75M, tasks column $5.80M, bucket $11.48M (legacy=True)"
       },
-      "what_moves_the_headline": "Only Directive and Feedback Loop. Assistant savings are the smaller of the category ceiling and the band rate, and the band rate tops out at 0.20, so it binds before any assistant ceiling does (every reading puts them at 0.25 or above). Task Iteration, Learning and Validation therefore disagree at zero financial cost: swapping in the Read me or bucket values leaves the headline at $9,376,169.02. Negligibility maps to Human and is never read.",
+      "what_moves_the_headline": "Only Directive and Feedback Loop. Assistant savings are the smaller of the category ceiling and the band rate, and the band rate tops out at 0.20, so it binds before any assistant ceiling does (every reading puts them at 0.25 or above). Task Iteration, Learning and Validation therefore disagree at zero financial cost: swapping in the Read me or bucket values leaves the headline at $7,023,654.78. Negligibility maps to Human and is never read.",
       "the_real_question": "The Directive / Feedback Loop pair. 0.90 for Directive matches the Read me table; 0.80 for Feedback Loop matches no table in the source (Read me 0.85, Tasks column 0.55). The question for Chandan is what 0.80 rests on.",
       "locked_by": "tests/test_ceiling_sets.py prices all four readings and asserts each headline.",
       "note": "A 2x spread on the headline from a choice the brief puts out of scope. This belongs in the validation pack as the first-named limitation, and in a question to Chandan."
@@ -98,7 +99,6 @@
   },
   "economics.wage_growth": {
     "status": "sourced",
-    "proposed_new_key": true,
     "default": 0.034,
     "p10": 0.025,
     "p90": 0.045,
@@ -106,7 +106,8 @@
     "url": "https://www.bls.gov/news.release/pdf/eci.pdf",
     "verified": "2026-11-04",
     "reconciles": "Compensation costs for private industry workers rose 3.4% (not seasonally adjusted) for the 12 months ending September 2026.",
-    "note": "Fixes the asymmetry flagged in review: run cost declines 13%/yr while salaries sit flat for 60 months under a nominal discount rate. Understates savings."
+    "note": "Fixes the asymmetry flagged in review: run cost declines 13%/yr while salaries sat flat for 60 months under a nominal discount rate. 0 reproduces the earlier model exactly.",
+    "applies_to": "evm.py simulate(): wage index (1 + wage_growth)^(m/12) on salaries no longer paid, loaded cost of hires avoided, capacity at cost, severance and the hours part of training. Cost per hire, seats and licences stay flat. The cost test in scope() stays at today's prices on both sides (it also ignores the running-cost decline)."
   },
   "uncertainty.params.takeover": {
     "status": "sourced",
@@ -181,6 +182,26 @@
       "pdf": "2304.11771v2.pdf p1, p21",
       "use": "Independent evidence that unreviewed AI output degrades quality for senior staff. Supports a review share that rises with band, which the pack does not currently model."
     }
+  },
+  "review.seniority_slope": {
+    "status": "judgment",
+    "default": 0.2,
+    "p10": 0.05,
+    "p90": 0.4,
+    "applies_to": "evm.py review_of(): review_band = min(0.95, review x (1 + slope x (rank - 1))), rank Para-professional 0, Professional 1, Management 2, Executive 3. Each role's freed hours and the cost test use takeover x (1 - review_band); the pass mark, break-even and gate keep the Professional anchor takeover x (1 - review).",
+    "direction_evidence": [
+      {
+        "citation": "Brynjolfsson, Li & Raymond, 'Generative AI at Work', v2 (7 Nov 2024)",
+        "finding": "Most skilled agents: no productivity gain and small but significant quality declines; least skilled: +36%.",
+        "pdf": "2304.11771v2.pdf p1, p20, p21"
+      },
+      {
+        "citation": "Dell'Acqua et al., 'Navigating the Jagged Technological Frontier', Organization Science (2026)",
+        "finding": "Outside the frontier (a complex managerial task) AI users were 19 percentage points less likely to produce correct solutions.",
+        "pdf": "4573321.pdf p2, p3"
+      }
+    ],
+    "note": "Direction evidenced, magnitude judgment. 0.2 gives 0.24 / 0.30 / 0.36 / 0.42 at review 0.30. 0 reproduces the flat-review model exactly. Swing P10-P90 on the headline ranks it in the tornado's top ten (rule 6)."
   },
   "uncertainty.params.takeover.downside_anchor": {
     "status": "sourced",
@@ -257,7 +278,7 @@
     "default": 4700,
     "intended_source": "SHRM Talent Acquisition Benchmarking Report",
     "url": null,
-    "note": "Gated. Immaterial against a $9.38M NPV; mark client-supplied and move on."
+    "note": "Gated. Immaterial against a $7.02M NPV; mark client-supplied and move on."
   },
   "costs.training_spend_per_head": {
     "status": "client_supplied",
@@ -272,6 +293,30 @@
     "intended_source": "ATD State of the Industry (hours per employee)",
     "url": null,
     "note": "Gated."
+  },
+  "costs.training_refresh_per_year": {
+    "status": "judgment",
+    "default": 0.25,
+    "p10": 0.1,
+    "p90": 0.5,
+    "applies_to": "evm.py simulate(): (people in post) x refresh / 12 x unit training cost each month, from 12 months after first exposure. Joiners (leavers replaced) are trained at the full unit cost as they arrive; that part is structural and has no parameter.",
+    "evidence": [
+      {
+        "citation": "BCG, 'AI at Work 2025: Momentum Builds, but Gaps Remain' (Jun 2025)",
+        "url": "https://www.bcg.com/press/26june2025-beyond-ai-adoption-full-potential",
+        "finding": "79% of employees with more than five hours of training were regular AI users, vs 67% of those with less. Only 36% think their training is enough.",
+        "use": "Training drives use. Supports a recurring cost; supplies no refresher rate.",
+        "verified": "2026-11-05 (press release and secondary coverage; report PDF not on file)"
+      },
+      {
+        "citation": "Budzyn et al., 'Endoscopist deskilling risk after exposure to artificial intelligence in colonoscopy', Lancet Gastroenterology & Hepatology 10 (2025) 896-903",
+        "url": "https://wrap.warwick.ac.uk/id/eprint/191005",
+        "finding": "Unaided adenoma detection fell from 28.4% to 22.4% after routine AI exposure (observational, 19 endoscopists).",
+        "use": "The review's 'gains do not persist when the tool is removed'. Covered in a Nature news feature (Jun 2026); the primary study is the Lancet paper. Supports the stop path (work comes back when AI is withdrawn) more directly than a refresher rate.",
+        "verified": "2026-11-05 (abstract and secondary coverage; PDF not on file)"
+      }
+    ],
+    "note": "No source measures how much refresher training AI tools need. 0.25 = a quarter of the initial package a year (about 4 hours and $212 per person at the default unit cost). Range is deliberately wide. Swing P10-P90 on the headline is about $4.0M, so it earns a place in the tornado (rule 6)."
   },
   "turnover_by_band": {
     "status": "sourced",
@@ -303,6 +348,22 @@
       "use": "Argues hard-to-learn tasks cap aggregate gains. Supports the DIRECTION of a drag term, supplies no magnitude."
     },
     "note": "No credible public source for the magnitude. Declaring that plainly is stronger than a decorative citation."
+  },
+  "capacity.min_block_share": {
+    "status": "judgment",
+    "default": 0.05,
+    "p10": 0.0,
+    "p90": 0.1,
+    "applies_to": "evm.py simulate(): capacity_h = max(0, leftover_h - min_block_share x H x people in post); the rest is stranded_h, valued at zero.",
+    "meaning": "Freed time per person below this share of their month is slack nobody can redeploy. 0.05 = 8 hours a month at 160, about 24 minutes a day; 0.10 = half a day a week.",
+    "cross_check": {
+      "citation": "Forrester, 'The Total Economic Impact of Microsoft 365 Copilot' (Mar 2025)",
+      "url": "https://tei.forrester.com/go/microsoft/M365Copilot",
+      "finding": "Values time saved at a flat 50% 'productivity recapture'. Forrester's own tables label it a TEI standard, i.e. a house assumption, not a measured rate.",
+      "use": "Cross-check only. A flat discount ignores the size of the slice; this parameter is a per-person threshold instead.",
+      "verified": "2026-11-05 (study landing page and secondary summaries)"
+    },
+    "note": "No public source measures the smallest redeployable block of time. Capacity is a cliff in this parameter on this data ($50.7M at 0, about $14.5M at 0.05, $0 at 0.10) because freed time is spread evenly across everyone in a role. It never touches cash, so it cannot appear in the cash tornado; on the capacity line it is the largest mover. Declared as a rule-6 exception in docs/Etter_Value_Model_spec_delta_review.md."
   },
   "costs.build_workflow": {
     "status": "client_supplied",
@@ -352,7 +413,8 @@
     "default": 360,
     "source": "Vendor list pricing: $30/user/month reconciles exactly to $360/yr",
     "url": null,
-    "note": "Record a dated screenshot of the pricing page. This is the cleanest-sourced cost line in the pack."
+    "note": "Record a dated screenshot of the pricing page. This is the cleanest-sourced cost line in the pack.",
+    "seat_count": "Seats are bought per person in post and trued down only at each contract anniversary (annual commitment; reductions at renewal). The model prices contract year k on positions at month 12k."
   },
   "uncertainty.params.adopt_months": {
     "status": "judgment",
@@ -372,19 +434,32 @@
   },
   "programme_abandonment": {
     "status": "judgment",
-    "proposed_new_key": true,
-    "default": null,
+    "default": "structural: a pilot gate, no parameter",
+    "applies_to": "evm.py montecarlo(gate=...): each simulated future stops at month build_lead + pilot_evaluation_months if its takeover x (1 - review) is below the plan's break-even net realisation; simulate(stop_month=...) switches the AI off, refills returning positions at cost per hire and stops recurring costs.",
     "sources": [
+      {
+        "citation": "Gartner press release, 'Gartner Predicts 30% of Generative AI Projects Will Be Abandoned After Proof of Concept By End of 2025' (29 Jul 2024)",
+        "url": "https://www.gartner.com/en/newsroom/press-releases/2024-07-29-gartner-predicts-30-percent-of-generative-ai-projects-will-be-abandoned-after-proof-of-concept-by-end-of-2025",
+        "evidence": "A forecast, not a measurement: at least 30% abandoned after proof of concept, citing poor data quality, inadequate risk controls, escalating costs or unclear business value.",
+        "use": "Cross-check on the share of futures the gate stops (about 30% at the default). An output of the model, not a calibration target.",
+        "verified": "2026-11-05"
+      },
+      {
+        "citation": "S&P Global Market Intelligence, Voice of the Enterprise: AI & Machine Learning, Use Cases 2025 (survey of 1,006, Oct-Nov 2024)",
+        "url": null,
+        "evidence": "42% of companies abandoned most of their AI initiatives in 2025 (17% a year earlier); on average 46% of proofs of concept scrapped before production.",
+        "verified": "2026-11-05 (secondary coverage only; report gated)",
+        "verify_before_use": true
+      },
       {
         "citation": "MIT Project NANDA, 'The GenAI Divide: State of AI in Business 2025' (Jul 2025)",
         "url": "https://www.artificialintelligence-news.com/wp-content/uploads/2025/08/ai_report_2025.pdf",
-        "evidence": "95% of enterprise GenAI pilots produced no measurable P&L impact. Methodology: 52 executive interviews, 153 surveys, 300+ implementation reviews, 26 pages, labelled preliminary by the authors.",
-        "handling": "CITE THE METHODOLOGY LINE WITH THE FIGURE. The 95% number is widely contested on sample-size and self-report grounds. Quoting it naked is what every low-quality blog post does.",
+        "evidence": "95% of enterprise GenAI pilots produced no measurable P&L impact. Methodology: 52 executive interviews, 153 surveys, 300+ implementation reviews, labelled preliminary by the authors.",
+        "handling": "CITE THE METHODOLOGY LINE WITH THE FIGURE. Widely contested on sample-size and self-report grounds.",
         "verified": "2026-11-04"
       }
     ],
-    "corroborating": "RAND on AI project failure; S&P Global Market Intelligence (42% abandoned most initiatives in 2025); Gartner (>40% of agentic projects cancelled by end-2027). All need URL verification.",
-    "note": "Supports the archetype where the honest conclusion is that payback does not justify the programme (acceptance criterion 5)."
+    "note": "Implemented without a new parameter: the gate month and pass mark come from programme.pilot_evaluation_months, costs.build_lead_months and the break-even. Measurement at the gate is taken as exact, which is optimistic. Supports acceptance criterion 5: an unfavourable answer can come from the programme failing, not only from pessimistic inputs."
   },
   "methodology.capacity_cost_rate": {
     "status": "sourced",
@@ -493,13 +568,39 @@
     "url": null,
     "verify_before_use": true
   },
+  "uncertainty.params.training_refresh.*": {
+    "status": "judgment",
+    "default": 0.25,
+    "p10": 0.1,
+    "p90": 0.5,
+    "note": "Uncertainty wrapper on costs.training_refresh_per_year; inherits that entry's lack of a source."
+  },
+  "uncertainty.params.wage_growth.*": {
+    "status": "sourced",
+    "default": 0.034,
+    "p10": 0.025,
+    "p90": 0.045,
+    "source": "BLS Employment Cost Index, private industry; range brackets recent 12-month changes",
+    "url": "https://www.bls.gov/news.release/pdf/eci.pdf",
+    "note": "Uncertainty wrapper on economics.wage_growth."
+  },
+  "uncertainty.params.review_slope.*": {
+    "status": "judgment",
+    "default": 0.2,
+    "p10": 0.05,
+    "p90": 0.4,
+    "note": "Uncertainty wrapper on review.seniority_slope; inherits that entry's lack of a magnitude source."
+  },
   "_unsourced_by_design": [
     "nonlinear.complexity_drag",
     "costs.build_workflow",
     "costs.build_enterprise",
     "costs.programme_fixed",
     "costs.deploy_per_affected_head",
-    "economics.standard_task_hours_month"
+    "economics.standard_task_hours_month",
+    "capacity.min_block_share",
+    "costs.training_refresh_per_year",
+    "review.seniority_slope"
   ],
   "_policy_not_empirical": [
     "policies.*.harvest_automation",

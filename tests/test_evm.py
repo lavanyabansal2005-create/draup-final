@@ -28,11 +28,15 @@ class Acceptance(unittest.TestCase):
                     self.assertIn(e['source'][10:], PREP['workloads'])
 
     def test_freed_hours_reconcile_within_one_percent(self):
+        # freed = positions + hires avoided + capacity + stranded, every month: exact, not within 1%
         for s, p in GRID:
-            r = evm.simulate(PREP, evm.scenario(PACK, s), evm.policy(PACK, p))
-            self.assertLess(r['check_reconciliation_max_gap'], 0.01, (s, p))
-            self.assertLess(r['check_reconciliation_max_gap'], 1e-9, (s, p))   # in fact exact
-            self.assertGreaterEqual(r['check_min_capacity_h'], -1e-9)
+            for stop in (None, 9):
+                r = evm.simulate(PREP, evm.scenario(PACK, s), evm.policy(PACK, p), dict(stop_month=stop))
+                self.assertLess(r['check_reconciliation_max_gap'], 0.01, (s, p))
+                self.assertLess(r['check_reconciliation_max_gap'], 1e-9, (s, p))
+                self.assertLess(r['check_reconciliation_max_hours'], 1e-6, (s, p))   # a hard zero, in hours
+                self.assertGreaterEqual(r['check_min_capacity_h'], -1e-9)
+                self.assertGreaterEqual(min(r['series']['stranded_h']), -1e-9)
 
     def test_zero_headcount_conversion_is_still_meaningful(self):
         r = evm.simulate(PREP, evm.scenario(PACK, 'Moderate'), evm.policy(PACK, 'Capacity only'))
@@ -131,12 +135,25 @@ class Invariants(unittest.TestCase):
         self.assertAlmostEqual(r['npv_cash'], REF['npv'], delta=0.5)
         self.assertEqual(r['positions_end'], REF['positions'])
         self.assertEqual(r['payback_month'], REF['payback'])
+        self.assertEqual(r['payback_discounted'], REF['payback_discounted'])
+
+    def test_legacy_switch_reproduces_the_pre_review_headline(self):
+        S = dict(evm.scenario(PACK, 'Moderate'), wage_growth=0.0, review_slope=0.0)
+        Q = evm.policy(PACK, 'Attrition only')
+        passing, _ = evm.scope(PREP, S)
+        chosen, _ = evm.size_to_peak(PREP, S, Q, passing, dict(legacy=True))
+        r = evm.simulate(PREP, S, Q, dict(chosen=chosen, legacy=True))
+        self.assertAlmostEqual(r['npv_cash'], 9376169.02, delta=0.5)
+        self.assertEqual(r['payback_month'], 33)
 
     def test_earlier_engine_is_reproduced(self):
         # build-only, every cost-effective workload, ceilings 85% / 55%: the v0 engine to the cent
         p = copy.deepcopy(PACK); p['costs']['allow_buy'] = False
         p['categories']['Directive']['ceiling'] = 0.85; p['categories']['Feedback Loop']['ceiling'] = 0.55
-        r = evm.simulate(evm.prepare(DATA, p), evm.scenario(p, 'Moderate'), evm.policy(p, 'Attrition only'))
+        # legacy=True switches off the three fixes the earlier engine did not have (capacity floor,
+        # joiner and refresher training, licence true-down); nothing else differs
+        S0 = dict(evm.scenario(p, 'Moderate'), wage_growth=0.0, review_slope=0.0)   # the earlier engine had neither
+        r = evm.simulate(evm.prepare(DATA, p), S0, evm.policy(p, 'Attrition only'), dict(legacy=True))
         self.assertAlmostEqual(r['npv_cash'], 3096839.06, delta=0.5)
         self.assertEqual(r['positions_end'], 47)
         self.assertEqual(r['payback_month'], 44)
@@ -165,6 +182,115 @@ class Invariants(unittest.TestCase):
         passing, _ = evm.scope(PREP, S)
         chosen, sweep = evm.size_to_peak(PREP, S, Q, passing)
         self.assertEqual(len(chosen), len(passing)); self.assertIsNone(sweep)
+
+
+
+class ReviewFixes(unittest.TestCase):
+    """The five fixes in docs/Etter_Value_Model_spec_delta_review.md."""
+
+    S = evm.scenario(PACK, 'Moderate')
+
+    def run_(self, pol='Attrition only', **o):
+        return evm.simulate(PREP, self.S, evm.policy(PACK, pol), o)
+
+    def test_capacity_floor_strands_thin_slivers_at_zero_value(self):
+        new, old = self.run_(), self.run_(legacy=True)
+        self.assertLess(new['pv_capacity'], old['pv_capacity'])
+        self.assertGreater(sum(new['series']['stranded_h']), 0)
+        p = copy.deepcopy(PACK); p['capacity']['min_block_share'] = 0.0
+        zero = evm.simulate(evm.prepare(DATA, p), self.S, evm.policy(p, 'Attrition only'))
+        self.assertEqual(zero['npv_cash'], new['npv_cash'])                    # the floor never touches cash
+        self.assertEqual(sum(zero['series']['stranded_h']), 0.0)
+        self.assertAlmostEqual(zero['pv_capacity'], old['pv_capacity'], delta=1e-6)
+
+    def test_joiners_and_refresher_are_trained(self):
+        new, old = self.run_(), self.run_(legacy=True)
+        tr = new['series']['trained']; first = next(m for m, v in enumerate(tr) if v)
+        self.assertAlmostEqual(tr[first], new['headcount'])                    # everyone at first exposure
+        self.assertTrue(all(v > 0 for v in tr[first + 1:]))                    # joiners every month after
+        self.assertGreater(sum(new['series']['training']), sum(old['series']['training']))
+        no_ref = evm.simulate(PREP, dict(self.S, training_refresh=0.0), evm.policy(PACK, 'Attrition only'))
+        self.assertGreater(no_ref['npv_cash'], new['npv_cash'])
+
+    def test_licences_are_trued_down_at_contract_anniversaries(self):
+        new, old = self.run_(), self.run_(legacy=True)
+        self.assertLess(sum(new['series']['licences']), sum(old['series']['licences']))
+        for m in range(1, 13):                                                 # year one is priced on day-0 headcount
+            self.assertAlmostEqual(new['series']['licences'][m], old['series']['licences'][m])
+
+    def test_discounted_payback_is_never_earlier(self):
+        for s, p in GRID:
+            r = evm.simulate(PREP, evm.scenario(PACK, s), evm.policy(PACK, p))
+            if r['payback_discounted'] is not None:
+                self.assertIsNotNone(r['payback_month'])
+                self.assertGreaterEqual(r['payback_discounted'], r['payback_month'], (s, p))
+            if r['npv_cash'] > 0:
+                self.assertIsNotNone(r['payback_discounted'], (s, p))
+
+    def test_a_stopped_programme_gives_the_positions_back_and_loses_money(self):
+        for pol in ('Attrition only', 'Active reduction'):
+            r = self.run_(pol, stop_month=12)
+            s = r['series']
+            self.assertGreater(max(s['positions']), 0, pol)
+            self.assertEqual(r['positions_end'], 0, pol)                       # the work came back
+            self.assertTrue(all(s[k][m] == 0 for k in ('run', 'licences', 'maintenance', 'freed_h')
+                                for m in range(12, r['T'] + 1)), pol)
+            self.assertGreaterEqual(min(s['severance']), 0.0, pol)             # never negative severance
+            self.assertLess(r['npv_cash'], 0, pol)
+
+    def test_the_gate_stops_failing_futures_only(self):
+        Q = evm.policy(PACK, 'Attrition only')
+        passing, _ = evm.scope(PREP, self.S)
+        chosen, _ = evm.size_to_peak(PREP, self.S, Q, passing)
+        be = evm.breakeven_net(PREP, self.S, Q, chosen)
+        gate = evm.pilot_gate(PREP, Q, chosen, be)
+        self.assertTrue(gate['applies'])
+        mc = evm.montecarlo(PREP, self.S, Q, n=100, opts=dict(chosen=chosen), gate=gate)
+        for x in mc:
+            net = x['draw']['takeover'] * (1 - x['draw']['review'])
+            self.assertEqual(x['stopped'], net < be)
+            if x['stopped']:
+                self.assertLess(x['npv'], 0)
+                self.assertEqual(x['pos'], 0)
+        self.assertTrue(any(x['stopped'] for x in mc) and not all(x['stopped'] for x in mc))
+        self.assertFalse(evm.pilot_gate(PREP, evm.policy(PACK, 'Capacity only'), chosen, be)['applies'])
+
+
+class WagesAndSeniority(unittest.TestCase):
+    """The addendum to docs/Etter_Value_Model_spec_delta_review.md."""
+
+    S = evm.scenario(PACK, 'Moderate')
+    Q = evm.policy(PACK, 'Attrition only')
+
+    def test_zero_wage_growth_and_flat_review_give_the_previous_model(self):
+        r = evm.simulate(PREP, dict(self.S, wage_growth=0.0, review_slope=0.0), self.Q,
+                         dict(chosen=evm.scope(PREP, dict(self.S, review_slope=0.0))[0][:45]))
+        self.assertAlmostEqual(r['npv_cash'], 6145867.38, delta=0.5)
+
+    def test_wage_growth_raises_cash_and_capacity(self):
+        ch, _ = evm.scope(PREP, self.S)
+        lo = evm.simulate(PREP, dict(self.S, wage_growth=0.0), self.Q, dict(chosen=ch))
+        hi = evm.simulate(PREP, dict(self.S, wage_growth=0.045), self.Q, dict(chosen=ch))
+        self.assertGreater(hi['npv_cash'], lo['npv_cash'])
+        self.assertGreater(hi['pv_capacity'], lo['pv_capacity'])
+        self.assertEqual(hi['series']['freed_h'], lo['series']['freed_h'])     # money only, never hours
+
+    def test_review_rises_with_seniority(self):
+        bands = ['Para-professional', 'Professional', 'Management', 'Executive']
+        rv = [evm.review_of(self.S, b, PACK) for b in bands]
+        self.assertEqual(rv, sorted(rv))
+        self.assertEqual(rv[1], self.S['review'])                               # Professional is the anchor
+        flat = [evm.review_of(dict(self.S, review_slope=0.0), b, PACK) for b in bands]
+        self.assertEqual(set(flat), {self.S['review']})
+
+    def test_new_parameters_earn_their_place(self):
+        # working-agreement rule 6: a new parameter must rank in the top ten of the cash tornado
+        passing, _ = evm.scope(PREP, self.S)
+        chosen, _ = evm.size_to_peak(PREP, self.S, self.Q, passing)
+        _, rows = evm.sensitivity(PREP, self.S, self.Q, chosen)
+        top10 = [r['param'] for r in rows[:10]]
+        for k in ('training_refresh', 'wage_growth', 'review_slope'):
+            self.assertIn(k, top10)
 
 
 if __name__ == '__main__':
