@@ -6,7 +6,7 @@
   const SCENS = ['Conservative', 'Moderate', 'Aggressive'];
   const N_MC = 1000, CHUNK = 40, SEED = 20261019;
   const state = { org: 'base', policy: 'Attrition only', scen: 'Moderate', horizon: 60, tab: 'leader', scopeK: null,
-    edits: { scenario: {}, policy: {}, economics: {}, costs: {} } };
+    edits: { scenario: {}, policy: {}, economics: {}, costs: {}, capacity: {} } };
   let cur = null, mcToken = 0, rerunTimer = null;
 
   // ------------------------------------------------------------ formatting
@@ -50,6 +50,8 @@
     { grp: 'costs', key: 'deploy_per_affected_head', label: 'Deployment cost per affected person, $', t: NUM, range: 'n/a', grade: 'C', kind: 'Fact', src: 'Forrester TEI, Microsoft 365 Copilot' },
     { grp: 'costs', key: 'training_spend_per_head', label: 'Training spend per affected person, $', t: NUM, range: '$423 to $1,692', grade: 'B', kind: 'Fact', src: 'ATD 2026' },
     { grp: 'costs', key: 'training_hours_per_head', label: 'Training hours per affected person', t: NUM, range: '8 to 33', grade: 'B', kind: 'Fact', src: 'ATD 2026' },
+    { grp: 'costs', key: 'training_refresh_per_year', label: 'Yearly refresher, share of the initial training', t: PCT, range: '10 to 50%', grade: 'D', kind: 'Judgment', src: 'No measured rate; BCG AI at Work 2025 links training to regular use' },
+    { grp: 'capacity', key: 'min_block_share', label: 'Smallest redeployable block of freed time per person, share of month', t: PCT, range: '0 to 10%', grade: 'D', kind: 'Judgment', src: 'No measured rate; Forrester TEI uses a flat 50% recapture instead' },
     { grp: 'costs', key: 'assistant_licence_per_seat_year', label: 'Assistant licence per active seat per year, $', t: NUM, range: 'fixed', grade: 'A', kind: 'Fact', src: 'Microsoft 365 Copilot list price, $30 a month' },
     { grp: 'costs', key: 'seat_cost_per_position', label: 'Software seat reclaimed per position, $ per year', t: NUM, range: '$0 to $2,000', grade: 'B', kind: 'Fact, client adds tools', src: 'Microsoft 365 E3 list price from July 2026' }
   ];
@@ -59,19 +61,20 @@
     recruit_avoided: ['Recruiting avoided', 'Leavers not replaced x cost per hire (SHRM)', 'B'],
     build: ['Build', 'Workloads x $55k or $130k (team build-up)', 'C'],
     programme: ['Programme and deployment', '$75k + $623 per affected person (Forrester TEI)', 'C'],
-    training: ['Training', '$846 + 16.7 hours per affected person (ATD 2026)', 'B'],
-    licences: ['Assistant licences', 'Active seats x $360 a year (Microsoft list price)', 'A'],
+    training: ['Training', '$846 + 16.7 hours per person at first use, then each joiner, plus a yearly refresher', 'B'],
+    licences: ['Assistant licences', 'Active seats of people in post x $360 a year, trued down each contract year', 'A'],
     run: ['AI running cost', 'AI hours x $3.48, falling 13% a year', 'D'],
     maintenance: ['Agent maintenance', '18% of build a year', 'C'],
     severance: ['Severance', '12 weeks of salary per separation', 'C'],
     avoidance: ['Hires avoided against plan', 'Planned hires not made x loaded cost + cost per hire', 'B'],
-    capacity: ['Capacity released, at cost', 'Freed hours x each role’s cost per hour', 'A']
+    capacity: ['Capacity released, at cost', 'Freed hours above the smallest usable block per person x each role’s cost per hour', 'A']
   };
   const PARAM = {
     takeover: ['AI takeover rate', v => P(v)], review: ['Human review load', v => P(v)], adopt_months: ['Months to full adoption', v => F(v, 0)],
     active_use: ['Assistant active use', v => P(v)], aug_mult: ['Assistant time saving', v => `x${F(v, 2)}`],
     cost_mult: ['Build and programme cost', v => `x${F(v, 2)}`], run_mult: ['AI running cost', v => `$${F(3.48 * v, 2)}/h`],
-    drag: ['Complexity drag', v => F(v, 2)], turnover_mult: ['Staff turnover', v => `x${F(v, 2)}`], harvest_automation: ['Harvest share (policy)', v => P(v)]
+    drag: ['Complexity drag', v => F(v, 2)], turnover_mult: ['Staff turnover', v => `x${F(v, 2)}`], harvest_automation: ['Harvest share (policy)', v => P(v)],
+    training_refresh: ['Training refresher', v => `${P(v)} a year`]
   };
 
   // ------------------------------------------------------------ inputs
@@ -85,6 +88,7 @@
     p.economics.horizon_months = state.horizon;
     Object.assign(p.economics, state.edits.economics);
     Object.assign(p.costs, state.edits.costs);
+    p.capacity = Object.assign({}, p.capacity, state.edits.capacity);
     return [d, p];
   }
   function choices(p, scen, pol) {
@@ -105,7 +109,9 @@
     const r = E.simulate(prep, S, Q, { chosen });
     const [sensBase, sens] = E.sensitivity(prep, S, Q, chosen);
     const be = E.breakevenNet(prep, S, Q, chosen);
-    cur = { d, p, prep, S, Q, chosen, ranked, kCost, r, sens, sensBase, be, mc: null, funnel: E.funnel(prep, S, r) };
+    const gate = E.pilotGate(prep, Q, chosen, be);
+    const stopped = gate.applies ? E.simulate(prep, S, Q, { chosen, stop_month: gate.month, ledger: false }) : null;
+    cur = { d, p, prep, S, Q, chosen, ranked, kCost, r, sens, sensBase, be, gate, stopped, mc: null, funnel: E.funnel(prep, S, r) };
     cur.grid = SCENS.map(sn => POLICIES.map(([pn]) => {
       const [S2, Q2] = choices(p, sn, pn);
       const sc2 = E.scope(prep, S2);
@@ -122,23 +128,25 @@
 
   function startMC() {
     const token = ++mcToken;
-    const { prep, S, Q, chosen, p } = cur;
+    const { prep, S, Q, chosen, p, gate } = cur;
     const rng = new E.RNG(SEED);
-    const acc = { hl: [], cap: [], cum: [], pay: [] };
+    const acc = { hl: [], cap: [], cum: [], pay: [], stops: 0 };
     let i = 0;
     const step = () => {
       if (token !== mcToken) return;
       const end = Math.min(N_MC, i + CHUNK);
       for (; i < end; i++) {
-        const dd = E.drawScenario(p, rng, S);
-        const x = E.simulate(prep, Object.assign({}, S, dd), Q, { chosen, ledger: false });
+        const dd = E.drawScenario(p, rng, S), S2 = Object.assign({}, S, dd);
+        const stop = gate.applies && (gate.pass_mark == null || S2.takeover * (1 - S2.review) < gate.pass_mark);
+        if (stop) acc.stops++;
+        const x = E.simulate(prep, S2, Q, { chosen, ledger: false, stop_month: stop ? gate.month : null });
         acc.hl.push(x.headline); acc.cap.push(x.pv_capacity); acc.pay.push(x.count_avoidance ? x.payback_plan : x.payback_month);
         acc.cum.push(x.count_avoidance ? cumulative(x.series.plan_net) : x.series.cum_cash);
       }
       const done = i >= N_MC;
       cur.mc = { n: i, done, p10: E.quantile(acc.hl, 0.1), p50: E.quantile(acc.hl, 0.5), p90: E.quantile(acc.hl, 0.9),
         pPos: acc.hl.filter(v => v > 0).length / acc.hl.length, cap10: E.quantile(acc.cap, 0.1), cap90: E.quantile(acc.cap, 0.9),
-        payShare: acc.pay.filter(v => v != null).length / acc.pay.length };
+        payShare: acc.pay.filter(v => v != null).length / acc.pay.length, pStop: acc.stops / i };
       if (done || i % 200 === 0) {
         const T = cur.r.T, lo = [], hi = [], md = [];
         for (let m = 0; m <= T; m++) { const col = acc.cum.map(c => c[m]); lo.push(E.quantile(col, 0.1)); hi.push(E.quantile(col, 0.9)); md.push(E.quantile(col, 0.5)); }
@@ -175,8 +183,8 @@
     if (r.count_avoidance)
       tiles.push(`<div class="tile avoid"><span class="label">Cash vs approved plan</span><span class="big">${M(r.npv_plan)}</span><span class="sub">${band}; includes ${F(av)} ${av === 1 ? 'hire' : 'hires'} avoided</span></div>`);
     else
-      tiles.push(`<div class="tile"><span class="label">Payback and funding</span><span class="big">${r.payback_month ? 'Month ' + r.payback_month : 'None'}</span><span class="sub">Peak cash needed ${Mabs(r.peak_funding)}${r.irr != null ? '; IRR ' + P(r.irr) : ''}</span></div>`);
-    tiles.push(`<div class="tile cap"><span class="label">Capacity at cost, not cash</span><span class="big">${Mabs(r.pv_capacity)}</span><span class="sub">${r.capacity_hurdle > 0 ? `Must be worth ${P(r.capacity_hurdle)} of its cost to cover the cash gap` : 'Value only if the time is put to use'}</span></div>`);
+      tiles.push(`<div class="tile"><span class="label">Payback, discounted</span><span class="big">${r.payback_discounted ? 'Month ' + r.payback_discounted : 'None'}</span><span class="sub">Undiscounted ${r.payback_month ? 'month ' + r.payback_month : 'none'}; peak cash needed ${Mabs(r.peak_funding)}${r.irr != null ? '; IRR ' + P(r.irr) : ''}</span></div>`);
+    tiles.push(`<div class="tile cap"><span class="label">Capacity at cost, not cash</span><span class="big">${Mabs(r.pv_capacity)}</span><span class="sub">${r.capacity_hurdle > 0 ? `Must be worth ${P(r.capacity_hurdle)} of its cost to cover the cash gap` : 'Value only if the time is put to use'}. Another ${F(r.stranded_fte_end, 0)} people’s worth is too thin per person to redeploy and counts as zero.</span></div>`);
     const v = mc && mc.done ? E.decide(mc.pPos, Q) : null;
     const chip = v ? `<span class="chip ${v[0]}">${{ go: 'Go', pilot: 'Pilot first', stop: 'Do not start', capacity: 'Capacity case' }[v[0]]}</span>` : `<span class="chip wait">Checking ${F(mc ? mc.n : 0)} of ${F(N_MC)} outcomes</span>`;
     tiles.push(`<div class="tile"><span class="label">Verdict</span>${chip}<span class="sub">${v ? esc(v[1]) : 'The verdict uses the chance of a positive result.'}</span><div class="meter" aria-hidden="true"><i style="width:${mc ? mc.n / N_MC * 100 : 0}%"></i></div></div>`);
@@ -243,7 +251,7 @@
     k.push(['Cash vs today', M(r.npv_cash), r.count_avoidance ? 'excludes hires avoided' : (mc ? `P10 ${M(mc.p10)}, P90 ${M(mc.p90)}` : 'computing')]);
     if (r.count_avoidance) k.push(['Cash vs approved plan', M(r.npv_plan), mc ? `P10 ${M(mc.p10)}, P90 ${M(mc.p90)}` : 'computing']);
     k.push(['Chance cash is positive', mc ? P(mc.pPos) : '…', mc ? `${F(mc.n)} correlated draws` : '']);
-    k.push(['Payback month', (r.count_avoidance ? r.payback_plan : r.payback_month) || 'None', `horizon ${r.T} months`]);
+    k.push(['Payback month, discounted', r.count_avoidance ? (r.payback_plan || 'None') : (r.payback_discounted || 'None'), r.count_avoidance ? `against plan, undiscounted; horizon ${r.T} months` : `undiscounted ${r.payback_month || 'none'}; horizon ${r.T} months`]);
     k.push(['IRR', r.irr == null ? 'n/a' : P(r.irr), 'cash vs today']);
     k.push(['Peak cash needed', Mabs(r.peak_funding), 'deepest point of the curve']);
     k.push(['Break-even realisation', be == null ? 'not reachable' : P(be, 1), `assumed ${P(S.takeover * (1 - S.review), 1)} (takeover x (1 − review))`]);
@@ -341,6 +349,7 @@
     $('gate').innerHTML = `<div><span class="label">Pilot workloads</span><ul class="plain">${pilot.map(x => `<li>${esc(cap1(x.name))}</li>`).join('') || '<li>None pass the cost test at this size</li>'}</ul></div>
       <div><span class="label">Go/no-go threshold</span><p>Scale if the pilot shows a net realisation of at least <b>${be == null ? 'n/a (not reachable)' : P(be, 1)}</b>. This run assumes ${P(net, 1)}: AI takes over ${P(S.takeover)} and people check ${P(S.review)} of its time.</p></div>
       <div><span class="label">Measure for ${p.programme.pilot_evaluation_months} months</span><ul class="plain"><li>Share of each workload’s hours the AI handles end to end</li><li>Minutes people spend checking each AI hour</li><li>Weeks from go-live to steady use</li><li>Actual build and running cost per workload</li></ul></div>
+      <div><span class="label">If the pilot misses</span><p>${cur.gate.applies ? `The programme stops in month ${cur.gate.month}: AI off, the work comes back and any positions removed are refilled. Trying and stopping costs <b>${Mabs(-cur.stopped.headline)}</b>, mostly training already given.${mc ? ` In ${P(mc.pStop)} of simulated futures the pilot misses and the programme stops; the odds above include them.` : ''}` : 'No cash gate applies: nothing is turned into positions, so there is no cash pass mark.'}</p></div>
       <div><span class="label">When a gate is worth it</span><p class="note">Experiments on this data: a gate adds value when the chance of positive cash is between about 40% and 70%. Above that, roll out in waves without pausing. Below it, do not start.${v ? ` Here it is ${P(mc.pPos)}: ${esc(v[1])}` : ''}</p></div>`;
   }
   function renderWaves() {
@@ -359,7 +368,7 @@
     const ok = (b, t) => `<li><span class="${b ? 'pos' : 'neg'}">${b ? 'Pass' : 'Fail'}</span> ${t}</li>`;
     const over = r.roles.filter(x => x.positions_end > Math.floor(x.freed_fte + 1e-9));
     $('checks').innerHTML = `<ul class="plain">
-      ${ok(r.check_reconciliation_max_gap < 0.01, `Freed hours reconcile across positions, hires avoided and capacity: largest monthly gap ${r.check_reconciliation_max_gap.toExponential(1)}`)}
+      ${ok(r.check_reconciliation_max_hours < 1e-6, `Freed hours reconcile exactly across positions, hires avoided, capacity and stranded slivers: largest monthly gap ${r.check_reconciliation_max_hours.toFixed(5)} hours`)}
       ${ok(r.check_ledger_gap < 1, `Ledger present values sum to the cash NPV: difference ${usd(r.check_ledger_gap)}`)}
       ${ok(over.length === 0, 'No role loses more positions than the FTE its work frees')}
       ${ok(cap0.pv_capacity > 0, `With headcount conversion at zero, the run still returns ${Mabs(cap0.pv_capacity)} of capacity and a cash result of ${M(cap0.headline)}`)}
@@ -385,6 +394,7 @@
     if (item.grp === 'scenario') { const v = cur.S[item.key]; return v == null && item.fallback ? item.fallback(p) : v; }
     if (item.grp === 'policy') return cur.Q[item.key];
     if (item.grp === 'economics') return p.economics[item.key] == null ? 0 : p.economics[item.key];
+    if (item.grp === 'capacity') return (p.capacity || {})[item.key] || 0;
     return p.costs[item.key];
   }
   function renderRegister() {

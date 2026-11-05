@@ -17,7 +17,12 @@ m = lambda v: f"{'+' if v >= 0 else '-'}${abs(v)/1e6:.1f}M"
 print(f"{rep['meta']['pack']} | {sn} | {pn}")
 print(f"  cash vs today {m(h['npv_cash'])}  (P10 {m(b['p10'])}, P50 {m(b['p50'])}, P90 {m(b['p90'])}, {b['p_positive']:.0%} positive)" if not h['count_avoidance']
       else f"  cash vs plan {m(h['npv_plan'])}; vs today {m(h['npv_cash'])}  (P10 {m(b['p10'])}, P90 {m(b['p90'])}, {b['p_positive']:.0%} positive)")
-print(f"  capacity at cost {m(h['pv_capacity'])}, positions {h['positions']:.0f}, hires avoided {h['hires_avoided']:.0f}, payback month {h['payback']}")
+print(f"  capacity at cost {m(h['pv_capacity'])} ({h['capacity_fte']:.1f} people's worth; {h['stranded_fte']:.1f} more stranded as slivers), positions {h['positions']:.0f}, hires avoided {h['hires_avoided']:.0f}")
+print(f"  payback month {h['payback_discounted']} discounted, {h['payback']} undiscounted")
+g = rep['gate']
+if g['applies']:
+    pm = 'none breaks even' if g['pass_mark'] is None else format(g['pass_mark'], '.1%')
+    print(f"  pilot gate month {g['month']} (pass mark {pm}): {g['p_stop']:.0%} of futures stop there; trying and stopping costs {m(g['headline_if_stopped'])}")
 print(f"  break-even realisation {rep['breakeven_net'] if rep['breakeven_net'] is None else format(rep['breakeven_net'], '.1%')} vs assumed {rep['realisation']:.1%}  ->  {rep['verdict_text']}")
 os.makedirs(os.path.join(ROOT, 'out'), exist_ok=True)
 stem = os.path.join(ROOT, 'out', f"{key}_{sn}_{pn}".replace(' ', '_'))

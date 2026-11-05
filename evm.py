@@ -17,7 +17,8 @@ Pipeline:
   4 Realised   takeover x (1 - review), S-curve adoption from go-live, complexity drag
                (the work left behind is harder), phased go-live schedule.
   5 Routing    freed hours go to exactly one destination: fewer positions (policy, attrition
-               paced), hires avoided (planned growth absorbed), or released capacity.
+               paced), hires avoided (planned growth absorbed), released capacity, or stranded
+               slivers (time per person too thin to redeploy, valued at zero).
   6 Money      cash vs today / cost avoidance vs plan / capacity at cost: computed and
                reported separately, never added together. Every dollar is in the ledger
                with the input row it came from.
@@ -244,7 +245,8 @@ def size_to_peak(prep, S, Q, chosen, opts=None, key='headline'):
 def simulate(prep, S, Q, opts=None):
     """S: scenario (uncertain quantities), Q: policy (choices). Month 0 = today."""
     o = dict(scope_rule='cost_effective', top_k=None, schedule='staged', ramp='s',
-             golive=None, horizon=None, chosen=None, aug_on=True, auto_on=True, count_avoidance=None, ledger=True)
+             golive=None, horizon=None, chosen=None, aug_on=True, auto_on=True, count_avoidance=None, ledger=True,
+             stop_month=None, legacy=False)
     o.update(opts or {})
     P = prep['pack']; E = P['economics']; C = P['costs']; A = P['augment']
     T = o['horizon'] or E['horizon_months']; d = E['discount_rate']
@@ -264,6 +266,10 @@ def simulate(prep, S, Q, opts=None):
     roles = list(prep['roles'].values())
     aug_start = A['rollout_start_month']
     run_rate0 = C['run_cost_per_ai_hour'] * S.get('run_mult', 1.0) * S['cost_mult']
+    stop = o['stop_month'] if o['stop_month'] is not None else T + 1   # from this month the AI is off
+    fix = not o['legacy']                      # legacy=True reproduces the earlier engine (no fixes 1-3)
+    block = P.get('capacity', {}).get('min_block_share', 0.0) if fix else 0.0
+    refresh = S.get('training_refresh', C.get('training_refresh_per_year', 0.0)) if fix else 0.0
 
     # steady state (everything chosen live, fully adopted) -> position targets
     st = {}
@@ -281,7 +287,7 @@ def simulate(prep, S, Q, opts=None):
     z = lambda: [0.0] * (T + 1)
     keys = CASH_LINES + COST_LINES + ['avoidance', 'capacity', 'freed_h', 'reduced_h', 'absorbed_h',
                                       'capacity_h', 'drag_h', 'positions', 'avoided_hires', 'ai_hours',
-                                      'seats_active']
+                                      'seats_active', 'stranded_h', 'capacity_fte', 'stranded_fte', 'trained']
     ser = {k: z() for k in keys}
     # ledger: line -> source -> [nominal, pv]
     led = {}
@@ -302,12 +308,13 @@ def simulate(prep, S, Q, opts=None):
     for x in chosen:
         gl = golive[x['name']]; b = x['up_base'] * S['cost_mult'] if 'up_base' in x else x['build'] * S['cost_mult']
         for m in range(max(0, gl - lead), gl):
-            if m <= T:
+            if m <= T and m < stop:
                 ser['build'][m] += b / lead; book('build', 'workload: ' + x['name'], m, b / lead)
-        for m in range(gl, T + 1):
+        for m in range(gl, min(T + 1, stop)):
             live_build[m] += b * x.get('maint_share', C['maintenance_share_per_year'])
 
     prevP = {R['role']: 0 for R in roles}; prevAv = {R['role']: 0 for R in roles}
+    histP = {R['role']: [0] for R in roles}    # positions by month, for licence true-down
     for m in range(1, T + 1):
         decay = (1 - C['run_cost_decline_per_year']) ** (m / 12)
         for R in roles:
@@ -315,16 +322,18 @@ def simulate(prep, S, Q, opts=None):
             fa_h = 0.0; ai_h_tot = 0.0
             for w, a in R['auto'].items():
                 if w in built:
-                    ad = ramp((m - golive[w]) / S['adopt_months'])
+                    ad = ramp((m - golive[w]) / S['adopt_months']) if m < stop else 0.0
                     fa_h += R['N'] * a * net * ad
                     ai_h = R['N'] * a * S['takeover'] * ad
                     ai_h_tot += ai_h
                     if ai_h:
                         cost = ai_h * (built[w]['rate_base'] * S.get('run_mult', 1.0) * S['cost_mult'] if 'rate_base' in built[w] else run_rate0) * decay
                         ser['run'][m] += cost; book('run', 'workload: ' + w, m, cost)
-            seats = (R['N'] * S['active_use'] * ramp((m - aug_start) / A['rollout_months'])
-                     if (o['aug_on'] and R['aug'] > 0) else 0.0)
-            fg_h = seats * R['aug'] * S['aug_mult']
+            cover = (S['active_use'] * ramp((m - aug_start) / A['rollout_months'])
+                     if (o['aug_on'] and R['aug'] > 0 and m < stop) else 0.0)
+            fg_h = R['N'] * cover * R['aug'] * S['aug_mult']       # the work does not shrink when positions go
+            # licences are bought per person in post and trued down only at each contract anniversary
+            seats = (R['N'] - (histP[nm][12 * ((m - 1) // 12)] if fix else 0)) * cover
             F_raw = fa_h + fg_h
             y = F_raw / (R['N'] * R['H']) if R['N'] else 0.0
             dr = 1 - kap * y
@@ -342,31 +351,47 @@ def simulate(prep, S, Q, opts=None):
             Pm = max(Pm, prevP[nm])                    # a removed position does not come back
             Pm = min(Pm, math.floor(fte + 1e-9))       # never remove more than was freed
             spare = fte - Pm
+            heads = R['N'] - Pm
             planned = R['N'] * ((1 + g) ** (m / 12) - 1) if g > 0 else 0.0
             Av = (max(0, min(math.floor(spare + 1e-9), math.floor(planned + 1e-9)))
                   if (g > 0 and Q.get('absorb_growth', True)) else 0)
-            cap_h = F_h - Pm * R['H'] - Av * R['H']
+            left_h = F_h - Pm * R['H'] - Av * R['H']
+            # granularity: the first block of freed time per person in post is too thin to redeploy
+            cap_h = max(0.0, left_h - block * R['H'] * heads)
+            str_h = left_h - cap_h
             # money, booked to the role it comes from
             newP = Pm - prevP[nm]; newAv = max(0, Av - prevAv[nm])
             items = [('hard', Pm * R['C'] / 12), ('seats_reclaimed', Pm * R['seat_cost'] / 12),
                      ('avoidance', Av * R['C'] / 12 + newAv * E['cost_per_hire']),
                      ('capacity', cap_h * R['rate']),
                      ('licences', seats * C['assistant_licence_per_seat_year'] / 12 * S['cost_mult'])]
-            if Q['mechanism'] == 'attrition':
+            if Q['mechanism'] == 'attrition' or newP < 0:     # a position that comes back is a hire
                 items.append(('recruit_avoided', newP * E['cost_per_hire']))
             else:
                 items.append(('severance', newP * Q['severance_weeks'] * R['S'] / 52))
-            if s['exposed'] is not None and m == max(1, s['exposed']):
-                items.append(('training', R['N'] * (C['training_spend_per_head']
-                                                    + C['training_hours_per_head'] * R['rate'])))
+            # training: everyone at first exposure; then joiners as they arrive and a yearly refresher
+            ex = s['exposed']; trained = 0.0
+            if ex is not None and ex < stop:
+                t0 = max(1, ex)
+                if m == t0:
+                    trained = R['N']
+                elif fix and t0 < m < stop:
+                    leavers = (R['N'] - prevP[nm]) * (1 - (1 - R['lam'] * S.get('turnover_mult', 1.0)) ** (1 / 12))
+                    joiners = max(0.0, leavers - (max(0, newP) if Q['mechanism'] == 'attrition' else 0))
+                    trained = joiners + (heads * refresh / 12 if m > t0 + 12 else 0.0)
+            if trained:
+                items.append(('training', trained * (C['training_spend_per_head']
+                                                     + C['training_hours_per_head'] * R['rate'])))
             for line, amt in items:
                 if amt:
                     ser[line][m] += amt; book(line, src, m, amt)
             ser['freed_h'][m] += F_h; ser['reduced_h'][m] += Pm * R['H']
-            ser['absorbed_h'][m] += Av * R['H']; ser['capacity_h'][m] += cap_h
+            ser['absorbed_h'][m] += Av * R['H']; ser['capacity_h'][m] += cap_h; ser['stranded_h'][m] += str_h
+            ser['capacity_fte'][m] += cap_h / R['H']; ser['stranded_fte'][m] += str_h / R['H']
+            ser['trained'][m] += trained
             ser['positions'][m] += Pm; ser['avoided_hires'][m] += Av
             ser['seats_active'][m] += seats; ser['ai_hours'][m] += ai_h_tot
-            prevP[nm] = Pm; prevAv[nm] = Av
+            prevP[nm] = Pm; prevAv[nm] = Av; histP[nm].append(Pm)
         mt = live_build[m] / 12
         if mt:
             ser['maintenance'][m] = mt
@@ -379,10 +404,10 @@ def simulate(prep, S, Q, opts=None):
     ser['costs'] = [sum(ser[k][m] for k in COST_LINES) for m in M]
     ser['cash_net'] = [sum(ser[k][m] for k in CASH_LINES) - ser['costs'][m] for m in M]
     ser['plan_net'] = [ser['cash_net'][m] + ser['avoidance'][m] for m in M]
-    def payback(series):
+    def payback(series, disc=False):
         cum, pb = 0.0, None
         for m in M:
-            cum += series[m]
+            cum += series[m] * (df(m, d) if disc else 1.0)
             if cum >= 0 and m > 0 and pb is None: pb = m
             if cum < 0: pb = None
         return pb
@@ -400,10 +425,14 @@ def simulate(prep, S, Q, opts=None):
     out['pv_savings'] = pv([sum(ser[k][m] for k in CASH_LINES) for m in M], d)
     out['payback_month'] = payback(ser['cash_net'])
     out['payback_plan'] = payback(ser['plan_net'])
+    out['payback_discounted'] = payback(ser['cash_net'], True)
     out['irr'] = irr_annual(ser['cash_net'])
     out['peak_funding'] = -min(ser['cum_cash'])
     out['positions_end'] = ser['positions'][T]
     out['avoided_end'] = ser['avoided_hires'][T]
+    out['capacity_fte_end'] = ser['capacity_fte'][T]
+    out['stranded_fte_end'] = ser['stranded_fte'][T]
+    out['stop_month'] = o['stop_month']
     out['headcount'] = sum(R['N'] for R in roles)
     out['payroll_loaded'] = sum(R['N'] * R['C'] for R in roles)
     out['freed_fte_ss'] = sum(s['fa'] + s['fg'] for s in st.values())
@@ -418,9 +447,11 @@ def simulate(prep, S, Q, opts=None):
     out['ledger'] = [dict(line=line, source=src, nominal=v[0], pv=v[1])
                      for line, srcs in led.items() for src, v in srcs.items()]
     # checks
-    gaps = [abs(ser['freed_h'][m] - ser['reduced_h'][m] - ser['absorbed_h'][m] - ser['capacity_h'][m])
-            / ser['freed_h'][m] for m in M if ser['freed_h'][m] > 0]
+    gap_h = [abs(ser['freed_h'][m] - ser['reduced_h'][m] - ser['absorbed_h'][m] - ser['capacity_h'][m]
+                 - ser['stranded_h'][m]) for m in M]
+    gaps = [gap_h[m] / ser['freed_h'][m] for m in M if ser['freed_h'][m] > 0]
     out['check_reconciliation_max_gap'] = max(gaps) if gaps else 0.0
+    out['check_reconciliation_max_hours'] = max(gap_h)
     out['check_min_capacity_h'] = min(ser['capacity_h'])
     led_pv = lambda lines: sum(e['pv'] for e in out['ledger'] if e['line'] in lines)
     out['check_ledger_gap'] = abs(led_pv(CASH_LINES) - led_pv(COST_LINES) - out['npv_cash']) if o['ledger'] else 0.0
@@ -454,8 +485,21 @@ def draw_scenario(pack, rng, center=None):
     return out
 
 
-def montecarlo(prep, S0, Q, n=1000, seed=20261019, opts=None, keep=False):
-    """Plan is fixed up front (scope chosen at S0); reality is drawn n times."""
+def pilot_gate(prep, Q, chosen, breakeven, opts=None):
+    """The go / no-go decision at the end of the pilot evaluation. Pass mark = the plan's break-even
+    net realisation; None means no realisation breaks even, so every future stops. No gate when nothing
+    is harvested (no cash case), when nothing is built, or when the schedule is not staged."""
+    o = opts or {}; P = prep['pack']
+    month = P['costs']['build_lead_months'] + P['programme']['pilot_evaluation_months']
+    T = o.get('horizon') or P['economics']['horizon_months']
+    applies = (bool(chosen) and o.get('schedule', 'staged') == 'staged' and month <= T
+               and (Q['harvest_automation'] > 0 or Q['harvest_augmentation'] > 0))
+    return dict(month=month, pass_mark=breakeven, applies=applies)
+
+
+def montecarlo(prep, S0, Q, n=1000, seed=20261019, opts=None, keep=False, gate=None):
+    """Plan is fixed up front (scope chosen at S0); reality is drawn n times.
+    With `gate` (from pilot_gate), a future whose net realisation misses the pass mark stops at the gate."""
     rng = RNG(seed); o = dict(opts or {}); o.setdefault('ledger', keep)
     if o.get('chosen') is None:
         o['chosen'], _ = scope(prep, S0, 'cost_effective')
@@ -463,10 +507,12 @@ def montecarlo(prep, S0, Q, n=1000, seed=20261019, opts=None, keep=False):
     for _ in range(n):
         dd = draw_scenario(prep['pack'], rng, S0)
         S = dict(S0); S.update(dd)
-        r = simulate(prep, S, Q, o)
+        stopped = bool(gate and gate['applies'] and (gate['pass_mark'] is None
+                                                     or S['takeover'] * (1 - S['review']) < gate['pass_mark']))
+        r = simulate(prep, S, Q, dict(o, stop_month=gate['month'] if stopped else None))
         res.append(r if keep else dict(npv=r['npv_cash'], plan=r['npv_plan'], cap=r['pv_capacity'],
                                        pay=r['payback_month'], pos=r['positions_end'], draw=dd,
-                                       headline=r['headline']))
+                                       headline=r['headline'], stopped=stopped))
     return res
 
 
@@ -558,10 +604,15 @@ def report(data, pack, scen_name='Moderate', pol_name='Attrition only', n_mc=500
     else:
         chosen, _ = size_to_peak(prep, S, Q, passing)
     r = simulate(prep, S, Q, dict(chosen=chosen))
-    mc = montecarlo(prep, S, Q, n=n_mc, seed=seed, opts=dict(chosen=chosen))
+    be = breakeven_net(prep, S, Q, chosen)
+    gate = pilot_gate(prep, Q, chosen, be)
+    mc = montecarlo(prep, S, Q, n=n_mc, seed=seed, opts=dict(chosen=chosen), gate=gate)
     hl = [x['headline'] for x in mc]
     p_pos = sum(1 for x in hl if x > 0) / len(hl)
-    be = breakeven_net(prep, S, Q, chosen)
+    if gate['applies']:
+        st = simulate(prep, S, Q, dict(chosen=chosen, stop_month=gate['month']))
+        gate.update(p_stop=sum(1 for x in mc if x['stopped']) / len(mc), headline_if_stopped=st['headline'],
+                    positions_refilled=max(st['series']['positions']))
     base, sens = sensitivity(prep, S, Q, chosen)
     verdict, verdict_text = decide(p_pos, Q)
     T = r['T']; s = r['series']
@@ -573,14 +624,16 @@ def report(data, pack, scen_name='Moderate', pol_name='Attrition only', n_mc=500
                   discount_rate=r['rate'], basis='tasks', n_mc=n_mc, seed=seed),
         headline=dict(npv_cash=r['npv_cash'], npv_plan=r['npv_plan'], pv_avoidance=r['pv_avoidance'],
                       pv_capacity=r['pv_capacity'], pv_costs=r['pv_costs'], pv_savings=r['pv_savings'],
-                      payback=r['payback_month'], payback_plan=r['payback_plan'], irr=r['irr'],
+                      payback=r['payback_month'], payback_plan=r['payback_plan'],
+                      payback_discounted=r['payback_discounted'], irr=r['irr'],
                       peak_funding=r['peak_funding'], positions=r['positions_end'], hires_avoided=r['avoided_end'],
                       freed_fte=r['freed_fte_ss'], headcount=r['headcount'], payroll=r['payroll_loaded'],
                       n_built=r['n_built'], build_total=r['build_total'], hurdle=r['capacity_hurdle'],
-                      count_avoidance=r['count_avoidance'], headline=r['headline']),
+                      count_avoidance=r['count_avoidance'], headline=r['headline'],
+                      capacity_fte=r['capacity_fte_end'], stranded_fte=r['stranded_fte_end']),
         bands=dict(p10=quantile(hl, .1), p50=quantile(hl, .5), p90=quantile(hl, .9), p_positive=p_pos,
                    cap_p10=quantile([x['cap'] for x in mc], .1), cap_p90=quantile([x['cap'] for x in mc], .9)),
-        breakeven_net=be, realisation=S['takeover'] * (1 - S['review']),
+        breakeven_net=be, realisation=S['takeover'] * (1 - S['review']), gate=gate,
         verdict=verdict, verdict_text=verdict_text,
         sensitivity=dict(base=base, rows=sens),
         funnel=funnel(prep, S, r),
@@ -593,9 +646,10 @@ def report(data, pack, scen_name='Moderate', pol_name='Attrition only', n_mc=500
                         built=any(c['name'] == x['name'] for c in chosen),
                         golive=r['golive'].get(x['name'])) for i, x in enumerate(ranked)],
         series={k: s[k] for k in ['cash_net', 'cum_cash', 'hard', 'avoidance', 'capacity', 'costs', 'positions',
-                                  'avoided_hires', 'freed_h']},
+                                  'avoided_hires', 'freed_h', 'capacity_h', 'stranded_h']},
         lines=led,
         ledger=r['ledger'],
         flags=prep['flags'],
         checks=dict(reconciliation_max_gap=r['check_reconciliation_max_gap'],
+                    reconciliation_max_hours=r['check_reconciliation_max_hours'],
                     ledger_gap=r['check_ledger_gap'], min_capacity_h=r['check_min_capacity_h']))

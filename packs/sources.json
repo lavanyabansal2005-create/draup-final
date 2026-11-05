@@ -273,6 +273,30 @@
     "url": null,
     "note": "Gated."
   },
+  "costs.training_refresh_per_year": {
+    "status": "judgment",
+    "default": 0.25,
+    "p10": 0.1,
+    "p90": 0.5,
+    "applies_to": "evm.py simulate(): (people in post) x refresh / 12 x unit training cost each month, from 12 months after first exposure. Joiners (leavers replaced) are trained at the full unit cost as they arrive; that part is structural and has no parameter.",
+    "evidence": [
+      {
+        "citation": "BCG, 'AI at Work 2025: Momentum Builds, but Gaps Remain' (Jun 2025)",
+        "url": "https://www.bcg.com/press/26june2025-beyond-ai-adoption-full-potential",
+        "finding": "79% of employees with more than five hours of training were regular AI users, vs 67% of those with less. Only 36% think their training is enough.",
+        "use": "Training drives use. Supports a recurring cost; supplies no refresher rate.",
+        "verified": "2026-11-05 (press release and secondary coverage; report PDF not on file)"
+      },
+      {
+        "citation": "Budzyn et al., 'Endoscopist deskilling risk after exposure to artificial intelligence in colonoscopy', Lancet Gastroenterology & Hepatology 10 (2025) 896-903",
+        "url": "https://wrap.warwick.ac.uk/id/eprint/191005",
+        "finding": "Unaided adenoma detection fell from 28.4% to 22.4% after routine AI exposure (observational, 19 endoscopists).",
+        "use": "The review's 'gains do not persist when the tool is removed'. Covered in a Nature news feature (Jun 2026); the primary study is the Lancet paper. Supports the stop path (work comes back when AI is withdrawn) more directly than a refresher rate.",
+        "verified": "2026-11-05 (abstract and secondary coverage; PDF not on file)"
+      }
+    ],
+    "note": "No source measures how much refresher training AI tools need. 0.25 = a quarter of the initial package a year (about 4 hours and $212 per person at the default unit cost). Range is deliberately wide. Swing P10-P90 on the headline is about $3.7M, so it earns a place in the tornado (rule 6)."
+  },
   "turnover_by_band": {
     "status": "sourced",
     "default": {
@@ -303,6 +327,22 @@
       "use": "Argues hard-to-learn tasks cap aggregate gains. Supports the DIRECTION of a drag term, supplies no magnitude."
     },
     "note": "No credible public source for the magnitude. Declaring that plainly is stronger than a decorative citation."
+  },
+  "capacity.min_block_share": {
+    "status": "judgment",
+    "default": 0.05,
+    "p10": 0.0,
+    "p90": 0.1,
+    "applies_to": "evm.py simulate(): capacity_h = max(0, leftover_h - min_block_share x H x people in post); the rest is stranded_h, valued at zero.",
+    "meaning": "Freed time per person below this share of their month is slack nobody can redeploy. 0.05 = 8 hours a month at 160, about 24 minutes a day; 0.10 = half a day a week.",
+    "cross_check": {
+      "citation": "Forrester, 'The Total Economic Impact of Microsoft 365 Copilot' (Mar 2025)",
+      "url": "https://tei.forrester.com/go/microsoft/M365Copilot",
+      "finding": "Values time saved at a flat 50% 'productivity recapture'. Forrester's own tables label it a TEI standard, i.e. a house assumption, not a measured rate.",
+      "use": "Cross-check only. A flat discount ignores the size of the slice; this parameter is a per-person threshold instead.",
+      "verified": "2026-11-05 (study landing page and secondary summaries)"
+    },
+    "note": "No public source measures the smallest redeployable block of time. Capacity is a cliff in this parameter on this data ($47.7M at 0, about $13M at 0.05, $0 at 0.10) because freed time is spread evenly across everyone in a role. It never touches cash, so it cannot appear in the cash tornado; on the capacity line it is the largest mover. Declared as a rule-6 exception in docs/Etter_Value_Model_spec_delta_review.md."
   },
   "costs.build_workflow": {
     "status": "client_supplied",
@@ -352,7 +392,8 @@
     "default": 360,
     "source": "Vendor list pricing: $30/user/month reconciles exactly to $360/yr",
     "url": null,
-    "note": "Record a dated screenshot of the pricing page. This is the cleanest-sourced cost line in the pack."
+    "note": "Record a dated screenshot of the pricing page. This is the cleanest-sourced cost line in the pack.",
+    "seat_count": "Seats are bought per person in post and trued down only at each contract anniversary (annual commitment; reductions at renewal). The model prices contract year k on positions at month 12k."
   },
   "uncertainty.params.adopt_months": {
     "status": "judgment",
@@ -372,19 +413,32 @@
   },
   "programme_abandonment": {
     "status": "judgment",
-    "proposed_new_key": true,
-    "default": null,
+    "default": "structural: a pilot gate, no parameter",
+    "applies_to": "evm.py montecarlo(gate=...): each simulated future stops at month build_lead + pilot_evaluation_months if its takeover x (1 - review) is below the plan's break-even net realisation; simulate(stop_month=...) switches the AI off, refills returning positions at cost per hire and stops recurring costs.",
     "sources": [
+      {
+        "citation": "Gartner press release, 'Gartner Predicts 30% of Generative AI Projects Will Be Abandoned After Proof of Concept By End of 2025' (29 Jul 2024)",
+        "url": "https://www.gartner.com/en/newsroom/press-releases/2024-07-29-gartner-predicts-30-percent-of-generative-ai-projects-will-be-abandoned-after-proof-of-concept-by-end-of-2025",
+        "evidence": "A forecast, not a measurement: at least 30% abandoned after proof of concept, citing poor data quality, inadequate risk controls, escalating costs or unclear business value.",
+        "use": "Cross-check on the share of futures the gate stops (about 30% at the default). An output of the model, not a calibration target.",
+        "verified": "2026-11-05"
+      },
+      {
+        "citation": "S&P Global Market Intelligence, Voice of the Enterprise: AI & Machine Learning, Use Cases 2025 (survey of 1,006, Oct-Nov 2024)",
+        "url": null,
+        "evidence": "42% of companies abandoned most of their AI initiatives in 2025 (17% a year earlier); on average 46% of proofs of concept scrapped before production.",
+        "verified": "2026-11-05 (secondary coverage only; report gated)",
+        "verify_before_use": true
+      },
       {
         "citation": "MIT Project NANDA, 'The GenAI Divide: State of AI in Business 2025' (Jul 2025)",
         "url": "https://www.artificialintelligence-news.com/wp-content/uploads/2025/08/ai_report_2025.pdf",
-        "evidence": "95% of enterprise GenAI pilots produced no measurable P&L impact. Methodology: 52 executive interviews, 153 surveys, 300+ implementation reviews, 26 pages, labelled preliminary by the authors.",
-        "handling": "CITE THE METHODOLOGY LINE WITH THE FIGURE. The 95% number is widely contested on sample-size and self-report grounds. Quoting it naked is what every low-quality blog post does.",
+        "evidence": "95% of enterprise GenAI pilots produced no measurable P&L impact. Methodology: 52 executive interviews, 153 surveys, 300+ implementation reviews, labelled preliminary by the authors.",
+        "handling": "CITE THE METHODOLOGY LINE WITH THE FIGURE. Widely contested on sample-size and self-report grounds.",
         "verified": "2026-11-04"
       }
     ],
-    "corroborating": "RAND on AI project failure; S&P Global Market Intelligence (42% abandoned most initiatives in 2025); Gartner (>40% of agentic projects cancelled by end-2027). All need URL verification.",
-    "note": "Supports the archetype where the honest conclusion is that payback does not justify the programme (acceptance criterion 5)."
+    "note": "Implemented without a new parameter: the gate month and pass mark come from programme.pilot_evaluation_months, costs.build_lead_months and the break-even. Measurement at the gate is taken as exact, which is optimistic. Supports acceptance criterion 5: an unfavourable answer can come from the programme failing, not only from pessimistic inputs."
   },
   "methodology.capacity_cost_rate": {
     "status": "sourced",
@@ -493,13 +547,22 @@
     "url": null,
     "verify_before_use": true
   },
+  "uncertainty.params.training_refresh.*": {
+    "status": "judgment",
+    "default": 0.25,
+    "p10": 0.1,
+    "p90": 0.5,
+    "note": "Uncertainty wrapper on costs.training_refresh_per_year; inherits that entry's lack of a source."
+  },
   "_unsourced_by_design": [
     "nonlinear.complexity_drag",
     "costs.build_workflow",
     "costs.build_enterprise",
     "costs.programme_fixed",
     "costs.deploy_per_affected_head",
-    "economics.standard_task_hours_month"
+    "economics.standard_task_hours_month",
+    "capacity.min_block_share",
+    "costs.training_refresh_per_year"
   ],
   "_policy_not_empirical": [
     "policies.*.harvest_automation",

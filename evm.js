@@ -177,7 +177,8 @@
 
   function simulate(prep, S, Q, opts) {
     const o = Object.assign({ scope_rule: 'cost_effective', top_k: null, schedule: 'staged', ramp: 's', golive: null,
-      horizon: null, chosen: null, aug_on: true, auto_on: true, count_avoidance: null, ledger: true }, opts || {});
+      horizon: null, chosen: null, aug_on: true, auto_on: true, count_avoidance: null, ledger: true,
+      stop_month: null, legacy: false }, opts || {});
     const P = prep.pack, E = P.economics, C = P.costs, A = P.augment;
     const T = o.horizon || E.horizon_months, d = E.discount_rate;
     const ramp = o.ramp === 's' ? smoothstep : linearRamp;
@@ -194,6 +195,10 @@
     const augStart = A.rollout_start_month;
     const runRate0 = C.run_cost_per_ai_hour * (S.run_mult == null ? 1.0 : S.run_mult) * S.cost_mult;
     const turnMult = S.turnover_mult == null ? 1.0 : S.turnover_mult;
+    const stop = o.stop_month != null ? o.stop_month : T + 1;   // from this month the AI is off
+    const fix = !o.legacy;                    // legacy=true reproduces the earlier engine (no fixes 1-3)
+    const block = fix ? ((P.capacity || {}).min_block_share || 0.0) : 0.0;
+    const refresh = fix ? (S.training_refresh != null ? S.training_refresh : (C.training_refresh_per_year || 0.0)) : 0.0;
     const upFront = x => x.up_base != null ? x.up_base * S.cost_mult : x.build * S.cost_mult;
     const maintShare = x => x.maint_share != null ? x.maint_share : C.maintenance_share_per_year;
     const builtMap = new Map(chosen.map(x => [x.name, x]));
@@ -213,7 +218,7 @@
     }
     const z = () => new Array(T + 1).fill(0);
     const keys = CASH_LINES.concat(COST_LINES, ['avoidance', 'capacity', 'freed_h', 'reduced_h', 'absorbed_h', 'capacity_h',
-      'drag_h', 'positions', 'avoided_hires', 'ai_hours', 'seats_active']);
+      'drag_h', 'positions', 'avoided_hires', 'ai_hours', 'seats_active', 'stranded_h', 'capacity_fte', 'stranded_fte', 'trained']);
     const ser = {}; for (const k of keys) ser[k] = z();
     const led = new Map();
     const book = (line, src, m, amt) => {
@@ -230,10 +235,11 @@
     const liveBuild = z();
     for (const x of chosen) {
       const gl = golive[x.name], b = upFront(x);
-      for (let m = Math.max(0, gl - lead); m < gl; m++) if (m <= T) { ser.build[m] += b / lead; book('build', 'workload: ' + x.name, m, b / lead); }
-      for (let m = gl; m <= T; m++) liveBuild[m] += b * maintShare(x);
+      for (let m = Math.max(0, gl - lead); m < gl; m++) if (m <= T && m < stop) { ser.build[m] += b / lead; book('build', 'workload: ' + x.name, m, b / lead); }
+      for (let m = gl; m <= T && m < stop; m++) liveBuild[m] += b * maintShare(x);
     }
-    const prevP = {}, prevAv = {}; for (const R of roles) { prevP[R.role] = 0; prevAv[R.role] = 0; }
+    const prevP = {}, prevAv = {}, histP = {};   // histP: positions by month, for licence true-down
+    for (const R of roles) { prevP[R.role] = 0; prevAv[R.role] = 0; histP[R.role] = [0]; }
     for (let m = 1; m <= T; m++) {
       const decay = Math.pow(1 - C.run_cost_decline_per_year, m / 12);
       for (const R of roles) {
@@ -241,15 +247,17 @@
         let faH = 0, aiTot = 0;
         for (const [w, a] of R.auto) {
           if (built.has(w)) {
-            const ad = ramp((m - golive[w]) / S.adopt_months);
+            const ad = m < stop ? ramp((m - golive[w]) / S.adopt_months) : 0.0;
             faH += R.N * a * net * ad;
             const aiH = R.N * a * S.takeover * ad;
             aiTot += aiH;
             if (aiH) { const cost = aiH * runRateOf(w) * decay; ser.run[m] += cost; book('run', 'workload: ' + w, m, cost); }
           }
         }
-        const seats = (o.aug_on && R.aug > 0) ? R.N * S.active_use * ramp((m - augStart) / A.rollout_months) : 0.0;
-        let fgH = seats * R.aug * S.aug_mult;
+        const cover = (o.aug_on && R.aug > 0 && m < stop) ? S.active_use * ramp((m - augStart) / A.rollout_months) : 0.0;
+        let fgH = R.N * cover * R.aug * S.aug_mult;       // the work does not shrink when positions go
+        // licences are bought per person in post and trued down only at each contract anniversary
+        const seats = (R.N - (fix ? histP[nm][12 * Math.floor((m - 1) / 12)] : 0)) * cover;
         const Fraw = faH + fgH;
         const y = R.N ? Fraw / (R.N * R.H) : 0.0;
         const dr = 1 - kap * y;
@@ -266,21 +274,36 @@
         Pm = Math.max(Pm, prevP[nm]);
         Pm = Math.min(Pm, floor(fte + 1e-9));
         const spare = fte - Pm;
+        const heads = R.N - Pm;
         const planned = g > 0 ? R.N * (Math.pow(1 + g, m / 12) - 1) : 0.0;
         const Av = (g > 0 && (Q.absorb_growth == null ? true : Q.absorb_growth)) ? Math.max(0, Math.min(floor(spare + 1e-9), floor(planned + 1e-9))) : 0;
-        const capH = Fh - Pm * R.H - Av * R.H;
+        const leftH = Fh - Pm * R.H - Av * R.H;
+        // granularity: the first block of freed time per person in post is too thin to redeploy
+        const capH = Math.max(0.0, leftH - block * R.H * heads);
+        const strH = leftH - capH;
         const newP = Pm - prevP[nm], newAv = Math.max(0, Av - prevAv[nm]);
         const items = [['hard', Pm * R.C / 12], ['seats_reclaimed', Pm * R.seat_cost / 12],
           ['avoidance', Av * R.C / 12 + newAv * E.cost_per_hire], ['capacity', capH * R.rate],
           ['licences', seats * C.assistant_licence_per_seat_year / 12 * S.cost_mult]];
-        if (Q.mechanism === 'attrition') items.push(['recruit_avoided', newP * E.cost_per_hire]);
+        if (Q.mechanism === 'attrition' || newP < 0) items.push(['recruit_avoided', newP * E.cost_per_hire]);   // a position that comes back is a hire
         else items.push(['severance', newP * Q.severance_weeks * R.S / 52]);
-        if (s.exposed != null && m === Math.max(1, s.exposed))
-          items.push(['training', R.N * (C.training_spend_per_head + C.training_hours_per_head * R.rate)]);
+        // training: everyone at first exposure; then joiners as they arrive and a yearly refresher
+        const ex = s.exposed; let trained = 0.0;
+        if (ex != null && ex < stop) {
+          const t0 = Math.max(1, ex);
+          if (m === t0) trained = R.N;
+          else if (fix && t0 < m && m < stop) {
+            const leavers = (R.N - prevP[nm]) * (1 - Math.pow(1 - R.lam * turnMult, 1 / 12));
+            const joiners = Math.max(0.0, leavers - (Q.mechanism === 'attrition' ? Math.max(0, newP) : 0));
+            trained = joiners + (m > t0 + 12 ? heads * refresh / 12 : 0.0);
+          }
+        }
+        if (trained) items.push(['training', trained * (C.training_spend_per_head + C.training_hours_per_head * R.rate)]);
         for (const [line, amt] of items) if (amt) { ser[line][m] += amt; book(line, src, m, amt); }
-        ser.freed_h[m] += Fh; ser.reduced_h[m] += Pm * R.H; ser.absorbed_h[m] += Av * R.H; ser.capacity_h[m] += capH;
+        ser.freed_h[m] += Fh; ser.reduced_h[m] += Pm * R.H; ser.absorbed_h[m] += Av * R.H; ser.capacity_h[m] += capH; ser.stranded_h[m] += strH;
+        ser.capacity_fte[m] += capH / R.H; ser.stranded_fte[m] += strH / R.H; ser.trained[m] += trained;
         ser.positions[m] += Pm; ser.avoided_hires[m] += Av; ser.seats_active[m] += seats; ser.ai_hours[m] += aiTot;
-        prevP[nm] = Pm; prevAv[nm] = Av;
+        prevP[nm] = Pm; prevAv[nm] = Av; histP[nm].push(Pm);
       }
       const mt = liveBuild[m] / 12;
       if (mt) {
@@ -295,7 +318,7 @@
       let h = 0; for (const k of CASH_LINES) h += ser[k][m];
       ser.costs.push(c); ser.cash_net.push(h - c); ser.plan_net.push(h - c + ser.avoidance[m]);
     }
-    const payback = series => { let cum = 0, pb = null; for (let m = 0; m < M; m++) { cum += series[m]; if (cum >= 0 && m > 0 && pb == null) pb = m; if (cum < 0) pb = null; } return pb; };
+    const payback = (series, disc) => { let cum = 0, pb = null; for (let m = 0; m < M; m++) { cum += series[m] * (disc ? df(m, d) : 1.0); if (cum >= 0 && m > 0 && pb == null) pb = m; if (cum < 0) pb = null; } return pb; };
     let cum = 0; ser.cum_cash = []; for (let m = 0; m < M; m++) { cum += ser.cash_net[m]; ser.cum_cash.push(cum); }
     const out = { T, rate: d, series: ser, chosen, golive, n_built: chosen.length, scenario: S, policy: Q, count_avoidance: countAvoid };
     out.build_total = chosen.reduce((a, x) => a + upFront(x), 0);
@@ -304,8 +327,10 @@
     const sav = []; for (let m = 0; m < M; m++) { let h = 0; for (const k of CASH_LINES) h += ser[k][m]; sav.push(h); }
     out.pv_savings = pv(sav, d);
     out.payback_month = payback(ser.cash_net); out.payback_plan = payback(ser.plan_net);
+    out.payback_discounted = payback(ser.cash_net, true);
     out.irr = irrAnnual(ser.cash_net); out.peak_funding = -Math.min(...ser.cum_cash);
     out.positions_end = ser.positions[T]; out.avoided_end = ser.avoided_hires[T];
+    out.capacity_fte_end = ser.capacity_fte[T]; out.stranded_fte_end = ser.stranded_fte[T]; out.stop_month = o.stop_month;
     out.headcount = roles.reduce((a, R) => a + R.N, 0); out.payroll_loaded = roles.reduce((a, R) => a + R.N * R.C, 0);
     out.freed_fte_ss = roles.reduce((a, R) => a + st[R.role].fa + st[R.role].fg, 0);
     const headline = countAvoid ? out.npv_plan : out.npv_cash;
@@ -316,9 +341,13 @@
       aug_fte: st[R.role].fg, target: st[R.role].target, positions_end: prevP[R.role], avoided_end: prevAv[R.role], lam: R.lam }));
     out.ledger = [];
     for (const [line, srcs] of led) for (const [src, v] of srcs) out.ledger.push({ line, source: src, nominal: v[0], pv: v[1] });
-    let gap = 0; for (let m = 0; m < M; m++) if (ser.freed_h[m] > 0)
-      gap = Math.max(gap, Math.abs(ser.freed_h[m] - ser.reduced_h[m] - ser.absorbed_h[m] - ser.capacity_h[m]) / ser.freed_h[m]);
-    out.check_reconciliation_max_gap = gap;
+    let gap = 0, gapH = 0;
+    for (let m = 0; m < M; m++) {
+      const gh = Math.abs(ser.freed_h[m] - ser.reduced_h[m] - ser.absorbed_h[m] - ser.capacity_h[m] - ser.stranded_h[m]);
+      gapH = Math.max(gapH, gh);
+      if (ser.freed_h[m] > 0) gap = Math.max(gap, gh / ser.freed_h[m]);
+    }
+    out.check_reconciliation_max_gap = gap; out.check_reconciliation_max_hours = gapH;
     out.check_min_capacity_h = Math.min(...ser.capacity_h);
     const ledPv = lines => out.ledger.filter(e => lines.includes(e.line)).reduce((a, e) => a + e.pv, 0);
     out.check_ledger_gap = o.ledger ? Math.abs(ledPv(CASH_LINES) - ledPv(COST_LINES) - out.npv_cash) : 0.0;
@@ -348,7 +377,17 @@
     }
     return out;
   }
-  function montecarlo(prep, S0, Q, n, seed, opts) {
+  // The go / no-go decision at the end of the pilot evaluation. Pass mark = the plan's break-even net realisation;
+  // null means no realisation breaks even, so every future stops. No gate without a cash case, a build or a staged schedule.
+  function pilotGate(prep, Q, chosen, breakeven, opts) {
+    const o = opts || {}, P = prep.pack;
+    const month = P.costs.build_lead_months + P.programme.pilot_evaluation_months;
+    const T = o.horizon || P.economics.horizon_months;
+    const applies = chosen.length > 0 && (o.schedule || 'staged') === 'staged' && month <= T &&
+      (Q.harvest_automation > 0 || Q.harvest_augmentation > 0);
+    return { month, pass_mark: breakeven, applies };
+  }
+  function montecarlo(prep, S0, Q, n, seed, opts, gate) {
     const rng = new RNG(seed == null ? 20261019 : seed);
     const o = Object.assign({ ledger: false }, opts || {});
     if (o.chosen == null) o.chosen = scope(prep, S0, 'cost_effective')[0];
@@ -356,8 +395,9 @@
     for (let i = 0; i < n; i++) {
       const dd = drawScenario(prep.pack, rng, S0);
       const S = Object.assign({}, S0, dd);
-      const r = simulate(prep, S, Q, o);
-      res.push({ npv: r.npv_cash, plan: r.npv_plan, cap: r.pv_capacity, pay: r.payback_month, pos: r.positions_end, draw: dd, headline: r.headline });
+      const stopped = !!(gate && gate.applies && (gate.pass_mark == null || S.takeover * (1 - S.review) < gate.pass_mark));
+      const r = simulate(prep, S, Q, Object.assign({}, o, { stop_month: stopped ? gate.month : null }));
+      res.push({ npv: r.npv_cash, plan: r.npv_plan, cap: r.pv_capacity, pay: r.payback_month, pos: r.positions_end, draw: dd, headline: r.headline, stopped });
     }
     return res;
   }
@@ -428,10 +468,16 @@
     if (scopeK != null) chosen = ranked.slice(0, scopeK);
     else chosen = sizeToPeak(prep, S, Q, passing)[0];
     const r = simulate(prep, S, Q, { chosen });
-    const mc = montecarlo(prep, S, Q, nMc, seed, { chosen });
+    const be = breakevenNet(prep, S, Q, chosen);
+    const gate = pilotGate(prep, Q, chosen, be);
+    const mc = montecarlo(prep, S, Q, nMc, seed, { chosen }, gate);
     const hl = mc.map(x => x.headline);
     const pPos = hl.filter(x => x > 0).length / hl.length;
-    const be = breakevenNet(prep, S, Q, chosen);
+    if (gate.applies) {
+      const st = simulate(prep, S, Q, { chosen, stop_month: gate.month });
+      Object.assign(gate, { p_stop: mc.filter(x => x.stopped).length / mc.length, headline_if_stopped: st.headline,
+        positions_refilled: Math.max(...st.series.positions) });
+    }
     const [base, sens] = sensitivity(prep, S, Q, chosen);
     const [verdict, verdictText] = decide(pPos, Q);
     const led = {}; for (const e of r.ledger) led[e.line] = (led[e.line] || 0) + e.pv;
@@ -440,12 +486,14 @@
     return {
       meta: { pack: pack.meta.name, scenario: scenName, policy: polName, horizon: r.T, discount_rate: r.rate, basis: 'tasks', n_mc: nMc, seed },
       headline: { npv_cash: r.npv_cash, npv_plan: r.npv_plan, pv_avoidance: r.pv_avoidance, pv_capacity: r.pv_capacity, pv_costs: r.pv_costs,
-        pv_savings: r.pv_savings, payback: r.payback_month, payback_plan: r.payback_plan, irr: r.irr, peak_funding: r.peak_funding,
+        pv_savings: r.pv_savings, payback: r.payback_month, payback_plan: r.payback_plan, payback_discounted: r.payback_discounted,
+        irr: r.irr, peak_funding: r.peak_funding,
         positions: r.positions_end, hires_avoided: r.avoided_end, freed_fte: r.freed_fte_ss, headcount: r.headcount, payroll: r.payroll_loaded,
-        n_built: r.n_built, build_total: r.build_total, hurdle: r.capacity_hurdle, count_avoidance: r.count_avoidance, headline: r.headline },
+        n_built: r.n_built, build_total: r.build_total, hurdle: r.capacity_hurdle, count_avoidance: r.count_avoidance, headline: r.headline,
+        capacity_fte: r.capacity_fte_end, stranded_fte: r.stranded_fte_end },
       bands: { p10: quantile(hl, 0.1), p50: quantile(hl, 0.5), p90: quantile(hl, 0.9), p_positive: pPos,
         cap_p10: quantile(mc.map(x => x.cap), 0.1), cap_p90: quantile(mc.map(x => x.cap), 0.9) },
-      breakeven_net: be, realisation: S.takeover * (1 - S.review), verdict, verdict_text: verdictText,
+      breakeven_net: be, realisation: S.takeover * (1 - S.review), gate, verdict, verdict_text: verdictText,
       sensitivity: { base, rows: sens }, funnel: funnel(prep, S, r), roles: r.roles,
       programme: { n_passing: passing.length, n_built: chosen.length,
         n_buy: chosen.filter(x => x.option === 'buy').length, n_build: chosen.filter(x => (x.option || 'build') === 'build').length },
@@ -453,14 +501,15 @@
         value_month: x.benefit, npv_at_cost: x.npv_at_cost, ratio: x.ratio, built: chosenNames.has(x.name),
         golive: r.golive[x.name] == null ? null : r.golive[x.name] })),
       series: { cash_net: s.cash_net, cum_cash: s.cum_cash, hard: s.hard, avoidance: s.avoidance, capacity: s.capacity,
-        costs: s.costs, positions: s.positions, avoided_hires: s.avoided_hires, freed_h: s.freed_h },
+        costs: s.costs, positions: s.positions, avoided_hires: s.avoided_hires, freed_h: s.freed_h,
+        capacity_h: s.capacity_h, stranded_h: s.stranded_h },
       lines: led, ledger: r.ledger, flags: prep.flags,
-      checks: { reconciliation_max_gap: r.check_reconciliation_max_gap, ledger_gap: r.check_ledger_gap, min_capacity_h: r.check_min_capacity_h },
+      checks: { reconciliation_max_gap: r.check_reconciliation_max_gap, reconciliation_max_hours: r.check_reconciliation_max_hours, ledger_gap: r.check_ledger_gap, min_capacity_h: r.check_min_capacity_h },
       scenario_used: S, policy_used: Q
     };
   }
 
-  const EVM = { RNG, prepare, scope, schedule, sizeToPeak, simulate, drawScenario, montecarlo, breakevenNet, decide, sensitivity,
+  const EVM = { RNG, prepare, scope, schedule, sizeToPeak, simulate, drawScenario, pilotGate, montecarlo, breakevenNet, decide, sensitivity,
     scenario, policy, funnel, report, quantile, pv, clone, norm };
   if (typeof module !== 'undefined' && module.exports) module.exports = EVM; else root.EVM = EVM;
 })(typeof window !== 'undefined' ? window : globalThis);

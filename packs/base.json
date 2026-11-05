@@ -62,6 +62,7 @@
     "deploy_per_affected_head": 623,
     "training_spend_per_head": 846,
     "training_hours_per_head": 16.7,
+    "training_refresh_per_year": 0.25,
     "assistant_licence_per_seat_year": 360,
     "seat_cost_per_position": 468,
     "allow_buy": true,
@@ -129,6 +130,9 @@
   "nonlinear": {
     "complexity_drag": 0.3
   },
+  "capacity": {
+    "min_block_share": 0.05
+  },
   "uncertainty": {
     "execution_correlation": 0.5,
     "params": {
@@ -189,6 +193,12 @@
         "median": 1.0,
         "p10": 0.75,
         "p90": 1.3
+      },
+      "training_refresh": {
+        "dist": "logitnormal",
+        "median": 0.25,
+        "p10": 0.1,
+        "p90": 0.5
       }
     }
   }
