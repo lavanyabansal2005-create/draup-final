@@ -6,7 +6,7 @@
   const SCENS = ['Conservative', 'Moderate', 'Aggressive'];
   const N_MC = 1000, CHUNK = 40, SEED = 20261019;
   const state = { org: 'base', policy: 'Attrition only', scen: 'Moderate', horizon: 60, tab: 'leader', scopeK: null,
-    edits: { scenario: {}, policy: {}, economics: {}, costs: {}, capacity: {} } };
+    edits: { scenario: {}, policy: {}, economics: {}, costs: {}, capacity: {}, review: {} } };
   let cur = null, mcToken = 0, rerunTimer = null;
 
   // ------------------------------------------------------------ formatting
@@ -39,6 +39,8 @@
     { grp: 'economics', key: 'function_growth', label: 'Planned headcount growth of the function, per year', t: PCT, range: 'client plan', grade: '', kind: 'Client fact', src: 'Client hiring plan' },
     { grp: 'economics', key: 'discount_rate', label: 'Discount rate', t: PCT, range: '5.6 to 9.3%', grade: 'A', kind: 'Fact', src: 'Damodaran WACC by industry, January 2026' },
     { grp: 'economics', key: 'turnover_multiplier', label: 'Turnover multiplier on the band rates', t: NUM, range: 'x0.59 to x1.3', grade: 'B', kind: 'Fact, client overrides', src: 'Mercer band rates; JOLTS 2025 industry quits' },
+    { grp: 'economics', key: 'wage_growth', label: 'Wage growth per year', t: PCT, range: '2.5 to 4.5%', grade: 'A', kind: 'Fact', src: 'BLS Employment Cost Index, private industry, 12 months to Sep 2026: 3.4%' },
+    { grp: 'review', key: 'seniority_slope', label: 'Review rise per band of seniority (Professional = the measured review)', t: PCT, range: '5 to 40%', grade: 'D', kind: 'Judgment', src: 'Direction: Brynjolfsson et al. v2; Dell\u2019Acqua et al. 2026. No measured magnitude' },
     { grp: 'economics', key: 'on_cost', label: 'On-cost multiplier on salary', t: NUM, range: 'fixed', grade: 'A', kind: 'Fact', src: 'BLS ECEC June 2026, Table 5, full-time private: 1/(68.5% + 8.1%)' },
     { grp: 'economics', key: 'cost_per_hire', label: 'Cost per hire avoided, $', t: NUM, range: '$4,100 to $10,000', grade: 'B', kind: 'Fact', src: 'SHRM benchmarking' },
     { grp: 'costs', key: 'build_workflow', label: 'Build cost, single-role workload, $', t: NUM, range: 'x0.85 to x1.6', grade: 'C', kind: 'Measure in pilot', src: 'Team cost build-up' },
@@ -56,7 +58,7 @@
     { grp: 'costs', key: 'seat_cost_per_position', label: 'Software seat reclaimed per position, $ per year', t: NUM, range: '$0 to $2,000', grade: 'B', kind: 'Fact, client adds tools', src: 'Microsoft 365 E3 list price from July 2026' }
   ];
   const LINE = {
-    hard: ['Positions not refilled or removed', 'Role salary x on-cost 1.3055 (BLS ECEC)', 'A'],
+    hard: ['Positions not refilled or removed', 'Role salary x on-cost 1.3055 (BLS ECEC), growing 3.4% a year (BLS ECI)', 'A'],
     seats_reclaimed: ['Software seats reclaimed', 'Positions x $468 (M365 E3)', 'B'],
     recruit_avoided: ['Recruiting avoided', 'Leavers not replaced x cost per hire (SHRM)', 'B'],
     build: ['Build', 'Workloads x $55k or $130k (team build-up)', 'C'],
@@ -74,7 +76,8 @@
     active_use: ['Assistant active use', v => P(v)], aug_mult: ['Assistant time saving', v => `x${F(v, 2)}`],
     cost_mult: ['Build and programme cost', v => `x${F(v, 2)}`], run_mult: ['AI running cost', v => `$${F(3.48 * v, 2)}/h`],
     drag: ['Complexity drag', v => F(v, 2)], turnover_mult: ['Staff turnover', v => `x${F(v, 2)}`], harvest_automation: ['Harvest share (policy)', v => P(v)],
-    training_refresh: ['Training refresher', v => `${P(v)} a year`]
+    training_refresh: ['Training refresher', v => `${P(v)} a year`], wage_growth: ['Wage growth', v => `${P(v, 1)} a year`],
+    review_slope: ['Review rise with seniority', v => `${P(v)} per band`]
   };
 
   // ------------------------------------------------------------ inputs
@@ -89,6 +92,7 @@
     Object.assign(p.economics, state.edits.economics);
     Object.assign(p.costs, state.edits.costs);
     p.capacity = Object.assign({}, p.capacity, state.edits.capacity);
+    p.review = Object.assign({}, p.review, state.edits.review);
     return [d, p];
   }
   function choices(p, scen, pol) {
@@ -197,7 +201,7 @@
     const drag = S.drag == null ? p.nonlinear.complexity_drag : S.drag;
     const why = {
       cat: 'Directive and Feedback Loop tasks', able: 'Etter category ceilings', scope: 'AI costs less than the work it takes over',
-      take: `AI takes over ${P(S.takeover)} of it`, review: `people check ${P(S.review)} of AI time`, drag: `remaining work is harder (drag ${F(drag, 2)})`,
+      take: `AI takes over ${P(S.takeover)} of it`, review: `people check ${P(S.review)} of AI time at Professional level, more for senior roles`, drag: `remaining work is harder (drag ${F(drag, 2)})`,
       pos: Q.harvest_automation === 0 && Q.harvest_augmentation === 0 ? 'policy: no reductions' : Q.mechanism === 'attrition' ? `bank ${P(Q.harvest_automation)}, whole positions, as people leave` : `bank ${P(Q.harvest_automation)} of it, plus ${P(Q.harvest_augmentation)} of assistant time`
     };
     const mx = Math.max(...funnel.map(f => f.fte), 1);
@@ -347,7 +351,7 @@
     $('gate-sub').textContent = `Run the top ${pilot.length} workloads for ${p.programme.pilot_evaluation_months} months, measure, then decide on the rest.`;
     const v = mc && mc.done ? E.decide(mc.pPos, Q) : null;
     $('gate').innerHTML = `<div><span class="label">Pilot workloads</span><ul class="plain">${pilot.map(x => `<li>${esc(cap1(x.name))}</li>`).join('') || '<li>None pass the cost test at this size</li>'}</ul></div>
-      <div><span class="label">Go/no-go threshold</span><p>Scale if the pilot shows a net realisation of at least <b>${be == null ? 'n/a (not reachable)' : P(be, 1)}</b>. This run assumes ${P(net, 1)}: AI takes over ${P(S.takeover)} and people check ${P(S.review)} of its time.</p></div>
+      <div><span class="label">Go/no-go threshold</span><p>Scale if the pilot shows a net realisation of at least <b>${be == null ? 'n/a (not reachable)' : P(be, 1)}</b>. This run assumes ${P(net, 1)}: AI takes over ${P(S.takeover)} and people check ${P(S.review)} of its time (Professional level; senior roles check more).</p></div>
       <div><span class="label">Measure for ${p.programme.pilot_evaluation_months} months</span><ul class="plain"><li>Share of each workload’s hours the AI handles end to end</li><li>Minutes people spend checking each AI hour</li><li>Weeks from go-live to steady use</li><li>Actual build and running cost per workload</li></ul></div>
       <div><span class="label">If the pilot misses</span><p>${cur.gate.applies ? `The programme stops in month ${cur.gate.month}: AI off, the work comes back and any positions removed are refilled. Trying and stopping costs <b>${Mabs(-cur.stopped.headline)}</b>, mostly training already given.${mc ? ` In ${P(mc.pStop)} of simulated futures the pilot misses and the programme stops; the odds above include them.` : ''}` : 'No cash gate applies: nothing is turned into positions, so there is no cash pass mark.'}</p></div>
       <div><span class="label">When a gate is worth it</span><p class="note">Experiments on this data: a gate adds value when the chance of positive cash is between about 40% and 70%. Above that, roll out in waves without pausing. Below it, do not start.${v ? ` Here it is ${P(mc.pPos)}: ${esc(v[1])}` : ''}</p></div>`;
@@ -395,6 +399,7 @@
     if (item.grp === 'policy') return cur.Q[item.key];
     if (item.grp === 'economics') return p.economics[item.key] == null ? 0 : p.economics[item.key];
     if (item.grp === 'capacity') return (p.capacity || {})[item.key] || 0;
+    if (item.grp === 'review') return (p.review || {})[item.key] || 0;
     return p.costs[item.key];
   }
   function renderRegister() {

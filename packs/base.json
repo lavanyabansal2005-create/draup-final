@@ -47,7 +47,8 @@
     "horizon_months": 60,
     "cost_per_hire": 4700,
     "function_growth": 0.0,
-    "turnover_multiplier": 1.0
+    "turnover_multiplier": 1.0,
+    "wage_growth": 0.034
   },
   "costs": {
     "build_workflow": 55000,
@@ -133,6 +134,9 @@
   "capacity": {
     "min_block_share": 0.05
   },
+  "review": {
+    "seniority_slope": 0.2
+  },
   "uncertainty": {
     "execution_correlation": 0.5,
     "params": {
@@ -199,6 +203,18 @@
         "median": 0.25,
         "p10": 0.1,
         "p90": 0.5
+      },
+      "wage_growth": {
+        "dist": "logitnormal",
+        "median": 0.034,
+        "p10": 0.025,
+        "p90": 0.045
+      },
+      "review_slope": {
+        "dist": "logitnormal",
+        "median": 0.2,
+        "p10": 0.05,
+        "p90": 0.4
       }
     }
   }

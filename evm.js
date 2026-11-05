@@ -6,6 +6,12 @@
     'Learning': 'augment', 'Validation': 'augment', 'Negligibility': 'human' };
   const COST_LINES = ['build', 'programme', 'training', 'licences', 'run', 'maintenance', 'severance'];
   const CASH_LINES = ['hard', 'seats_reclaimed', 'recruit_avoided'];
+  const BAND_RANK = { 'Para-professional': 0, 'Professional': 1, 'Management': 2, 'Executive': 3 };
+  // Review load for a band: the measured review (Professional anchor) scaled up with seniority.
+  function reviewOf(S, band, pack) {
+    const slope = S.review_slope != null ? S.review_slope : ((pack.review || {}).seniority_slope || 0.0);
+    return Math.min(0.95, S.review * (1 + slope * ((band in BAND_RANK ? BAND_RANK[band] : 1) - 1)));
+  }
 
   const norm = s => s.trim().toLowerCase().split(' & ').join(' and ').split(/\s+/).filter(Boolean).join(' ');
 
@@ -116,12 +122,14 @@
     rule = rule || 'cost_effective';
     const P = prep.pack, E = P.economics, C = P.costs;
     const T = horizon || E.horizon_months, d = E.discount_rate;
-    const net = S.takeover * (1 - S.review), lead = C.build_lead_months;
+    const lead = C.build_lead_months;
     let ann = 0; for (let m = 1; m <= T; m++) ann += smoothstep((m - lead) / S.adopt_months) * df(m, d);
     const ranked = [];
     const rm = S.run_mult == null ? 1.0 : S.run_mult;
     for (const X of prep.workloads.values()) {
-      const benefit = X.value * net;
+      // work taken over, at cost, net of each role's own review load
+      let benefit = 0;
+      for (const n of X.roles) { const R = prep.roles[n]; benefit += R.N * R.auto.get(X.name) * R.rate * S.takeover * (1 - reviewOf(S, R.band, P)); }
       // build custom vs buy vendor: keep the option with the higher NPV at cost (buy only if strictly better)
       const opts = [];
       const upB = X.build * S.cost_mult;
@@ -190,7 +198,7 @@
     if (!o.auto_on) chosen = [];
     const golive = o.golive != null ? Object.assign({}, o.golive) : schedule(prep, chosen, o.schedule);
     const built = new Set(chosen.map(x => x.name));
-    const lead = C.build_lead_months, net = S.takeover * (1 - S.review);
+    const lead = C.build_lead_months;
     const roles = prep.roleOrder.map(n => prep.roles[n]);
     const augStart = A.rollout_start_month;
     const runRate0 = C.run_cost_per_ai_hour * (S.run_mult == null ? 1.0 : S.run_mult) * S.cost_mult;
@@ -199,6 +207,8 @@
     const fix = !o.legacy;                    // legacy=true reproduces the earlier engine (no fixes 1-3)
     const block = fix ? ((P.capacity || {}).min_block_share || 0.0) : 0.0;
     const refresh = fix ? (S.training_refresh != null ? S.training_refresh : (C.training_refresh_per_year || 0.0)) : 0.0;
+    const wageG = S.wage_growth != null ? S.wage_growth : (E.wage_growth || 0.0);
+    const netOf = {}; for (const n of prep.roleOrder) netOf[n] = S.takeover * (1 - reviewOf(S, prep.roles[n].band, P));
     const upFront = x => x.up_base != null ? x.up_base * S.cost_mult : x.build * S.cost_mult;
     const maintShare = x => x.maint_share != null ? x.maint_share : C.maintenance_share_per_year;
     const builtMap = new Map(chosen.map(x => [x.name, x]));
@@ -207,7 +217,7 @@
     const st = {};
     for (const R of roles) {
       let sa = 0; for (const [w, a] of R.auto) if (built.has(w)) sa += a;
-      let fa = R.N * sa * net / R.H;
+      let fa = R.N * sa * netOf[R.role] / R.H;
       let fg = o.aug_on ? (R.N * R.aug * S.active_use * S.aug_mult / R.H) : 0.0;
       const y = R.N ? (fa + fg) / R.N : 0.0;
       fa *= (1 - kap * y); fg *= (1 - kap * y);
@@ -242,13 +252,14 @@
     for (const R of roles) { prevP[R.role] = 0; prevAv[R.role] = 0; histP[R.role] = [0]; }
     for (let m = 1; m <= T; m++) {
       const decay = Math.pow(1 - C.run_cost_decline_per_year, m / 12);
+      const wi = Math.pow(1 + wageG, m / 12);    // wage index: everything priced off pay grows with it
       for (const R of roles) {
         const s = st[R.role], nm = R.role, src = 'role: ' + nm;
         let faH = 0, aiTot = 0;
         for (const [w, a] of R.auto) {
           if (built.has(w)) {
             const ad = m < stop ? ramp((m - golive[w]) / S.adopt_months) : 0.0;
-            faH += R.N * a * net * ad;
+            faH += R.N * a * netOf[nm] * ad;
             const aiH = R.N * a * S.takeover * ad;
             aiTot += aiH;
             if (aiH) { const cost = aiH * runRateOf(w) * decay; ser.run[m] += cost; book('run', 'workload: ' + w, m, cost); }
@@ -282,11 +293,11 @@
         const capH = Math.max(0.0, leftH - block * R.H * heads);
         const strH = leftH - capH;
         const newP = Pm - prevP[nm], newAv = Math.max(0, Av - prevAv[nm]);
-        const items = [['hard', Pm * R.C / 12], ['seats_reclaimed', Pm * R.seat_cost / 12],
-          ['avoidance', Av * R.C / 12 + newAv * E.cost_per_hire], ['capacity', capH * R.rate],
+        const items = [['hard', Pm * R.C * wi / 12], ['seats_reclaimed', Pm * R.seat_cost / 12],
+          ['avoidance', Av * R.C * wi / 12 + newAv * E.cost_per_hire], ['capacity', capH * R.rate * wi],
           ['licences', seats * C.assistant_licence_per_seat_year / 12 * S.cost_mult]];
         if (Q.mechanism === 'attrition' || newP < 0) items.push(['recruit_avoided', newP * E.cost_per_hire]);   // a position that comes back is a hire
-        else items.push(['severance', newP * Q.severance_weeks * R.S / 52]);
+        else items.push(['severance', newP * Q.severance_weeks * R.S * wi / 52]);
         // training: everyone at first exposure; then joiners as they arrive and a yearly refresher
         const ex = s.exposed; let trained = 0.0;
         if (ex != null && ex < stop) {
@@ -298,7 +309,7 @@
             trained = joiners + (m > t0 + 12 ? heads * refresh / 12 : 0.0);
           }
         }
-        if (trained) items.push(['training', trained * (C.training_spend_per_head + C.training_hours_per_head * R.rate)]);
+        if (trained) items.push(['training', trained * (C.training_spend_per_head + C.training_hours_per_head * R.rate * wi)]);
         for (const [line, amt] of items) if (amt) { ser[line][m] += amt; book(line, src, m, amt); }
         ser.freed_h[m] += Fh; ser.reduced_h[m] += Pm * R.H; ser.absorbed_h[m] += Av * R.H; ser.capacity_h[m] += capH; ser.stranded_h[m] += strH;
         ser.capacity_fte[m] += capH / R.H; ser.stranded_fte[m] += strH / R.H; ser.trained[m] += trained;
@@ -443,13 +454,14 @@
   function funnel(prep, S, r) {
     const roles = prep.roleOrder.map(n => prep.roles[n]);
     const built = new Set(r.chosen.map(x => x.name));
-    let cat = 0, able = 0, sc = 0;
+    let cat = 0, able = 0, sc = 0, rev = 0;
     for (const R of roles) {
       cat += R.N * ((R.hours_by_cat['Directive'] || 0) + (R.hours_by_cat['Feedback Loop'] || 0)) / R.H;
       able += R.N * R.auto_share;
       let s = 0; for (const [w, a] of R.auto) if (built.has(w)) s += a; sc += R.N * s / R.H;
+      rev += R.N * s / R.H * S.takeover * (1 - reviewOf(S, R.band, prep.pack));
     }
-    const take = sc * S.takeover, rev = take * (1 - S.review);
+    const take = sc * S.takeover;
     const drag = r.roles.reduce((a, x) => a + x.auto_fte, 0);
     return [{ key: 'cat', stage: 'Hours in AI categories', fte: cat }, { key: 'able', stage: 'AI-able (Etter ceilings)', fte: able },
       { key: 'scope', stage: 'In workloads worth building', fte: sc }, { key: 'take', stage: 'AI takes over', fte: take },
@@ -509,7 +521,7 @@
     };
   }
 
-  const EVM = { RNG, prepare, scope, schedule, sizeToPeak, simulate, drawScenario, pilotGate, montecarlo, breakevenNet, decide, sensitivity,
+  const EVM = { RNG, reviewOf, prepare, scope, schedule, sizeToPeak, simulate, drawScenario, pilotGate, montecarlo, breakevenNet, decide, sensitivity,
     scenario, policy, funnel, report, quantile, pv, clone, norm };
   if (typeof module !== 'undefined' && module.exports) module.exports = EVM; else root.EVM = EVM;
 })(typeof window !== 'undefined' ? window : globalThis);

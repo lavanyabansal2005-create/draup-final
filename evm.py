@@ -14,7 +14,7 @@ Pipeline:
                option is kept, and the workload passes only if the AI costs less than the work it
                takes over (cost-effectiveness test, policy independent). Passing workloads join the
                programme in rank order until five-year cash peaks (size_to_peak).
-  4 Realised   takeover x (1 - review), S-curve adoption from go-live, complexity drag
+  4 Realised   takeover x (1 - review, rising with seniority), S-curve adoption from go-live, complexity drag
                (the work left behind is harder), phased go-live schedule.
   5 Routing    freed hours go to exactly one destination: fewer positions (policy, attrition
                paced), hires avoided (planned growth absorbed), released capacity, or stranded
@@ -32,6 +32,13 @@ CAT_TYPE = {'Directive': 'automate', 'Feedback Loop': 'automate',
             'Negligibility': 'human'}
 COST_LINES = ['build', 'programme', 'training', 'licences', 'run', 'maintenance', 'severance']
 CASH_LINES = ['hard', 'seats_reclaimed', 'recruit_avoided']
+BAND_RANK = {'Para-professional': 0, 'Professional': 1, 'Management': 2, 'Executive': 3}
+
+
+def review_of(S, band, pack):
+    """Review load for a band: the measured review (Professional anchor) scaled up with seniority."""
+    slope = S.get('review_slope', pack.get('review', {}).get('seniority_slope', 0.0))
+    return min(0.95, S['review'] * (1 + slope * (BAND_RANK.get(band, 1) - 1)))
 
 
 def norm(s):
@@ -178,11 +185,14 @@ def scope(prep, S, rule='cost_effective', top_k=None, horizon=None):
     Default rule builds every workload whose AI costs less than the work it takes over."""
     P = prep['pack']; E = P['economics']; C = P['costs']
     T = horizon or E['horizon_months']; d = E['discount_rate']
-    net = S['takeover'] * (1 - S['review']); lead = C['build_lead_months']
+    lead = C['build_lead_months']
     ann = sum(smoothstep((m - lead) / S['adopt_months']) * df(m, d) for m in range(1, T + 1))
     ranked = []
+    roles = prep['roles']
     for X in prep['workloads'].values():
-        benefit = X['value'] * net
+        # work taken over, at cost, net of each role's own review load
+        benefit = sum(roles[n]['N'] * roles[n]['auto'][X['name']] * roles[n]['rate'] * S['takeover']
+                      * (1 - review_of(S, roles[n]['band'], P)) for n in X['roles'])
         opts = []
         # build custom
         rate_b = C['run_cost_per_ai_hour'] * S['cost_mult'] * S.get('run_mult', 1.0)
@@ -262,7 +272,6 @@ def simulate(prep, S, Q, opts=None):
     golive = dict(o['golive']) if o['golive'] is not None else schedule(prep, chosen, o['schedule'])
     built = {x['name']: x for x in chosen}
     lead = C['build_lead_months']
-    net = S['takeover'] * (1 - S['review'])
     roles = list(prep['roles'].values())
     aug_start = A['rollout_start_month']
     run_rate0 = C['run_cost_per_ai_hour'] * S.get('run_mult', 1.0) * S['cost_mult']
@@ -270,11 +279,13 @@ def simulate(prep, S, Q, opts=None):
     fix = not o['legacy']                      # legacy=True reproduces the earlier engine (no fixes 1-3)
     block = P.get('capacity', {}).get('min_block_share', 0.0) if fix else 0.0
     refresh = S.get('training_refresh', C.get('training_refresh_per_year', 0.0)) if fix else 0.0
+    wage_g = S.get('wage_growth', E.get('wage_growth', 0.0))
+    net_of = {R['role']: S['takeover'] * (1 - review_of(S, R['band'], P)) for R in prep['roles'].values()}
 
     # steady state (everything chosen live, fully adopted) -> position targets
     st = {}
     for R in roles:
-        fa = R['N'] * sum(a for w, a in R['auto'].items() if w in built) * net / R['H']
+        fa = R['N'] * sum(a for w, a in R['auto'].items() if w in built) * net_of[R['role']] / R['H']
         fg = (R['N'] * R['aug'] * S['active_use'] * S['aug_mult'] / R['H']) if o['aug_on'] else 0.0
         y = (fa + fg) / R['N'] if R['N'] else 0.0
         fa *= (1 - kap * y); fg *= (1 - kap * y)
@@ -317,13 +328,14 @@ def simulate(prep, S, Q, opts=None):
     histP = {R['role']: [0] for R in roles}    # positions by month, for licence true-down
     for m in range(1, T + 1):
         decay = (1 - C['run_cost_decline_per_year']) ** (m / 12)
+        wi = (1 + wage_g) ** (m / 12)              # wage index: everything priced off pay grows with it
         for R in roles:
             s = st[R['role']]; nm = R['role']; src = 'role: ' + nm
             fa_h = 0.0; ai_h_tot = 0.0
             for w, a in R['auto'].items():
                 if w in built:
                     ad = ramp((m - golive[w]) / S['adopt_months']) if m < stop else 0.0
-                    fa_h += R['N'] * a * net * ad
+                    fa_h += R['N'] * a * net_of[nm] * ad
                     ai_h = R['N'] * a * S['takeover'] * ad
                     ai_h_tot += ai_h
                     if ai_h:
@@ -361,14 +373,14 @@ def simulate(prep, S, Q, opts=None):
             str_h = left_h - cap_h
             # money, booked to the role it comes from
             newP = Pm - prevP[nm]; newAv = max(0, Av - prevAv[nm])
-            items = [('hard', Pm * R['C'] / 12), ('seats_reclaimed', Pm * R['seat_cost'] / 12),
-                     ('avoidance', Av * R['C'] / 12 + newAv * E['cost_per_hire']),
-                     ('capacity', cap_h * R['rate']),
+            items = [('hard', Pm * R['C'] * wi / 12), ('seats_reclaimed', Pm * R['seat_cost'] / 12),
+                     ('avoidance', Av * R['C'] * wi / 12 + newAv * E['cost_per_hire']),
+                     ('capacity', cap_h * R['rate'] * wi),
                      ('licences', seats * C['assistant_licence_per_seat_year'] / 12 * S['cost_mult'])]
             if Q['mechanism'] == 'attrition' or newP < 0:     # a position that comes back is a hire
                 items.append(('recruit_avoided', newP * E['cost_per_hire']))
             else:
-                items.append(('severance', newP * Q['severance_weeks'] * R['S'] / 52))
+                items.append(('severance', newP * Q['severance_weeks'] * R['S'] * wi / 52))
             # training: everyone at first exposure; then joiners as they arrive and a yearly refresher
             ex = s['exposed']; trained = 0.0
             if ex is not None and ex < stop:
@@ -381,7 +393,7 @@ def simulate(prep, S, Q, opts=None):
                     trained = joiners + (heads * refresh / 12 if m > t0 + 12 else 0.0)
             if trained:
                 items.append(('training', trained * (C['training_spend_per_head']
-                                                     + C['training_hours_per_head'] * R['rate'])))
+                                                     + C['training_hours_per_head'] * R['rate'] * wi)))
             for line, amt in items:
                 if amt:
                     ser[line][m] += amt; book(line, src, m, amt)
@@ -581,7 +593,8 @@ def funnel(prep, S, r):
     able = sum(R['N'] * R['auto_share'] for R in roles)
     scope_ = sum(R['N'] * sum(a for w, a in R['auto'].items() if w in built) / R['H'] for R in roles)
     take = scope_ * S['takeover']
-    rev = take * (1 - S['review'])
+    rev = sum(R['N'] * sum(a for w, a in R['auto'].items() if w in built) / R['H'] * S['takeover']
+              * (1 - review_of(S, R['band'], prep['pack'])) for R in roles)
     drag = sum(x['auto_fte'] for x in r['roles'])
     return [dict(key='cat', stage='Hours in AI categories', fte=cat_h),
             dict(key='able', stage='AI-able (Etter ceilings)', fte=able),

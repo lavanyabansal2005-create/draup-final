@@ -99,7 +99,6 @@
   },
   "economics.wage_growth": {
     "status": "sourced",
-    "proposed_new_key": true,
     "default": 0.034,
     "p10": 0.025,
     "p90": 0.045,
@@ -107,7 +106,8 @@
     "url": "https://www.bls.gov/news.release/pdf/eci.pdf",
     "verified": "2026-11-04",
     "reconciles": "Compensation costs for private industry workers rose 3.4% (not seasonally adjusted) for the 12 months ending September 2026.",
-    "note": "Fixes the asymmetry flagged in review: run cost declines 13%/yr while salaries sit flat for 60 months under a nominal discount rate. Understates savings."
+    "note": "Fixes the asymmetry flagged in review: run cost declines 13%/yr while salaries sat flat for 60 months under a nominal discount rate. 0 reproduces the earlier model exactly.",
+    "applies_to": "evm.py simulate(): wage index (1 + wage_growth)^(m/12) on salaries no longer paid, loaded cost of hires avoided, capacity at cost, severance and the hours part of training. Cost per hire, seats and licences stay flat. The cost test in scope() stays at today's prices on both sides (it also ignores the running-cost decline)."
   },
   "uncertainty.params.takeover": {
     "status": "sourced",
@@ -182,6 +182,26 @@
       "pdf": "2304.11771v2.pdf p1, p21",
       "use": "Independent evidence that unreviewed AI output degrades quality for senior staff. Supports a review share that rises with band, which the pack does not currently model."
     }
+  },
+  "review.seniority_slope": {
+    "status": "judgment",
+    "default": 0.2,
+    "p10": 0.05,
+    "p90": 0.4,
+    "applies_to": "evm.py review_of(): review_band = min(0.95, review x (1 + slope x (rank - 1))), rank Para-professional 0, Professional 1, Management 2, Executive 3. Each role's freed hours and the cost test use takeover x (1 - review_band); the pass mark, break-even and gate keep the Professional anchor takeover x (1 - review).",
+    "direction_evidence": [
+      {
+        "citation": "Brynjolfsson, Li & Raymond, 'Generative AI at Work', v2 (7 Nov 2024)",
+        "finding": "Most skilled agents: no productivity gain and small but significant quality declines; least skilled: +36%.",
+        "pdf": "2304.11771v2.pdf p1, p20, p21"
+      },
+      {
+        "citation": "Dell'Acqua et al., 'Navigating the Jagged Technological Frontier', Organization Science (2026)",
+        "finding": "Outside the frontier (a complex managerial task) AI users were 19 percentage points less likely to produce correct solutions.",
+        "pdf": "4573321.pdf p2, p3"
+      }
+    ],
+    "note": "Direction evidenced, magnitude judgment. 0.2 gives 0.24 / 0.30 / 0.36 / 0.42 at review 0.30. 0 reproduces the flat-review model exactly. Swing P10-P90 on the headline ranks it in the tornado's top ten (rule 6)."
   },
   "uncertainty.params.takeover.downside_anchor": {
     "status": "sourced",
@@ -555,6 +575,22 @@
     "p90": 0.5,
     "note": "Uncertainty wrapper on costs.training_refresh_per_year; inherits that entry's lack of a source."
   },
+  "uncertainty.params.wage_growth.*": {
+    "status": "sourced",
+    "default": 0.034,
+    "p10": 0.025,
+    "p90": 0.045,
+    "source": "BLS Employment Cost Index, private industry; range brackets recent 12-month changes",
+    "url": "https://www.bls.gov/news.release/pdf/eci.pdf",
+    "note": "Uncertainty wrapper on economics.wage_growth."
+  },
+  "uncertainty.params.review_slope.*": {
+    "status": "judgment",
+    "default": 0.2,
+    "p10": 0.05,
+    "p90": 0.4,
+    "note": "Uncertainty wrapper on review.seniority_slope; inherits that entry's lack of a magnitude source."
+  },
   "_unsourced_by_design": [
     "nonlinear.complexity_drag",
     "costs.build_workflow",
@@ -563,7 +599,8 @@
     "costs.deploy_per_affected_head",
     "economics.standard_task_hours_month",
     "capacity.min_block_share",
-    "costs.training_refresh_per_year"
+    "costs.training_refresh_per_year",
+    "review.seniority_slope"
   ],
   "_policy_not_empirical": [
     "policies.*.harvest_automation",
