@@ -158,3 +158,52 @@ Workloads (45) and positions (59) do not change. The chance of positive cash fal
 ## Not changed
 
 Ceilings (open question 1), tax (open question 2), terminal value (open question 3), wage escalation, review by band, and productive hours by level are untouched. They remain listed in the working agreement.
+
+---
+
+# Addendum: wage growth and review by seniority
+
+**Status:** specified 5 November 2026, before the engine change, on the user's decision to add both (working agreement, rule 1).
+**Headline effect (prototype):** about **$6.15M → $7.02M**. Wage growth adds about $1.9M. Review by seniority takes about $1.05M off and shrinks the programme from 45 to 35 workloads. The exact figure goes in `tests/reference.json` once the engine is built.
+
+Both close gaps already listed in the working agreement ("no wage escalation"; "`review` is a flat 0.30 across all bands"). Both pass rule 6 in the prototype: each P10–P90 swing ranks 8th or 9th of 13 in the tornado.
+
+## 6. Wage growth
+
+**Finding.** Salaries stay flat for 60 months while running cost falls 13% a year, under a nominal discount rate. That asymmetry understates savings, and the source book already says so (`economics.wage_growth`).
+
+**Rule.** A wage index `w_m = (1 + wage_growth)^(m/12)` multiplies everything priced off pay:
+
+```
+salaries no longer paid   = positions × loaded cost / 12 × w_m
+hires avoided (loaded)    = avoided × loaded cost / 12 × w_m       (the cost per hire stays flat)
+capacity at cost          = capacity hours × hourly rate × w_m
+severance                 = new positions × weeks × salary / 52 × w_m
+training                  = people trained × (spend + hours × hourly rate × w_m)
+```
+
+The cost test (which workloads pass) stays at today's prices on both sides. It already ignores the running-cost decline, so adding one trend without the other would bias it.
+
+**Default.** `economics.wage_growth = 0.034`, status **sourced**: BLS Employment Cost Index, private industry compensation, 12 months to September 2026 (already in `sources.json`). Spread in `uncertainty.params.wage_growth`: P10 0.025, P90 0.045. Setting it to 0 gives the previous model exactly.
+
+## 7. Review rises with seniority
+
+**Finding.** `review` is one number for every band. Brynjolfsson et al. (v2) find no productivity gain and small quality declines for the most skilled agents, and the largest gains for the least skilled. Dell'Acqua et al. find that, outside the frontier, AI users were 19 percentage points less likely to produce correct solutions on a complex managerial task. Both point the same way: unreviewed output costs more the more senior the work, so senior work needs more checking. Neither gives a magnitude.
+
+**Rule.** The measured `review` stays the single uncertain quantity, anchored at the Professional band, which holds 1,119 of 1,523 people. A slope scales it by band:
+
+```
+review_band = min(0.95, review × (1 + slope × (rank − 1)))      rank: Para-professional 0, Professional 1, Management 2, Executive 3
+net_band    = takeover × (1 − review_band)
+```
+
+At the default slope of 0.2 this gives review 0.24 / 0.30 / 0.36 / 0.42. Each role's own `net_band` sets its freed hours, and the cost test values each workload role by role. The pilot pass mark, the break-even and the gate keep using the Professional anchor, `takeover × (1 − review)`, so "net realisation" still means one measurable number.
+
+**Default.** `review.seniority_slope = 0.2`, status **judgment**. The direction is evidenced; the magnitude is not. Spread in `uncertainty.params.review_slope`: P10 0.05, P90 0.40. Setting it to 0 gives the previous model exactly.
+
+**What it does.** Agent work in management roles frees less, so fewer workloads pay for themselves and the peak-cash programme shrinks from 45 to about 35 workloads. Positions fall from 59 to about 56. The peak-cash size table in the workbook is recomputed.
+
+## Kept reproducible
+
+- Both new parameters at 0 reproduce the model before this addendum, and `legacy=True` with both at 0 reproduces the pre-review and v0 engines. Those tests pass the zeros explicitly.
+- Workbook: a wage-index column on the Timeline, a review-by-band and net-by-band column on Roles, a freed-value column on Tasks, a wage-growth input and a slope row in the scenario dials.
