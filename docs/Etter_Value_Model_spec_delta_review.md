@@ -2,7 +2,7 @@
 
 **Status:** specified 5 November 2026, before any engine change (working agreement, rule 1).
 **Scope:** five points raised in a finance review of the final model. Four change numbers; one (discounted payback) adds an output.
-**Headline effect:** cash NPV at the default (FP&A, Moderate, Attrition only) moves from **$9,376,169.02** to **about $6.15M**. The two training fixes cause the whole fall. The capacity fix does not touch cash. The exact figure is fixed in `tests/reference.json` once the engine is built.
+**Headline effect:** cash NPV at the default (FP&A, Moderate, Attrition only) moves from **$9,376,169.02** to **$6,145,867.38** (`tests/reference.json`). The two training fixes cause the whole fall. The capacity fix does not touch cash.
 
 | # | Finding | Fix | Kind | Moves cash? |
 |---|---|---|---|---|
@@ -128,10 +128,10 @@ stop at gate if the future's takeover × (1 − review) < pass mark
 
 No new parameter: the gate month and the pass mark come from inputs already in the pack. The deterministic headline does not stop, because Moderate passes the gate.
 
-**What it shows at the default (prototype numbers, fixed after build):**
-- About **30%** of futures stop at the gate. This is an output, not a calibration target. It sits on Gartner's forecast that at least 30% of GenAI projects would be abandoned after proof of concept by end-2025 (press release, 29 July 2024). S&P Global Market Intelligence reported that 42% of companies abandoned most AI initiatives in 2025.
-- A programme stopped at the gate loses about **$4.4M**, mostly the training already given. The pages report it as "cost of trying and stopping".
-- The gate trims the bad tail (P10 about −$7.6M without it, −$4.8M with it) and barely moves the chance of positive cash.
+**What it shows at the default (built engine, 1,000 draws):**
+- **27%** of futures stop at the gate. This is an output, not a calibration target. It sits on Gartner's forecast that at least 30% of GenAI projects would be abandoned after proof of concept by end-2025 (press release, 29 July 2024). S&P Global Market Intelligence reported that 42% of companies abandoned most AI initiatives in 2025.
+- A programme stopped at the gate loses **$4.44M**, mostly the training already given. The pages report it as "cost of trying and stopping".
+- The gate trims the bad tail (P10 −$7.49M without it, −$4.78M with it), raises the mean (+$3.75M → +$4.08M), and barely moves the chance of positive cash (61.3% → 59.8%).
 
 This gives the acceptance criterion its other route: an unfavourable answer can now come from the programme failing in a share of futures, and the report says how often and what it costs.
 
@@ -147,7 +147,7 @@ This gives the acceptance criterion its other route: an unfavourable answer can 
 | + refresher 25% a year | $6,145,867 | 37 / 39 |
 | + capacity floor, stop path, gate | $6,145,867 (cash unchanged) | 37 / 39 |
 
-Workloads (45) and positions (59) do not change. The chance of positive cash falls from 75% to about 56%, so the verdict at the default moves from **Go** to **Pilot first**. Joiner training alone is enough to cross the 70% line, and that fix is structural, not a judgment.
+Workloads (45) and positions (59) do not change. The chance of positive cash falls from 75% to 60%, so the verdict at the default moves from **Go** to **Pilot first**. Joiner training alone is enough to cross the 70% line, and that fix is structural, not a judgment.
 
 ## Kept reproducible
 

@@ -50,12 +50,13 @@
       },
       "which_is_authoritative": "The Tasks sheet column is the per-row data actually shipped on all 420 rows, and the How to use it sheet reproduces it. The Read me table disagrees with it on five of six categories; only Negligibility agrees (both 0.10).",
       "priced_impact_5y_cash_npv": {
-        "pack": "$9.38M",
-        "read_me_table": "$9.75M",
-        "tasks_column": "$5.80M",
-        "coarse_bucket_ceiling": "$11.48M"
+        "pack": "$6.15M",
+        "read_me_table": "$6.53M",
+        "tasks_column": "$2.52M",
+        "coarse_bucket_ceiling": "$8.28M",
+        "before_finance_review_fixes": "pack $9.38M, read me $9.75M, tasks column $5.80M, bucket $11.48M (legacy=True)"
       },
-      "what_moves_the_headline": "Only Directive and Feedback Loop. Assistant savings are the smaller of the category ceiling and the band rate, and the band rate tops out at 0.20, so it binds before any assistant ceiling does (every reading puts them at 0.25 or above). Task Iteration, Learning and Validation therefore disagree at zero financial cost: swapping in the Read me or bucket values leaves the headline at $9,376,169.02. Negligibility maps to Human and is never read.",
+      "what_moves_the_headline": "Only Directive and Feedback Loop. Assistant savings are the smaller of the category ceiling and the band rate, and the band rate tops out at 0.20, so it binds before any assistant ceiling does (every reading puts them at 0.25 or above). Task Iteration, Learning and Validation therefore disagree at zero financial cost: swapping in the Read me or bucket values leaves the headline at $6,145,867.38. Negligibility maps to Human and is never read.",
       "the_real_question": "The Directive / Feedback Loop pair. 0.90 for Directive matches the Read me table; 0.80 for Feedback Loop matches no table in the source (Read me 0.85, Tasks column 0.55). The question for Chandan is what 0.80 rests on.",
       "locked_by": "tests/test_ceiling_sets.py prices all four readings and asserts each headline.",
       "note": "A 2x spread on the headline from a choice the brief puts out of scope. This belongs in the validation pack as the first-named limitation, and in a question to Chandan."
@@ -257,7 +258,7 @@
     "default": 4700,
     "intended_source": "SHRM Talent Acquisition Benchmarking Report",
     "url": null,
-    "note": "Gated. Immaterial against a $9.38M NPV; mark client-supplied and move on."
+    "note": "Gated. Immaterial against a $6.15M NPV; mark client-supplied and move on."
   },
   "costs.training_spend_per_head": {
     "status": "client_supplied",

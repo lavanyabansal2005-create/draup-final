@@ -22,7 +22,7 @@ delta in `docs/` first, in the same session, before touching `evm.py`.
 If a change moves it, say so explicitly, state the new number and why, and update
 `reference.json` as its own commit. Never update it silently to make a test pass.
 
-**3. The full suite stays green.** `python3 -m unittest discover tests` — currently 27 tests.
+**3. The full suite stays green.** `python3 -m unittest discover tests` — currently 34 tests.
 Includes the five acceptance criteria from the brief. A red suite is never "fixed" by
 weakening an assertion.
 
@@ -55,7 +55,7 @@ one archetype must conclude the payback does not justify the programme.
 **11. The Excel workbook is the reproducibility artifact.** The brief requires that someone
 with a spreadsheet and no access to this code can reproduce the headline number in under an
 hour. `docs/Etter_Value_Model_FPA.xlsx` currently satisfies that — its Summary sheet carries
-$9,376,169.02, matching the engine to the cent. Any change that moves the headline must
+$6,145,867.38, matching the engine to the cent (and in five more cases, both paybacks included). Any change that moves the headline must
 regenerate that workbook in the same session. A stale workbook fails the requirement silently,
 which is worse than failing it loudly.
 
@@ -88,7 +88,7 @@ question 1 below. Do not "correct" it.
 ## Open questions for Chandan — do not resolve unilaterally
 1. **Ceilings.** The source workbook states the Etter potential ceilings twice and the two
    tables disagree on five of six categories (only Negligibility agrees, both 0.10). The pack matches neither. Priced on this engine
-   the readings give $5.80M / $9.38M / $9.75M / $11.48M of 5-year cash NPV. See
+   the readings give $2.52M / $6.15M / $6.53M / $8.28M of 5-year cash NPV ($5.80M / $9.38M / $9.75M / $11.48M before the 5 Nov finance-review fixes). See
    `packs/sources.json` → `categories.*.ceiling` → `CONFLICT`. The question is not "which table
    is right" — `engine_v2.py` shows we once used the shipped column, so the override to 90 / 80
    was intentional. The question is what it rests on, so it can go in the parameter book with a

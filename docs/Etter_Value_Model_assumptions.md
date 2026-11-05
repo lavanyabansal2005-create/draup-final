@@ -1,6 +1,6 @@
 # Etter Value Model — final list of assumptions
 
-**Version:** final model, 23 October 2026, with the agent ceilings set by Chandan in the review meeting (Directive 90%, Feedback Loop 80%) · **Default case:** Etter FP&A data (11 roles, 1,523 people, 420 tasks), Moderate scenario, Attrition only policy, cross-industry defaults, assistant tools on.
+**Version:** final model, 23 October 2026, with the agent ceilings set by Chandan in the review meeting (Directive 90%, Feedback Loop 80%); updated 5 November 2026 with the finance-review fixes (`Etter_Value_Model_spec_delta_review.md`) · **Default case:** Etter FP&A data (11 roles, 1,523 people, 420 tasks), Moderate scenario, Attrition only policy, cross-industry defaults, assistant tools on.
 **Where they live:** every number below is an input on the **Inputs** sheet of `Etter_Value_Model_FPA.xlsx` (blue text) and in the engine's parameter pack (`packs/base.json`). Change it there and the whole model follows.
 
 **Grades** — **A** official statistic or list price · **B** industry benchmark with a stated method · **C** indirect evidence or estimate · **D** thin evidence, replace first · **Policy** the company's choice, not an estimate · **Design** a modelling choice.
@@ -26,7 +26,7 @@
 |---|---|---|---|---|---|---|---|---|
 | 2.1 | **AI takeover**: share of AI-able work the agent actually does | 25% | **40%** | 60% | 20–62% | C | ✔ | Indirect: finance AI deployments report low-to-moderate impact (Gartner, May 2026); accounts payable, the most automated finance process, averages ~33% touchless (Ardent Partners 2025). |
 | 2.2 | **Human review**: hours people spend checking per 100 AI hours | 40% | **30%** | 20% | 15–45% | C | ✔ | Estimate; measured in the pilot as checking time per AI hour. |
-| 2.3 | **Net realisation** = takeover × (1 − review) | 15% | **28%** | 48% | — | derived | ✔ | The single number the answer turns on. Break-even at the default: **14.3%**. |
+| 2.3 | **Net realisation** = takeover × (1 − review) | 15% | **28%** | 48% | — | derived | ✔ | The single number the answer turns on. Break-even at the default: **19.7%**. |
 | 2.4 | Months to full use after go-live (S-curve) | 18 | **12** | 6 | 6–24 | C | ✔ | MIT NANDA, State of AI in Business 2025. |
 | 2.5 | Assistant active use (share of seat holders who save time) | 55% | **70%** | 85% | 50–85% | C | ✔ | Published weekly-active use of purchased assistant seats; estimate. |
 | 2.6 | Assistant saving multiplier | 0.50 | **1.00** | 1.25 | 0.4–1.6 | C | ✔ | Scales the band rates in 4.4. |
@@ -48,7 +48,7 @@
 | 3.5 | Severance | — | — | 12 weeks of base salary (outplacement not included) | Policy |
 | 3.6 | Freed time absorbs planned hires first (if the industry grows) | yes | **yes** | yes | Policy |
 
-Harvest share is the largest single driver: −$1.4M at 25% to +$20.5M at 75% (default case).
+Harvest share is the largest single driver: −$4.8M at 25% to +$17.4M at 75% (default case).
 
 ---
 
@@ -113,18 +113,18 @@ Assistant savings are the smaller of the category ceiling and the band rate, and
 
 | Reading | Directive / Feedback Loop | Cash NPV | vs pack | Workloads in programme | Positions at month 60 | Payback month |
 |---|---|---|---|---|---|---|
-| Tasks column (shipped data) | 0.85 / 0.55 | $5,800,227 | −$3.58M (−38%) | 36 | 47 | 36 |
-| **Pack (in use)** | **0.90 / 0.80** | **$9,376,169** | — | **45** | **59** | **33** |
-| Read me table | 0.90 / 0.85 | $9,754,377 | +$0.38M (+4%) | 41 | 60 | 32 |
-| Bucket ceiling | 1.00 / 1.00 | $11,476,089 | +$2.10M (+22%) | 37 | 66 | 30 |
+| Tasks column (shipped data) | 0.85 / 0.55 | $2,523,950 | −$3.62M (−59%) | 36 | 47 | 44 |
+| **Pack (in use)** | **0.90 / 0.80** | **$6,145,867** | — | **45** | **59** | **37** |
+| Read me table | 0.90 / 0.85 | $6,528,391 | +$0.38M (+6%) | 41 | 60 | 36 |
+| Bucket ceiling | 1.00 / 1.00 | $8,275,434 | +$2.13M (+35%) | 37 | 66 | 34 |
 
-High to low is a 2.0x spread on the headline, from an input the brief puts out of scope. The ceilings are not among the uncertainty draws, so the P10–P90 band (−$4.2M to +$21.2M) assumes the pack reading is correct. It does not cover this question.
+Repriced after the finance-review fixes (payback undiscounted; before the fixes the four readings were $5.80M / $9.38M / $9.75M / $11.48M). High to low is now a 3.3x spread on the headline, from an input the brief puts out of scope. The ceilings are not among the uncertainty draws, so the P10–P90 band (−$4.8M to +$17.3M) assumes the pack reading is correct. It does not cover this question.
 
 These four figures are locked in by `tests/test_ceiling_sets.py`. Changing the ceilings, or anything that moves their price, fails that test.
 
 #### Reproducing this in the workbook
 
-`docs/Etter_Value_Model_FPA.xlsx` reproduces all four figures to the dollar, with one catch. Programme size (Inputs B9) is the peak-cash size for the **default** ceilings (45 workloads), copied from the engine. Editing only the ceiling cells keeps 45 workloads and gives $5.49M / $9.56M / $11.27M for the other three readings. To match the engine, set the override (Inputs B8) to each size from 1 to 59 and take the highest cash NPV. The peaks are at 36, 41 and 37.
+`docs/Etter_Value_Model_FPA.xlsx` reproduces the pack reading to the cent. Programme size (Inputs B9) is the peak-cash size for the **default** ceilings (45 workloads), copied from the engine. To match the engine on the other three readings, set the override (Inputs B8) to their peak sizes, 36, 41 and 37, which the fixes did not move.
 
 ---
 
@@ -160,9 +160,10 @@ Grades: discount rates **A** (Damodaran, cost of capital by industry, January 20
 | 7.10 | Build lead time (cost spread over these months before go-live) | **3 months** | — | C | ✔ | Estimate. |
 | 7.11 | Programme setup, fixed (month 0) | **$75,000** | — | C | — | Forrester TEI of Microsoft 365 Copilot (full study). |
 | 7.12 | Deployment per person in every touched role (month 0) | **$623** | — | C | — | Forrester TEI, setup cost per seat. |
-| 7.13 | Training per person in every touched role (once) | **$846 + 16.7 hours** of the person's own time | — | B | — | ATD 2026 State of the Industry. Not scaled by the cost multiplier. |
+| 7.13 | Training per person in every touched role | **$846 + 16.7 hours** of the person's own time, for everyone at first use and for **every joiner** who replaces a leaver | — | B | — | ATD 2026 State of the Industry. Not scaled by the cost multiplier. Joiners = leavers − positions not refilled that month (all leavers under active reduction). |
 | 7.14 | Assistant licence | **$360 per seat a year** | — | A | — | Microsoft list price (unchanged since 2023). |
-| 7.15 | Assistant seats | headcount × active use, ramped in | — | derived | ✔ | — |
+| 7.15 | Assistant seats | **people in post** × active use, ramped in; trued down only at each contract anniversary (contract year k priced on positions at month 12k) | — | derived | ✔ | Annual seat commitments are reduced at renewal. Assistant time saved still uses the full headcount: the work does not shrink when positions go. |
+| 7.16 | Training refresher | **25% of the initial package a year** (about 4 hours and $212 per person), for people in post, from 12 months after first use | 10–50% | **D** | ✔ | Judgment; no measured rate. BCG *AI at Work 2025*: 79% of people with 5+ hours of training are regular users vs 67% with less. Ranks 7th of 11 in the tornado (+$7.5M → +$3.8M). |
 
 ---
 
@@ -189,16 +190,17 @@ Grades: discount rates **A** (Damodaran, cost of capital by industry, January 20
 
 | # | Assumption | Grade |
 |---|---|---|
-| 9.1 | **Every freed hour goes to exactly one place**: positions not refilled, hires avoided, or capacity. Checked every month (gap = 0). | Design |
+| 9.1 | **Every freed hour goes to exactly one place**: positions not refilled, hires avoided, capacity, or stranded slivers. Checked every month: largest gap 0.00000 hours, exact. | Design |
 | 9.2 | **Positions are whole numbers, rounded down per role.** (Pooling across a level is described in the deck's engine as an option, off by default; not in this package yet.) | Design |
 | 9.3 | Under attrition only, **a position goes only when someone leaves on their own**: positions ≤ people who have left so far = headcount × (1 − (1 − yearly rate)^(months ÷ 12)). | Design |
-| 9.4 | Positions follow programme progress (target × share of steady-state freed time reached), **never come back** once removed, and **never exceed the time actually freed**. | Design |
+| 9.4 | Positions follow programme progress (target × share of steady-state freed time reached), do not bounce back while the AI runs, and **never exceed the time actually freed**. If the AI is switched off (a stopped programme), the work comes back and the positions are refilled at the cost per hire. | Design |
 | 9.5 | Assistant time is not turned into positions under attrition only (minutes scattered across many people). | Policy |
 | 9.6 | **Cash, hires avoided and capacity are never added together.** | Design |
 | 9.7 | Capacity is valued at the hourly rate (at cost) and is real only if used; when cash is negative the model reports a **capacity hurdle** (share that must become real value to break even) instead of adding it. | Design |
+| 9.7a | **Smallest redeployable block: 5% of a person's month** (8 hours at 160, about 24 minutes a day). Leftover freed time per person in post below this is stranded and valued at zero; only time above it is capacity. Range 0–10%: capacity is $47.7M at 0, $13.2M at 5% and $0 at 10% on this data, because freed time is spread evenly across each role. Forrester TEI uses a flat 50% recapture instead, which is its house assumption. | **D** (judgment) |
 | 9.8 | Hires avoided count only if the industry has job growth; reported against the hiring plan, separate from cash. Headline = plan NPV if the industry grows, else cash NPV. | Design |
 | 9.9 | Discounting: monthly, at the annual discount rate, (1 + r)^(−month ÷ 12). | A |
-| 9.10 | Payback = first month after the last month with negative cumulative cash. | Design |
+| 9.10 | Payback = first month after the last month with negative cumulative cash. Reported twice: **discounted** (cumulative discounted cash, the NPV's convention; 39 at the default) and **undiscounted** (37). | Design |
 
 ---
 
@@ -213,7 +215,8 @@ Grades: discount rates **A** (Damodaran, cost of capital by industry, January 20
 | 10.5 | The plan (which workloads, when) is fixed before reality is drawn | — | Design |
 | 10.6 | Break-even | net realisation at which cash NPV = 0, plan fixed (takeover varied, review held) | Design |
 | 10.7 | Verdict thresholds | **Go** ≥ 70% chance of positive cash · **Pilot first** 40–70% · **Stop** < 40% · capacity case if nothing is harvested | experiment (value of a pilot gate) |
-| 10.8 | Pilot pass mark / break-even to watch | net realisation ≥ the break-even (**14.3%** at the default) | derived |
+| 10.8 | Pilot pass mark / break-even to watch | net realisation ≥ the break-even (**19.7%** at the default) | derived |
+| 10.9 | **Pilot gate in the odds** | each simulated future stops at month 9 (build lead + evaluation) if its net realisation is below the pass mark: AI off, work back, positions refilled, recurring costs end, money spent stays spent. 27% of futures stop at the default, at −$4.4M each. Only when cash is the case (harvest > 0). Measurement at the gate taken as exact (optimistic). | Design |
 
 ---
 
@@ -235,12 +238,14 @@ Grades: discount rates **A** (Damodaran, cost of capital by industry, January 20
 
 | Rank | Assumption | Why it matters | How to fix |
 |---|---|---|---|
-| 1 | AI takeover 40% (C) | 2nd largest driver: −$0.1M to +$19.1M | Pilot |
-| 2 | Human review 30% (C) | 3rd largest: +$12.0M to +$4.6M | Pilot |
-| 3 | Custom running cost $3.48/h (D) | +$10.9M to +$4.3M across $1.50–$10 | Pilot invoices / vendor quotes |
+| 1 | AI takeover 40% (C) | 2nd largest driver: −$3.4M to +$16.0M | Pilot |
+| 2 | Human review 30% (C) | 3rd largest: +$8.8M to +$1.3M | Pilot |
+| 3 | Custom running cost $3.48/h (D) | +$7.7M to +$1.1M across $1.50–$10 | Pilot invoices / vendor quotes |
+| 3a | Training refresher 25% a year (D) | +$7.5M to +$3.8M across 10–50% | Training records from the pilot |
+| 3b | Smallest redeployable block 5% (D) | Capacity $47.7M at 0 to $0 at 10%; never touches cash | Time studies in the pilot: where the freed time went |
 | 4 | Vendor prices $15k / $35k and $6/h (D/C) | Build-or-buy adds about $2M; it depends on them | Vendor quotes |
 | 5 | Complexity drag 0.30 (D) | Stand-in for "the remaining work is harder" | Etter task volumes or handling times |
 | 6 | One takeover and review for every task and level (design) | Treats Coordinator and Director work alike | Vary by Etter category and role level |
 | 7 | Tasks vs Workloads sheet (open) | Can flip the verdict | Etter to confirm |
 | — | Harvest share 50% (Policy) | Largest driver | Leadership decision, not research |
-| — | Agent ceilings 90% / 80% (set by Chandan) | Raise every result: at 85% / 55% the default was +$5.8M, 65%, pilot first | Validate against Etter's own task evidence or the pilot |
+| — | Agent ceilings 90% / 80% (set by Chandan) | Raise every result: at 85% / 55% the default is +$2.5M on this engine | Validate against Etter's own task evidence or the pilot |

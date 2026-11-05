@@ -1,6 +1,6 @@
 # Etter Value Model — how it works
 
-**Version:** final model, 23 October 2026, with the agent ceilings set by Chandan in the review meeting (**Directive 90%, Feedback Loop 80%**). **Default case:** Etter FP&A data (11 roles, 1,523 people, 420 tasks), Moderate scenario, Attrition only, cross-industry defaults, assistant tools on. Every number below is an exact output of the model at that default. The full list of inputs, sources and grades is in `Etter_Value_Model_assumptions.md`.
+**Version:** final model, 23 October 2026, with the agent ceilings set by Chandan in the review meeting (**Directive 90%, Feedback Loop 80%**). **Updated 5 November 2026** with five fixes from a finance review (capacity granularity, recurring training, licence true-down, discounted payback, a stop path and pilot gate); what changed and why is in `Etter_Value_Model_spec_delta_review.md`. **Default case:** Etter FP&A data (11 roles, 1,523 people, 420 tasks), Moderate scenario, Attrition only, cross-industry defaults, assistant tools on. Every number below is an exact output of the model at that default. The full list of inputs, sources and grades is in `Etter_Value_Model_assumptions.md`.
 
 ---
 
@@ -12,10 +12,10 @@ Etter breaks each role into workloads and tasks and labels every task with a cat
 
 **The model in three sentences**
 1. Etter says which tasks AI can do; the model keeps only the workloads where an agent (built or bought, whichever is cheaper) costs less than the work, and only the share AI really takes over once people have checked it.
-2. That freed time becomes whole positions as people leave, hires the plan no longer needs, or capacity for other work — every hour goes to exactly one place.
+2. That freed time becomes whole positions as people leave, hires the plan no longer needs, or capacity for other work — or, where it is spread too thinly per person to use, nothing. Every hour goes to exactly one place.
 3. Cash, avoided hires and capacity are reported separately, with the odds, a break-even and a ledger that traces every dollar to an input.
 
-**Answer at the default:** cash **+$9.38M** over five years (today's money) · **59** positions not refilled (3.9%) · capacity **$47.7M** (never added to cash) · payback **month 33** · **75%** chance cash is positive · break-even net realisation **14.3%** vs **28%** assumed · verdict **GO** (phased rollout).
+**Answer at the default:** cash **+$6.15M** over five years (today's money) · **59** positions not refilled (3.9%) · capacity **$13.2M** (44 people's worth; never added to cash; another 73 people's worth is stranded in slivers and valued at zero) · payback **month 39** discounted (37 undiscounted) · **60%** chance cash is positive · break-even net realisation **19.7%** vs **28%** assumed · verdict **PILOT FIRST**. In 27% of futures the pilot misses that mark and the programme stops in month 9, at a cost of $4.4M.
 
 ---
 
@@ -133,69 +133,80 @@ Turnover: Para-professional 12.5%, Professional 9.1%, Management 6.3%, Executive
 
 **Hires avoided (against the plan):** only if the industry is growing — spare freed people fill planned hires before becoming capacity. FP&A default: 0% growth → 0.
 
-**Capacity (time back):** freed hours − positions × hours − hires avoided × hours, valued at the hourly rate. ~117 people's worth at month 60.
+**Capacity (time back):** what is left after positions and hires avoided is spread across everyone still in post. Freed time below **8 hours a month per person** (5% of the month, about 24 minutes a day) is too thin to redeploy: it is **stranded** and valued at zero. Only time above that block counts as capacity, at the hourly rate.
+```
+left over       = freed hours − positions × hours − hires avoided × hours
+capacity hours  = max(0, left over − 5% × task hours × people in post)
+stranded hours  = left over − capacity hours
+```
+At month 60: 44 people's worth of capacity and 73 stranded. Every role frees only 7.6–14.8 hours per remaining person, so the threshold decides most of the capacity figure: $47.7M at 0, $13.2M at 5%, $0 at 10% (half a day a week). That is stated, not hidden.
 
-Every month the model checks **freed = positions + hires avoided + capacity** (gap = 0).
+Every month the model checks **freed = positions + hires avoided + capacity + stranded**. The largest gap in any month is **0.00000 hours**: exact, not a tolerance.
 
 ### Step 6 — Money: three kinds, never added
 Each month's money is discounted at 6.96% a year, (1.0696)^(−m ÷ 12), and summed over 60 months.
 
 | Savings (PV) | | Costs (PV) | |
 |---|---|---|---|
-| Salaries no longer paid (× 1.31) | $18.89M | Training: $846 + 16.7 h, each of 1,523 people | $3.05M |
+| Salaries no longer paid (× 1.31) | $18.89M | Training: $846 + 16.7 h for all 1,523 at first use ($3.05M), each of the 578 joiners who replace leavers ($0.93M), and a yearly refresher of 25% of that for people in post ($2.33M) | $6.32M |
 | Recruiting avoided ($4,700 per leaver not replaced) | $0.25M | Running: $3.48 / $6 per AI hour, 13% cheaper a year | $2.67M |
-| Equipment per position ($468/yr) | $0.08M | Assistant licences: $360 a seat a year | $1.48M |
+| Equipment per position ($468/yr) | $0.08M | Assistant licences: $360 a seat a year for people in post, trued down at each contract anniversary | $1.45M |
 | | | Build or buy | $1.20M |
 | | | Programme: $75,000 + $623 per person | $1.02M |
 | | | Custom-agent upkeep: 18% a year | $0.41M |
-| **Total** | **$19.22M** | **Total** | **$9.84M** |
+| **Total** | **$19.22M** | **Total** | **$13.08M** |
 
 | Three kinds of money | Default |
 |---|---|
-| **Cash vs today** (savings − costs) | **+$9.38M** |
+| **Cash vs today** (savings − costs) | **+$6.15M** |
 | **Hires avoided vs plan** | $0 |
-| **Capacity at cost** | **$47.7M** — never added to cash |
+| **Capacity at cost** | **$13.2M** — never added to cash (plus 73 people's worth stranded at zero value) |
 
-Payback **month 33**; peak funding needed **$4.4M**. Cash by year (nominal): day 0 −$1.09M, year 1 −$3.32M, year 2 +$1.61M, year 3 +$4.56M, year 4 +$5.51M, year 5 +$5.62M.
+Payback **month 39** on discounted cash, the same convention as the NPV; **month 37** undiscounted. Both are reported and labelled. Peak funding needed **$4.7M**. Cash by year (nominal): day 0 −$1.09M, year 1 −$3.51M, year 2 +$0.78M, year 3 +$3.59M, year 4 +$4.53M, year 5 +$4.64M.
 
-**Capacity hurdle.** If nobody leaves (Capacity only, all 59 workloads), cash is −$10.14M against $67.3M of capacity, so **about 15%** of the freed time must turn into real value for the programme to break even. The model states the hurdle instead of adding capacity to cash.
+**Capacity hurdle.** If nobody leaves (Capacity only, all 59 workloads), cash is −$13.59M against $31.6M of capacity, so **about 43%** of the redeployable time must turn into real value for the programme to break even. The model states the hurdle instead of adding capacity to cash.
 
 ---
 
 ## 4. How sure we are
 
-The plan (which workloads, when) is fixed, then reality is drawn **1,000 times** with a fixed seed (same answer every run). Each draw picks takeover, review, months to full use, active use, assistant saving, costs, running cost, drag and turnover from their ranges. One shared "execution quality" factor (correlation 0.5) makes good programmes good at everything at once.
+The plan (which workloads, when) is fixed, then reality is drawn **1,000 times** with a fixed seed (same answer every run). Each draw picks takeover, review, months to full use, active use, assistant saving, costs, running cost, drag, turnover and the training refresher from their ranges. One shared "execution quality" factor (correlation 0.5) makes good programmes good at everything at once.
+
+**The pilot gate is in the draws.** In each future, if net realisation is below the break-even when the pilot is evaluated (month 9), the programme stops there. The AI is switched off, the work comes back, any positions removed are refilled at the cost per hire, and no further builds, licences, running or training are paid. Money already spent stays spent. So "we tried it and stopped" is an outcome the model produces, not only a pessimistic input.
 
 | Result (default) | |
 |---|---|
-| Chance cash is positive | **75%** |
-| Bad case (P10) / middle (P50) / good case (P90) | −$4.2M / +$5.1M / +$21.2M |
-| Break-even net realisation | **14.3%** (assumed 28%) |
+| Chance cash is positive | **60%** |
+| Bad case (P10) / middle (P50) / good case (P90) | −$4.8M / +$2.2M / +$17.3M |
+| Break-even net realisation | **19.7%** (assumed 28%) |
+| Futures that stop at the pilot gate | **27%** (Gartner's forecast for GenAI projects abandoned after proof of concept: 30%) |
+| Cash if tried and stopped at the gate | −$4.4M, mostly training already given |
 
 **What moves the answer most** (one input at a time):
 | Input | Range | Cash NPV |
 |---|---|---|
-| Harvest share (leadership's choice) | 25% → 75% | −$1.4M → +$20.5M |
-| AI takeover (pilot measures) | 20% → 62% | −$0.1M → +$19.1M |
-| Human review (pilot measures) | 15% → 45% | +$12.0M → +$4.6M |
-| Months to full use | 6 → 24 | +$11.0M → +$6.3M |
-| Running cost | $1.50 → $10/h | +$10.9M → +$4.3M |
-| Build and programme cost | ×0.85 → ×1.6 | +$10.4M → +$5.3M |
+| Harvest share (leadership's choice) | 25% → 75% | −$4.8M → +$17.4M |
+| AI takeover (pilot measures) | 20% → 62% | −$3.4M → +$16.0M |
+| Human review (pilot measures) | 15% → 45% | +$8.8M → +$1.3M |
+| Running cost | $1.50 → $10/h | +$7.7M → +$1.1M |
+| Build and programme cost | ×0.85 → ×1.6 | +$7.2M → +$2.1M |
+| Months to full use | 6 → 24 | +$7.8M → +$3.0M |
+| Training refresher | 10% → 50% a year | +$7.5M → +$3.8M |
 
 ---
 
 ## 5. The decision
 
 - **Go** if the chance of positive cash is 70% or more · **Pilot first** at 40–70% · **Stop** below 40% · **Capacity case** if nothing is turned into positions (fund only if leadership commits to using the time).
-- FP&A: 75% → **GO, phased rollout**. The rollout still starts with the top 3 workloads (live in month 3) and a 6-month evaluation before the waves, so takeover, checking time, adoption speed and real costs are measured early; the break-even to watch is **14.3%** net realisation.
+- FP&A: 60% → **PILOT FIRST**. The top 3 workloads go live in month 3, followed by a 6-month evaluation. Scale only if the pilot shows net realisation of at least **19.7%**. Otherwise stop in month 9, which costs about $4.4M. Before the finance-review fixes this case was 75% and Go. Training the joiners alone takes it below 70%.
 - A **backfill rule per role** for hiring managers (e.g. Associate Analyst: leave 16 of the next 141 leavers unreplaced; Analyst: 14 of the next 118; Senior Coordinator: refill as usual).
 
 **Scenarios and policies (each sized to its own peak cash):**
 | | Capacity only | Attrition only | Active reduction |
 |---|---|---|---|
-| Conservative | −$9.7M | −$1.0M · 30% · stop | +$4.7M · 60% · pilot |
-| **Moderate** | −$10.1M (hurdle 15%) | **+$9.4M · 75% · go** | +$22.6M · 97% · go |
-| Aggressive | −$11.4M | +$25.0M · 97% · go | +$49.1M · ~100% · go |
+| Conservative | −$13.2M (capacity cannot cover it) | −$4.4M · 14% · stop | +$1.3M · 44% · pilot |
+| **Moderate** | −$13.6M (hurdle 43%) | **+$6.1M · 60% · pilot** | +$19.4M · 91% · go |
+| Aggressive | −$14.9M (hurdle 19%) | +$21.9M · 93% · go | +$46.1M · 99% · go |
 
 ---
 
@@ -224,9 +235,9 @@ The plan (which workloads, when) is fixed, then reality is drawn **1,000 times**
 
 ## 8. How we know it holds
 
-- **20 checks** in the Excel, all pass: tasks, headcount, payroll and hours tie to the Etter file; every freed hour reconciles every month; capacity never negative; positions whole and within headcount; ledger sums to the cash NPV with a $0 gap; build charged equals workloads built; and the workbook matches the reference engine.
-- The Excel matches the Python engine **to the cent** ($9,376,169.02 at the default) in six tested cases across scenarios, policies and an industry pack.
-- The browser engine matches the Python engine to ~3×10⁻¹⁴ on six cases; **18 automated tests** pass, including reproducing the earlier engine to the cent when build-or-buy, sizing and the old ceilings are switched off.
+- **21 checks** in the Excel, all pass: tasks, headcount, payroll and hours tie to the Etter file; every freed hour reconciles every month to 0.00000 hours; capacity and stranded hours never negative; positions whole and within headcount; ledger sums to the cash NPV with a $0 gap; build charged equals workloads built; and the workbook matches the reference engine.
+- The Excel matches the Python engine **to the cent** ($6,145,867.38 at the default) in six tested cases across scenarios, policies and an industry pack, including both paybacks.
+- The browser engine matches the Python engine to ~2×10⁻¹⁴ on six cases; **34 automated tests** pass, including reproducing the earlier engine to the cent when build-or-buy, sizing, the old ceilings and the finance-review fixes are switched off (`legacy=True`).
 - Deterministic: fixed seed, monthly arithmetic, no hidden steps.
 
 ---
@@ -238,9 +249,11 @@ The plan (which workloads, when) is fixed, then reality is drawn **1,000 times**
 3. Vendor prices and running cost have thin evidence; much of the gain from build-or-buy depends on vendor prices.
 4. The odds depend on the ranges chosen; quote them as "about three in four".
 5. Etter's Tasks and Workloads sheets disagree on the category split; the model uses Tasks. This is the one structural question that could flip the verdict.
-6. Under attrition only, assistant tools are a cash cost (about $1.8M) justified only by capacity.
+6. Under attrition only, assistant tools are a cash cost (about $2.1M: $8.23M without them) justified only by capacity.
 7. Industry packs are settings applied to the FP&A data, not validated on other industries' real data yet.
-8. The higher agent ceilings (90% / 80%) raise every result; with the previous 85% / 55% the default was +$5.8M, 65%, pilot first.
+8. The higher agent ceilings (90% / 80%) raise every result; with the previous 85% / 55% the default is +$2.5M on this engine.
+9. Capacity depends almost entirely on one judgment: the smallest block of freed time a person can redeploy (5% of the month). Freed time is spread evenly across everyone in a role, so capacity is a cliff in that number: $47.7M at 0, $0 at 10%. The training refresher (25% a year) is also judgment and moves cash by $3.7M across its range.
+10. The pilot gate assumes the pilot measures realisation exactly, which is optimistic. A noisy pilot would stop some good programmes and pass some bad ones.
 
 ---
 
