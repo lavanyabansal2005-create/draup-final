@@ -113,7 +113,7 @@ The high-to-low spread narrows from 1.98x to 1.86x.
 - `packs/base.json`: `economics.wage_growth = 0.034`.
 - `evm.py` and `evm.js`: `scope()` (wage-weighted annuity) and `simulate()` (wage index on the five salary-linked lines). Parity passes.
 - `site/app.js`: the assumption register gains a "Pay growth per year" row; site rebuilt.
-- `docs/Etter_Value_Model_FPA.xlsx`: new input `p_wage` (Inputs row 54), wage index in Timeline column FP, the five salary-linked Timeline columns escalated, cost test on `p_annw` (Workloads D4). Reference-engine values (Sizing, Risk, peak-cash sizes, Checks 16–20) recomputed. Matches the engine to the cent at the default and in three other scenario/policy cases; all 20 checks pass.
+- `docs/Etter_Value_Model_FPA.xlsx`: new input `p_wage` (Inputs row 54), wage index in Timeline column FP, the five salary-linked Timeline columns escalated, cost test on `p_annw` (Workloads D4). Reference-engine values (Sizing, Risk, peak-cash sizes, Checks 16–20) recomputed. Matches the engine to the cent at the default and in four other scenario/policy cases; all 20 checks pass.
 - `tests/test_evm.py`: `test_earlier_engine_is_reproduced` now sets `wage_growth = 0`, because the v0 engine it reproduces had flat pay. Its assertions are unchanged.
 
 ## Left for the owner
