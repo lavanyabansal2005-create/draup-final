@@ -164,9 +164,9 @@ Ceilings (open question 1), tax (open question 2), terminal value (open question
 # Addendum: wage growth and review by seniority
 
 **Status:** specified 5 November 2026, before the engine change, on the user's decision to add both (working agreement, rule 1).
-**Headline effect (prototype):** about **$6.15M → $7.02M**. Wage growth adds about $1.9M. Review by seniority takes about $1.05M off and shrinks the programme from 45 to 35 workloads. The exact figure goes in `tests/reference.json` once the engine is built.
+**Headline effect:** **$6,145,867.38 → $7,023,654.78** (`tests/reference.json`). Wage growth adds $1.93M. Review by seniority takes $1.05M off and shrinks the programme from 45 to 35 workloads (25 buy, 10 build).
 
-Both close gaps already listed in the working agreement ("no wage escalation"; "`review` is a flat 0.30 across all bands"). Both pass rule 6 in the prototype: each P10–P90 swing ranks 8th or 9th of 13 in the tornado.
+Both close gaps already listed in the working agreement ("no wage escalation"; "`review` is a flat 0.30 across all bands"). Both pass rule 6 on the built engine: review slope ranks 8th of 13 in the tornado ($1.56M swing) and wage growth 9th ($1.10M). `tests/test_evm.WagesAndSeniority.test_new_parameters_earn_their_place` keeps that true.
 
 ## 6. Wage growth
 
@@ -201,7 +201,7 @@ At the default slope of 0.2 this gives review 0.24 / 0.30 / 0.36 / 0.42. Each ro
 
 **Default.** `review.seniority_slope = 0.2`, status **judgment**. The direction is evidenced; the magnitude is not. Spread in `uncertainty.params.review_slope`: P10 0.05, P90 0.40. Setting it to 0 gives the previous model exactly.
 
-**What it does.** Agent work in management roles frees less, so fewer workloads pay for themselves and the peak-cash programme shrinks from 45 to about 35 workloads. Positions fall from 59 to about 56. The peak-cash size table in the workbook is recomputed.
+**What it does.** Agent work in management roles frees less, so fewer workloads pay for themselves and the peak-cash programme shrinks from 45 to 35 workloads. Positions fall from 59 to 56. The peak-cash size table in the workbook is recomputed. With the programme fixed, cash does not move until the slope reaches about 0.3, because positions are whole numbers per role. The slope works mainly through the cost test.
 
 ## Kept reproducible
 

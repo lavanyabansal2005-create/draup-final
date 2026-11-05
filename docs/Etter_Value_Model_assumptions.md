@@ -1,6 +1,6 @@
 # Etter Value Model — final list of assumptions
 
-**Version:** final model, 23 October 2026, with the agent ceilings set by Chandan in the review meeting (Directive 90%, Feedback Loop 80%); updated 5 November 2026 with the finance-review fixes (`Etter_Value_Model_spec_delta_review.md`) · **Default case:** Etter FP&A data (11 roles, 1,523 people, 420 tasks), Moderate scenario, Attrition only policy, cross-industry defaults, assistant tools on.
+**Version:** final model, 23 October 2026, with the agent ceilings set by Chandan in the review meeting (Directive 90%, Feedback Loop 80%); updated 5 November 2026 with the finance-review fixes, wage growth and review by seniority (`Etter_Value_Model_spec_delta_review.md`) · **Default case:** Etter FP&A data (11 roles, 1,523 people, 420 tasks), Moderate scenario, Attrition only policy, cross-industry defaults, assistant tools on.
 **Where they live:** every number below is an input on the **Inputs** sheet of `Etter_Value_Model_FPA.xlsx` (blue text) and in the engine's parameter pack (`packs/base.json`). Change it there and the whole model follows.
 
 **Grades** — **A** official statistic or list price · **B** industry benchmark with a stated method · **C** indirect evidence or estimate · **D** thin evidence, replace first · **Policy** the company's choice, not an estimate · **Design** a modelling choice.
@@ -16,7 +16,7 @@
 | 1.2 | Policy for freed time | **Attrition only** | Capacity only, Attrition only, Active reduction | See section 3. Healthcare pack defaults to Capacity only. |
 | 1.3 | Industry | **Cross-industry default** | 7 packs (section 6) | Changes discount rate, turnover and job growth only. |
 | 1.4 | Assistant tools (Copilot-style seats) | **On** | On / Off | Off = agents only; no licences or assistant time. |
-| 1.5 | Programme size (number of workloads) | **Peak-cash size** (45 at the default) | any number; 0 = all that pass | Optional override. Peak-cash sizes by case are in section 8. |
+| 1.5 | Programme size (number of workloads) | **Peak-cash size** (35 at the default) | any number; 0 = all that pass | Optional override. Peak-cash sizes by case are in section 8. |
 
 ---
 
@@ -25,8 +25,9 @@
 | # | Assumption | Conservative | **Moderate** | Aggressive | Range used for odds (P10–P90) | Grade | Pilot? | Basis |
 |---|---|---|---|---|---|---|---|---|
 | 2.1 | **AI takeover**: share of AI-able work the agent actually does | 25% | **40%** | 60% | 20–62% | C | ✔ | Indirect: finance AI deployments report low-to-moderate impact (Gartner, May 2026); accounts payable, the most automated finance process, averages ~33% touchless (Ardent Partners 2025). |
-| 2.2 | **Human review**: hours people spend checking per 100 AI hours | 40% | **30%** | 20% | 15–45% | C | ✔ | Estimate; measured in the pilot as checking time per AI hour. |
-| 2.3 | **Net realisation** = takeover × (1 − review) | 15% | **28%** | 48% | — | derived | ✔ | The single number the answer turns on. Break-even at the default: **19.7%**. |
+| 2.2 | **Human review**: hours people spend checking per 100 AI hours, at the Professional band | 40% | **30%** | 20% | 15–45% | C | ✔ | Estimate; measured in the pilot as checking time per AI hour. |
+| 2.2a | **Review rise per band of seniority**: review × (1 + this × (band rank − 1)) | 20% | **20%** | 20% | 5–40% | **D** | ✔ | Judgment on magnitude; direction from Brynjolfsson et al. v2 (quality declines for the most skilled) and Dell'Acqua et al. (19 points less accurate outside the frontier). Gives 24 / 30 / 36 / 42% by band. Moves cash +$7.0M → +$5.5M across its range, mostly through which workloads pass the cost test. |
+| 2.3 | **Net realisation** = takeover × (1 − review) | 15% | **28%** | 48% | — | derived | ✔ | The single number the answer turns on, measured at the Professional band. Break-even at the default: **19.2%**. |
 | 2.4 | Months to full use after go-live (S-curve) | 18 | **12** | 6 | 6–24 | C | ✔ | MIT NANDA, State of AI in Business 2025. |
 | 2.5 | Assistant active use (share of seat holders who save time) | 55% | **70%** | 85% | 50–85% | C | ✔ | Published weekly-active use of purchased assistant seats; estimate. |
 | 2.6 | Assistant saving multiplier | 0.50 | **1.00** | 1.25 | 0.4–1.6 | C | ✔ | Scales the band rates in 4.4. |
@@ -48,7 +49,7 @@
 | 3.5 | Severance | — | — | 12 weeks of base salary (outplacement not included) | Policy |
 | 3.6 | Freed time absorbs planned hires first (if the industry grows) | yes | **yes** | yes | Policy |
 
-Harvest share is the largest single driver: −$4.8M at 25% to +$17.4M at 75% (default case).
+Harvest share is the largest single driver: −$4.8M at 25% to +$18.4M at 75% (default case).
 
 ---
 
@@ -57,6 +58,7 @@ Harvest share is the largest single driver: −$4.8M at 25% to +$17.4M at 75% (d
 | # | Assumption | Value | Grade | Source / basis |
 |---|---|---|---|---|
 | 4.1 | On-cost multiplier (loaded cost = salary × this) | **1.3055** | A | BLS Employer Costs for Employee Compensation, **Table 5, full-time private industry**: wages 68.5%, paid leave 8.1% of compensation; 100 ÷ (68.5 + 8.1). Paid leave is added back because the hours below are working hours. |
+| 4.1a | **Wage growth** (salaries, capacity, avoided hires, severance and training hours grow with it; the cost test stays at today's prices) | **3.4% a year** | A | BLS Employment Cost Index, private industry compensation, 12 months to September 2026. Range 2.5–4.5%: cash +$6.5M → +$7.6M. |
 | 4.2 | Working hours | **160 a month (1,920 a year)** | A | Etter file convention. If a role's tasks sum to a different total (Senior Analyst: 136), shares are taken of the hours recorded. |
 | 4.3 | Hourly rate | loaded cost ÷ (12 × task hours a month) | derived | Time-driven activity-based costing. Example: Analyst $54.17/h. |
 | 4.4 | Assistant time saving by band | Para-professional **20%**, Professional **12%**, Management **6%**, Executive **3%** | B | Brynjolfsson, Li and Raymond, *Generative AI at Work*, QJE 2025 (largest gains for less experienced workers). Applied as the smaller of this and the category ceiling. |
@@ -113,18 +115,18 @@ Assistant savings are the smaller of the category ceiling and the band rate, and
 
 | Reading | Directive / Feedback Loop | Cash NPV | vs pack | Workloads in programme | Positions at month 60 | Payback month |
 |---|---|---|---|---|---|---|
-| Tasks column (shipped data) | 0.85 / 0.55 | $2,523,950 | −$3.62M (−59%) | 36 | 47 | 44 |
-| **Pack (in use)** | **0.90 / 0.80** | **$6,145,867** | — | **45** | **59** | **37** |
-| Read me table | 0.90 / 0.85 | $6,528,391 | +$0.38M (+6%) | 41 | 60 | 36 |
-| Bucket ceiling | 1.00 / 1.00 | $8,275,434 | +$2.13M (+35%) | 37 | 66 | 34 |
+| Tasks column (shipped data) | 0.85 / 0.55 | $3,438,343 | −$3.59M (−51%) | 48 | 47 | 43 |
+| **Pack (in use)** | **0.90 / 0.80** | **$7,023,655** | — | **35** | **56** | **36** |
+| Read me table | 0.90 / 0.85 | $7,228,907 | +$0.21M (+3%) | 35 | 57 | 36 |
+| Bucket ceiling | 1.00 / 1.00 | $10,645,163 | +$3.62M (+52%) | 35 | 66 | 32 |
 
-Repriced after the finance-review fixes (payback undiscounted; before the fixes the four readings were $5.80M / $9.38M / $9.75M / $11.48M). High to low is now a 3.3x spread on the headline, from an input the brief puts out of scope. The ceilings are not among the uncertainty draws, so the P10–P90 band (−$4.8M to +$17.3M) assumes the pack reading is correct. It does not cover this question.
+Repriced after the finance-review fixes, wage growth and review by seniority (payback undiscounted; before any of them the four readings were $5.80M / $9.38M / $9.75M / $11.48M). High to low is a 3.1x spread on the headline, from an input the brief puts out of scope. The ceilings are not among the uncertainty draws, so the P10–P90 band (−$4.8M to +$20.7M) assumes the pack reading is correct. It does not cover this question.
 
 These four figures are locked in by `tests/test_ceiling_sets.py`. Changing the ceilings, or anything that moves their price, fails that test.
 
 #### Reproducing this in the workbook
 
-`docs/Etter_Value_Model_FPA.xlsx` reproduces the pack reading to the cent. Programme size (Inputs B9) is the peak-cash size for the **default** ceilings (45 workloads), copied from the engine. To match the engine on the other three readings, set the override (Inputs B8) to their peak sizes, 36, 41 and 37, which the fixes did not move.
+`docs/Etter_Value_Model_FPA.xlsx` reproduces the pack reading to the cent. Programme size (Inputs B9) is the peak-cash size for the **default** ceilings (35 workloads), copied from the engine. To match the engine on the other three readings, set the override (Inputs B8) to their peak sizes, 48, 35 and 35.
 
 ---
 
@@ -163,7 +165,7 @@ Grades: discount rates **A** (Damodaran, cost of capital by industry, January 20
 | 7.13 | Training per person in every touched role | **$846 + 16.7 hours** of the person's own time, for everyone at first use and for **every joiner** who replaces a leaver | — | B | — | ATD 2026 State of the Industry. Not scaled by the cost multiplier. Joiners = leavers − positions not refilled that month (all leavers under active reduction). |
 | 7.14 | Assistant licence | **$360 per seat a year** | — | A | — | Microsoft list price (unchanged since 2023). |
 | 7.15 | Assistant seats | **people in post** × active use, ramped in; trued down only at each contract anniversary (contract year k priced on positions at month 12k) | — | derived | ✔ | Annual seat commitments are reduced at renewal. Assistant time saved still uses the full headcount: the work does not shrink when positions go. |
-| 7.16 | Training refresher | **25% of the initial package a year** (about 4 hours and $212 per person), for people in post, from 12 months after first use | 10–50% | **D** | ✔ | Judgment; no measured rate. BCG *AI at Work 2025*: 79% of people with 5+ hours of training are regular users vs 67% with less. Ranks 7th of 11 in the tornado (+$7.5M → +$3.8M). |
+| 7.16 | Training refresher | **25% of the initial package a year** (about 4 hours and $212 per person), for people in post, from 12 months after first use | 10–50% | **D** | ✔ | Judgment; no measured rate. BCG *AI at Work 2025*: 79% of people with 5+ hours of training are regular users vs 67% with less. Ranks 7th of 13 in the tornado (+$8.5M → +$4.5M). |
 
 ---
 
@@ -172,14 +174,14 @@ Grades: discount rates **A** (Damodaran, cost of capital by industry, January 20
 | # | Assumption | Value | Grade | Notes |
 |---|---|---|---|---|
 | 8.1 | One agent per Etter workload, shared by every role that does it | — | Design | 59 workloads contain agent tasks. |
-| 8.2 | Build or buy | **the option with the higher 5-year NPV at cost** (buy only if strictly better) | Design | Default: 35 buy, 10 build. |
+| 8.2 | Build or buy | **the option with the higher 5-year NPV at cost** (buy only if strictly better) | Design | Default: 25 buy, 10 build. |
 | 8.3 | Cost test | workload passes if (freed value − running − maintenance) × annuity − up front > 0, freed value = work value × net realisation | Design | Policy-independent: "is the AI cheaper than the work?" |
 | 8.4 | Annuity factor (months of full value in five years) | **42.5** | derived | After 3-month build, S-curve ramp, 6.96% discounting. |
 | 8.5 | Ranking | **return per $ up front** | Design | — |
-| 8.6 | Programme size | **stop where 5-year cash NPV peaks** | Design | Moderate: Attrition 45 · Active 37 · Capacity all (59). Conservative: 35 · 32 · 53. Aggressive: 41 · 58 · 59. |
+| 8.6 | Programme size | **stop where 5-year cash NPV peaks** | Design | Moderate: Attrition 35 · Active 39 · Capacity all (59). Conservative: 42 · 28 · 56. Aggressive: 41 · 57 · 59. |
 | 8.7 | Pilot | **top 3 workloads**, live in month 3 | Design | — |
 | 8.8 | Pilot evaluation before further builds | **6 months** | Design | — |
-| 8.9 | Waves after the pilot | **10 workloads every 3 months** (go-live months 12, 15, 18, 21 and 24 at the default) | Design | — |
+| 8.9 | Waves after the pilot | **10 workloads every 3 months** (go-live months 12, 15, 18 and 21 at the default) | Design | — |
 | 8.10 | Adoption curve | **S-curve** from each go-live; the same curve in the cost test, running cost and savings | Design | — |
 | 8.11 | Assistant rollout | starts **month 2**, full after **6 months** (S-curve) | Design | — |
 | 8.12 | Horizon | **60 months** (5 years), month 0 = today | Design | Fixed; the cost test uses the same window. |
@@ -197,10 +199,10 @@ Grades: discount rates **A** (Damodaran, cost of capital by industry, January 20
 | 9.5 | Assistant time is not turned into positions under attrition only (minutes scattered across many people). | Policy |
 | 9.6 | **Cash, hires avoided and capacity are never added together.** | Design |
 | 9.7 | Capacity is valued at the hourly rate (at cost) and is real only if used; when cash is negative the model reports a **capacity hurdle** (share that must become real value to break even) instead of adding it. | Design |
-| 9.7a | **Smallest redeployable block: 5% of a person's month** (8 hours at 160, about 24 minutes a day). Leftover freed time per person in post below this is stranded and valued at zero; only time above it is capacity. Range 0–10%: capacity is $47.7M at 0, $13.2M at 5% and $0 at 10% on this data, because freed time is spread evenly across each role. Forrester TEI uses a flat 50% recapture instead, which is its house assumption. | **D** (judgment) |
+| 9.7a | **Smallest redeployable block: 5% of a person's month** (8 hours at 160, about 24 minutes a day). Leftover freed time per person in post below this is stranded and valued at zero; only time above it is capacity. Range 0–10%: capacity is $50.7M at 0, $14.5M at 5% and $0 at 10% on this data, because freed time is spread evenly across each role. Forrester TEI uses a flat 50% recapture instead, which is its house assumption. | **D** (judgment) |
 | 9.8 | Hires avoided count only if the industry has job growth; reported against the hiring plan, separate from cash. Headline = plan NPV if the industry grows, else cash NPV. | Design |
 | 9.9 | Discounting: monthly, at the annual discount rate, (1 + r)^(−month ÷ 12). | A |
-| 9.10 | Payback = first month after the last month with negative cumulative cash. Reported twice: **discounted** (cumulative discounted cash, the NPV's convention; 39 at the default) and **undiscounted** (37). | Design |
+| 9.10 | Payback = first month after the last month with negative cumulative cash. Reported twice: **discounted** (cumulative discounted cash, the NPV's convention; 38 at the default) and **undiscounted** (36). | Design |
 
 ---
 
@@ -215,8 +217,8 @@ Grades: discount rates **A** (Damodaran, cost of capital by industry, January 20
 | 10.5 | The plan (which workloads, when) is fixed before reality is drawn | — | Design |
 | 10.6 | Break-even | net realisation at which cash NPV = 0, plan fixed (takeover varied, review held) | Design |
 | 10.7 | Verdict thresholds | **Go** ≥ 70% chance of positive cash · **Pilot first** 40–70% · **Stop** < 40% · capacity case if nothing is harvested | experiment (value of a pilot gate) |
-| 10.8 | Pilot pass mark / break-even to watch | net realisation ≥ the break-even (**19.7%** at the default) | derived |
-| 10.9 | **Pilot gate in the odds** | each simulated future stops at month 9 (build lead + evaluation) if its net realisation is below the pass mark: AI off, work back, positions refilled, recurring costs end, money spent stays spent. 27% of futures stop at the default, at −$4.4M each. Only when cash is the case (harvest > 0). Measurement at the gate taken as exact (optimistic). | Design |
+| 10.8 | Pilot pass mark / break-even to watch | net realisation ≥ the break-even (**19.2%** at the default) | derived |
+| 10.9 | **Pilot gate in the odds** | each simulated future stops at month 9 (build lead + evaluation) if its net realisation is below the pass mark: AI off, work back, positions refilled, recurring costs end, money spent stays spent. 28% of futures stop at the default, at −$4.4M each. Only when cash is the case (harvest > 0). Measurement at the gate taken as exact (optimistic). | Design |
 
 ---
 
@@ -238,14 +240,15 @@ Grades: discount rates **A** (Damodaran, cost of capital by industry, January 20
 
 | Rank | Assumption | Why it matters | How to fix |
 |---|---|---|---|
-| 1 | AI takeover 40% (C) | 2nd largest driver: −$3.4M to +$16.0M | Pilot |
-| 2 | Human review 30% (C) | 3rd largest: +$8.8M to +$1.3M | Pilot |
-| 3 | Custom running cost $3.48/h (D) | +$7.7M to +$1.1M across $1.50–$10 | Pilot invoices / vendor quotes |
-| 3a | Training refresher 25% a year (D) | +$7.5M to +$3.8M across 10–50% | Training records from the pilot |
-| 3b | Smallest redeployable block 5% (D) | Capacity $47.7M at 0 to $0 at 10%; never touches cash | Time studies in the pilot: where the freed time went |
+| 1 | AI takeover 40% (C) | 2nd largest driver: −$3.5M to +$17.2M | Pilot |
+| 2 | Human review 30% (C) | 3rd largest: +$11.6M to +$1.6M | Pilot |
+| 3 | Custom running cost $3.48/h (D) | +$8.5M to +$2.0M across $1.50–$10 | Pilot invoices / vendor quotes |
+| 3a | Training refresher 25% a year (D) | +$8.5M to +$4.5M across 10–50% | Training records from the pilot |
+| 3b | Smallest redeployable block 5% (D) | Capacity $50.7M at 0 to $0 at 10%; never touches cash | Time studies in the pilot: where the freed time went |
+| 3c | Review rise with seniority 20% a band (D) | +$7.0M to +$5.5M across 5–40% | Pilot: checking time per AI hour, by level |
 | 4 | Vendor prices $15k / $35k and $6/h (D/C) | Build-or-buy adds about $2M; it depends on them | Vendor quotes |
 | 5 | Complexity drag 0.30 (D) | Stand-in for "the remaining work is harder" | Etter task volumes or handling times |
 | 6 | One takeover and review for every task and level (design) | Treats Coordinator and Director work alike | Vary by Etter category and role level |
 | 7 | Tasks vs Workloads sheet (open) | Can flip the verdict | Etter to confirm |
 | — | Harvest share 50% (Policy) | Largest driver | Leadership decision, not research |
-| — | Agent ceilings 90% / 80% (set by Chandan) | Raise every result: at 85% / 55% the default is +$2.5M on this engine | Validate against Etter's own task evidence or the pilot |
+| — | Agent ceilings 90% / 80% (set by Chandan) | Raise every result: at 85% / 55% the default is +$3.4M on this engine | Validate against Etter's own task evidence or the pilot |

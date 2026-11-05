@@ -3,7 +3,7 @@
 Turns Etter task data into a month-by-month financial estimate: cash vs today, cost avoided vs plan, and capacity at cost, never added together.
 
 **Version:** final model, 23 October 2026. Agent ceilings set by Chandan (Draup): **Directive 90%, Feedback Loop 80%**.
-**Default answer** (Etter FP&A data, Moderate, Attrition only, cross-industry): cash **+$6.15M** 5-yr NPV · **59** positions not refilled · capacity **$13.2M** (never added; 73 more people's worth stranded in slivers at zero value) · payback **month 39** discounted, 37 undiscounted · **60%** chance cash is positive · break-even net realisation **19.7%** vs 28% assumed · **45 of 59** workloads (35 buy, 10 build) · verdict **PILOT FIRST** (27% of futures stop at the pilot gate, at −$4.4M). Finance-review fixes of 5 Nov 2026: `docs/Etter_Value_Model_spec_delta_review.md`.
+**Default answer** (Etter FP&A data, Moderate, Attrition only, cross-industry): cash **+$7.02M** 5-yr NPV · **56** positions not refilled · capacity **$14.5M** (never added; 72 more people's worth stranded in slivers at zero value) · payback **month 38** discounted, 36 undiscounted · **60%** chance cash is positive · break-even net realisation **19.2%** vs 28% assumed · **35 of 59** workloads (25 buy, 10 build) · verdict **PILOT FIRST** (28% of futures stop at the pilot gate, at −$4.4M). Salaries grow 3.4% a year and review rises with seniority. Finance-review fixes of 5 Nov 2026: `docs/Etter_Value_Model_spec_delta_review.md`.
 
 ## Run
     python3 run.py                                  # FP&A dataset, Moderate, attrition only
