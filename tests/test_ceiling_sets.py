@@ -5,14 +5,17 @@ The source workbook states the ceilings more than once and the statements disagr
 them exactly. This test prices every reading so the spread is locked in and visible:
 if anything moves the price of a reading, it fails here first.
 
-    Tasks column    0.85 / 0.55   $5,800,227.08
-    Pack (in use)   0.90 / 0.80   $9,376,169.02   <- tests/reference.json headline
-    Read me table   0.90 / 0.85   $9,754,376.86
-    Bucket ceiling  1.00 / 1.00  $11,476,088.73
+    Tasks column    0.85 / 0.55   $2,523,950.35
+    Pack (in use)   0.90 / 0.80   $6,145,867.38   <- tests/reference.json headline
+    Read me table   0.90 / 0.85   $6,528,391.01
+    Bucket ceiling  1.00 / 1.00   $8,275,434.37
 
-Expected values were reproduced independently in docs/Etter_Value_Model_FPA.xlsx with
-programme size re-optimised to peak cash for each reading, and match this engine
-to within $0.01. The tolerance below is $0.50, the same as test_reference_numbers.
+Repriced 5 November 2026 after the finance-review fixes (docs/Etter_Value_Model_spec_delta_review.md):
+joiner and refresher training and licence true-down lower every reading by $3.2-3.3M. Before the
+fixes the four readings were $5.80M / $9.38M / $9.75M / $11.48M (still reproduced with legacy=True).
+The pack reading is reproduced in docs/Etter_Value_Model_FPA.xlsx to the cent; the other three
+need the programme size override set to their peak (36, 41, 37). The tolerance below is $0.50,
+the same as test_reference_numbers.
 
 Do not edit an expected value to make this pass. A change here is a change to the
 open ceilings question and needs the same treatment as a headline change.
@@ -30,10 +33,10 @@ CATS = ('Directive', 'Feedback Loop', 'Task Iteration', 'Learning', 'Validation'
 
 # name: (ceilings in CATS order, expected 5-year cash NPV)
 CEILING_SETS = {
-    'tasks_column':   ((0.85, 0.55, 0.45, 0.25, 0.50, 0.10),  5_800_227.08),
-    'pack':           ((0.90, 0.80, 0.45, 0.25, 0.50, 0.00),  9_376_169.02),
-    'read_me_table':  ((0.90, 0.85, 0.50, 0.45, 0.40, 0.10),  9_754_376.86),
-    'bucket_ceiling': ((1.00, 1.00, 0.50, 0.50, 0.50, 0.00), 11_476_088.73),
+    'tasks_column':   ((0.85, 0.55, 0.45, 0.25, 0.50, 0.10),  2_523_950.35),
+    'pack':           ((0.90, 0.80, 0.45, 0.25, 0.50, 0.00),  6_145_867.38),
+    'read_me_table':  ((0.90, 0.85, 0.50, 0.45, 0.40, 0.10),  6_528_391.01),
+    'bucket_ceiling': ((1.00, 1.00, 0.50, 0.50, 0.50, 0.00),  8_275_434.37),
 }
 
 TOLERANCE = 0.50  # dollars, as in test_evm.test_reference_numbers
